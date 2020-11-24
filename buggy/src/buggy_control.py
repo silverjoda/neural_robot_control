@@ -275,18 +275,19 @@ class Controller:
             else:
                 m_1, m_2 = np.clip((0.5 * throttle * self.config["motor_scalar"]) + self.config["throttle_offset"], 0, 1) , (turn / 2) + 0.5
 
-
-            print(f"Position: {position_rob}, throttle: {throttle}, motor_commands: {m_1}, {m_2}, autonomous: {autonomous_control}")
+            vel_dirvec = np.sqrt(np.square(vel_rob).sum())
 
             # Software work-around concerning "double-click" backwards issue
-            if self.fw_dir and (np.sqrt(np.square(vel_rob)).sum() < 0.03) and m_1 < (self.config["throttle_offset"] - 0.03):
+            if self.fw_dir and (vel_dirvec < 0.03) and m_1 < (self.config["throttle_offset"] - 0.03):
                 self.fw_dir = False
-                self.PWMDriver.write_servos([0, m_2])
-                time.sleep(0.01)
                 self.PWMDriver.write_servos([self.config["throttle_offset"], m_2])
-                time.sleep(0.01)
+                time.sleep(0.02)
                 self.PWMDriver.write_servos([0, m_2])
-                time.sleep(0.01)
+                time.sleep(0.02)
+                self.PWMDriver.write_servos([self.config["throttle_offset"], m_2])
+                time.sleep(0.02)
+
+            print(f"Position: {position_rob}, throttle: {throttle}, motor_commands: {m_1}, {m_2}, autonomous: {autonomous_control}, dirvec: {vel_dirvec}, fw_dir: {fw_dir}")
 
             if m_1 > self.config["throttle_offset"] + 0.03:
                 self.fw_dir = True

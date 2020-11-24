@@ -54,7 +54,14 @@
       <option name="project" value="LOCAL" />
       <updated>1606236204949</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="M">
+      <created>1606240244705</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1606240244705</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -70,10 +77,10 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="723" y="233" width="530" height="647" key="Github.UntrackedFilesDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1606233437023" />
-    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1606236206163">
+    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1606240246926">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/67.27.1853.1053@67.27.1853.1053" timestamp="1606236206163" />
+    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/67.27.1853.1053@67.27.1853.1053" timestamp="1606240246926" />
     <state x="774" y="468" width="438" height="177" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1606239002885">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
