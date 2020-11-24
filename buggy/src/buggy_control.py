@@ -51,7 +51,7 @@ class WPGenerator:
         self.config = config
         self.wp_sequence = None
         if self.config["wp_sequence"] == "two_pole":
-            self.wp_sequence = [[0, 2], [0, -2]]
+            self.wp_sequence = [[2, 0], [-2, 0]]
         if self.config["wp_sequence"] == "four_pole":
             self.wp_sequence = [[2, 0], [0, -2], [-2, 0], [0, 2]]
         if self.config["wp_sequence"] == "rnd":
@@ -80,25 +80,25 @@ class JoyController():
         turn, vel = [self.joystick.get_axis(3), self.joystick.get_axis(1)]
         #print([self.joystick.get_axis(i) for i in range(4)])
         #print(turn, vel)
-        button_x = self.joystick.get_button(1)
+        button_x = self.joystick.get_button(0)
         pygame.event.clear()
 
         turn = -turn # [-.5, .5]
         vel = vel * -1  # [0, 1]
 
         # button_x only when upon press
-        if self.button_x_state == 0 and button_x == 1:
-            self.button_x_state = 1
-            button_x = 1
-        elif self.button_x_state == 1 and button_x == 0:
-            self.button_x_state = 0
-            button_x = 0
-        elif self.button_x_state == 1 and button_x == 1:
-            self.button_x_state = 1
-            button_x = 0
-        else:
-            self.button_x_state = 0
-            button_x = 0
+        #if self.button_x_state == 0 and button_x == 1:
+        #    self.button_x_state = 1
+        #    button_x = 1
+        #elif self.button_x_state == 1 and button_x == 0:
+        #    self.button_x_state = 0
+        #    button_x = 0
+        #elif self.button_x_state == 1 and button_x == 1:
+        #    self.button_x_state = 1
+        #    button_x = 0
+        #else:
+        #    self.button_x_state = 0
+        #    button_x = 0
 
         return vel, turn, button_x
 
@@ -210,7 +210,7 @@ class Controller:
 
         print("Initializing the Controller, motors_on: {}".format(self.motors_on))
 
-        self.config["obs_dim"], self.config["act_dim"] = 6, 2
+        self.config["obs_dim"], self.config["act_dim"] = 10, 2
 
         self.AHRS = AHRS_RS()
         self.PWMDriver = PWMDriver(self.motors_on)
@@ -220,6 +220,8 @@ class Controller:
         self.update_targets()
 
         print("Finished initializing the Controller")
+
+        self.autonomous = False
 
     def update_targets(self):
         if not hasattr(self, 'target_A'):
