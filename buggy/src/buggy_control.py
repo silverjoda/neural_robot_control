@@ -275,7 +275,7 @@ class Controller:
                 action_m_1, action_m_2 = throttle, turn
 
             if action_m_1 < 0:
-                action_m_1 *= 1.5
+                action_m_1 *= 1.8
             m_1, m_2 = np.clip((0.5 * action_m_1 * self.config["motor_scalar"]) + self.config["throttle_offset"], 0, 1) , (action_m_2 / 2) + 0.5
 
             # Software work-around concerning "double-click" backwards issue
