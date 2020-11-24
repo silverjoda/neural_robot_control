@@ -3,8 +3,8 @@
 "controller_source" : "nn" # nn/joystick
 "update_rate" : 100
 "update_period" : 0.01
-"motor_scalar" : 0.2
-"throttle_offset" : 0.59
+"motor_scalar" : 0.15
+"throttle_offset" : 0.5
 "target_proximity_threshold" : 0.6
 "wp_sequence" : "two_pole" # "rnd", "two_pole", "four_pole"
 
