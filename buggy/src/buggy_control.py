@@ -283,11 +283,11 @@ class Controller:
                 self.PWMDriver.write_servos([self.config["throttle_offset"], m_2])
                 time.sleep(0.02)
                 self.PWMDriver.write_servos([0, m_2])
-                time.sleep(0.02)
+                time.sleep(0.1)
                 self.PWMDriver.write_servos([self.config["throttle_offset"], m_2])
-                time.sleep(0.02)
+                time.sleep(0.1)
 
-            print(f"Position: {position_rob}, throttle: {throttle}, motor_commands: {m_1}, {m_2}, autonomous: {autonomous_control}, dirvec: {vel_dirvec}, fw_dir: {fw_dir}")
+            print(f"Position: {position_rob}, throttle: {throttle}, motor_commands: {m_1}, {m_2}, autonomous: {autonomous_control}, dirvec: {vel_dirvec}, fw_dir: {self.fw_dir}")
 
             if m_1 > self.config["throttle_offset"] + 0.03:
                 self.fw_dir = True
