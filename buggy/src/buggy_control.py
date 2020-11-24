@@ -222,7 +222,7 @@ class Controller:
         print("Finished initializing the Controller")
 
     def update_targets(self):
-        if self.target_A is None:
+        if not hasattr(self, 'target_A'):
             self.target_A = self.waypoint_generator.next()
             self.target_B = self.waypoint_generator.next()
         else:
