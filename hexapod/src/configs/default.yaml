@@ -1,0 +1,11 @@
+"policy_straight" : "XWJ_SB_policy.zip"
+"policy_straight_rough" : "XWJ_SB_policy.zip"
+"motors_on" : True 
+"target_vel_source" : "joystick" # rnd/joystick/ros
+"ahrs_source" : "rs"
+"imu_ahrs_update_period" : 0.01
+"update_period" : 0.120
+"max_servo_speed" : 200
+"max_servo_torque" : 1023
+"policy_hid_dim" : 256
+"use_contacts" : False

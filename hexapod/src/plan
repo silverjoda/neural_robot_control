@@ -1,0 +1,2 @@
+Tested most of the stuff with ahrs_rs, looks like it works. The new control script looks like it works but needs a real life test with battery.
+New ahrs with imu (multithreading and higher fps) should be tested as well.

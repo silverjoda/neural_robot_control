@@ -1,0 +1,8 @@
+"policy_path" : "BUGGY_WP_TEST.zip"
+"motors_on" : True 
+"controller_source" : "nn" # nn/joystick
+"update_rate" : 100
+"update_period" : 0.01
+"motor_scalar" : 0.1
+"wp_sequence" : "two_pole" # "rnd", "two_pole", "four_pole"
+

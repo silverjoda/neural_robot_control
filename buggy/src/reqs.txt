@@ -1,0 +1,9 @@
+sudo apt update
+sudo apt upgrade
+sudo apt-get install git build-essential python-dev
+sudo apt-get install -y python-smbus
+sudo apt-get install -y i2c-tools
+pip install adafruit-circuitpython-pca9685
+sudo apt-get install python-dev libatlas-base-dev
+pip3 install pyserial
+pip3 install PyYaml
