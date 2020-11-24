@@ -216,9 +216,18 @@ class Controller:
         self.PWMDriver = PWMDriver(self.motors_on)
         self.JOYStick = JoyController()
         self.policy = self.load_policy(self.config)
-        self.wp_generator = WPGenerator(self.config)
+        self.waypoint_generator = WPGenerator(self.config)
+        self.update_targets()
 
         print("Finished initializing the Controller")
+
+    def update_targets(self):
+        if self.target_A is None:
+            self.target_A = self.waypoint_generator.next()
+            self.target_B = self.waypoint_generator.next()
+        else:
+            self.target_A = self.target_B
+            self.target_B = self.waypoint_generator.next()
 
     def load_policy(self, config):
         logging.info("Loading policy from: \"{}\" ".format(config["policy_path"]))
@@ -247,9 +256,18 @@ class Controller:
             # Update sensor data
             position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
 
+            target_dist = np.sqrt((position_rob[0] - self.target_A[0]) ** 2 + (position_rob[1] - self.target_A[1]) ** 2)
+
+            if target_dist < self.config["target_proximity_threshold"]:
+                self.update_targets()
+
+            # Calculate relative positions of targets
+            relative_target_A = self.target_A[0] - position_rob[0], self.target_A[1] - position_rob[1]
+            relative_target_B = self.target_B[0] - position_rob[0], self.target_B[1] - position_rob[1]
+
             if self.config["controller_source"] == "nn" and autonomous_control:
                 # Make neural network observation vector
-                obs = np.concatenate((position_rob[:2], vel_rob[:2], euler_rob[2:3], angular_vel_rob[2:3]))
+                obs = np.concatenate((euler_rob[2:3], vel_rob[0:2], angular_vel_rob[2:3], relative_target_A, relative_target_B)) # Ours
                 m_1, m_2 = self.get_policy_action(obs)
             else:
                 m_1, m_2 = np.clip((0.5 * throttle * self.config["motor_scalar"]) + 0.55, 0, 1) , (turn / 2) + 0.5
