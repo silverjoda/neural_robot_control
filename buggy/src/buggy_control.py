@@ -239,8 +239,7 @@ class Controller:
 
     def get_policy_action(self, obs):
         (throttle, turn ), _ = self.policy.predict(obs)
-        m_1, m_2 = np.clip((0.5 * throttle * self.config["motor_scalar"]) + self.config["throttle_offset"], 0, 1) , (turn / 2) + 0.5
-        return m_1, m_2
+        return throttle, turn
 
     def loop_control(self):
         '''
@@ -258,8 +257,8 @@ class Controller:
 
             # Update sensor data
             position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
-
             target_dist = np.sqrt((position_rob[0] - self.target_A[0]) ** 2 + (position_rob[1] - self.target_A[1]) ** 2)
+            vel_dirvec = np.sqrt(np.square(vel_rob).sum())
 
             if target_dist < self.config["target_proximity_threshold"]:
                 self.update_targets()
@@ -271,11 +270,13 @@ class Controller:
             if self.config["controller_source"] == "nn" and autonomous_control:
                 # Make neural network observation vector
                 obs = np.concatenate((euler_rob[2:3], vel_rob[0:2], angular_vel_rob[2:3], relative_target_A, relative_target_B)) # Ours
-                m_1, m_2 = self.get_policy_action(obs)
+                action_m_1, action_m_2 = self.get_policy_action(obs)
             else:
-                m_1, m_2 = np.clip((0.5 * throttle * self.config["motor_scalar"]) + self.config["throttle_offset"], 0, 1) , (turn / 2) + 0.5
+                action_m_1, action_m_2 = throttle, turn
 
-            vel_dirvec = np.sqrt(np.square(vel_rob).sum())
+            if action_m_1 < 0:
+                action_m_1 *= 1.5
+            m_1, m_2 = np.clip((0.5 * action_m_1 * self.config["motor_scalar"]) + self.config["throttle_offset"], 0, 1) , (action_m_2 / 2) + 0.5
 
             # Software work-around concerning "double-click" backwards issue
             if self.fw_dir and (vel_dirvec < 0.03) and m_1 < (self.config["throttle_offset"] - 0.03):
