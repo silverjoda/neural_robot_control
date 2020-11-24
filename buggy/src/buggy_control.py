@@ -238,7 +238,7 @@ class Controller:
 
     def get_policy_action(self, obs):
         (throttle, turn ), _ = self.policy.predict(obs)
-        m_1, m_2 = np.clip((0.5 * throttle * self.config["motor_scalar"]) + 0.55, 0, 1) , (turn / 2) + 0.5
+        m_1, m_2 = np.clip((0.5 * throttle * self.config["motor_scalar"]) + self.config["throttle_offset"], 0, 1) , (turn / 2) + 0.5
         return m_1, m_2
 
     def loop_control(self):
@@ -272,10 +272,10 @@ class Controller:
                 obs = np.concatenate((euler_rob[2:3], vel_rob[0:2], angular_vel_rob[2:3], relative_target_A, relative_target_B)) # Ours
                 m_1, m_2 = self.get_policy_action(obs)
             else:
-                m_1, m_2 = np.clip((0.5 * throttle * self.config["motor_scalar"]) + 0.55, 0, 1) , (turn / 2) + 0.5
+                m_1, m_2 = np.clip((0.5 * throttle * self.config["motor_scalar"]) + self.config["throttle_offset"], 0, 1) , (turn / 2) + 0.5
 
             # Write control to servos
-            print(f"Position: {position_rob}, motor_commands: {m_1}, {m_2}, autonomous: {autonomous_control}")
+            print(f"Position: {position_rob}, throttle: {throttle}, motor_commands: {m_1}, {m_2}, autonomous: {autonomous_control}")
             self.PWMDriver.write_servos([m_1, m_2])
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
@@ -301,13 +301,24 @@ class Controller:
                 # Update sensor data
                 position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
 
-                # Make neural network observation vector
-                obs = np.concatenate((position_rob[:2], vel_rob[:2], euler_rob[2], angular_vel_rob[2]))
+                target_dist = np.sqrt(
+                    (position_rob[0] - self.target_A[0]) ** 2 + (position_rob[1] - self.target_A[1]) ** 2)
 
-                if autonomous_control:
+                if target_dist < self.config["target_proximity_threshold"]:
+                    self.update_targets()
+
+                # Calculate relative positions of targets
+                relative_target_A = self.target_A[0] - position_rob[0], self.target_A[1] - position_rob[1]
+                relative_target_B = self.target_B[0] - position_rob[0], self.target_B[1] - position_rob[1]
+
+                if self.config["controller_source"] == "nn" and autonomous_control:
+                    # Make neural network observation vector
+                    obs = np.concatenate((euler_rob[2:3], vel_rob[0:2], angular_vel_rob[2:3], relative_target_A,
+                                          relative_target_B))  # Ours
                     m_1, m_2 = self.get_policy_action(obs)
                 else:
-                    m_1, m_2 = 0.55 + (throttle * 0.45), turn + 0.5
+                    m_1, m_2 = np.clip((0.5 * throttle * self.config["motor_scalar"]) + self.config["throttle_offset"],
+                                       0, 1), (turn / 2) + 0.5
 
                 data_position.append(position_rob)
                 data_vel.append(vel_rob)

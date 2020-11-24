@@ -4,6 +4,7 @@
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="M">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/buggy/src/buggy_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/buggy_control.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buggy/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/configs/default.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +40,14 @@
       <option name="project" value="LOCAL" />
       <updated>1606234064876</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="M">
+      <created>1606234240258</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1606234240258</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -55,9 +63,13 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="723" y="233" width="530" height="647" key="Github.UntrackedFilesDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1606233437023" />
-    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1606234065995">
+    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1606234241279">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/67.27.1853.1053@67.27.1853.1053" timestamp="1606234065995" />
+    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/67.27.1853.1053@67.27.1853.1053" timestamp="1606234241279" />
+    <state x="774" y="468" width="438" height="177" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1606235978871">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="774" y="468" width="438" height="177" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/67.27.1853.1053@67.27.1853.1053" timestamp="1606235978871" />
   </component>
 </project>
