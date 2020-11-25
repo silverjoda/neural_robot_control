@@ -1,9 +1,5 @@
 import Adafruit_PCA9685
 import sys
-import rospy
-import std_msgs
-from geometry_msgs.msg import Pose, PoseStamped, Twist
-from sensor_msgs.msg import Joy
 import threading
 import copy
 import logging
@@ -323,7 +319,7 @@ class PWMDriver:
 
 class Controller:
     def __init__(self):
-        with open('config.yaml') as f:
+        with open('configs/default.yaml') as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
         self.motors_on = self.config["motors_on"]
 
