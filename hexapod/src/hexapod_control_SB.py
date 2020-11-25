@@ -35,7 +35,7 @@ class JoyController():
     def get_joystick_input(self):
         pygame.event.pump()
         turn, vel = [self.joystick.get_axis(3), self.joystick.get_axis(1)]
-        button_x = self.joystick.get_button(1)
+        button_x = self.joystick.get_button(0)
         pygame.event.clear()
 
         turn = -turn / 2 # [-0.5, 0.5]
@@ -319,9 +319,9 @@ class HexapodController:
         
         # Load policies
         self.nn_policy_straight = A2C.load("agents/{}".format(self.config["policy_straight"]))
-        self.nn_policy_straight_rough = A2C.load("agents/{}".format(self.config["policy_straight"]))
+        self.nn_policy_straight_rough = A2C.load("agents/{}".format(self.config["policy_straight_rough"]))
         self.nn_policy_turn_left = A2C.load("agents/{}".format(self.config["policy_straight"]))
-        self.nn_policy_turn_right = A2C.load("agents/{}".format(self.config["policy_straight"]))
+        self.nn_policy_turn_right = A2C.load("agents/{}".format(self.config["policy_straight_rough"]))
 
         self.current_nn_policy = self.nn_policy_straight
         self.current_nn_policy_ID = "straight"

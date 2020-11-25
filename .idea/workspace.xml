@@ -19,10 +19,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="M">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control_SB.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control_SB.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,7 +89,14 @@
       <option name="project" value="LOCAL" />
       <updated>1606240730728</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="M">
+      <created>1606324046556</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1606324046556</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -121,10 +128,10 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="723" y="233" width="530" height="647" key="Github.UntrackedFilesDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1606233437023" />
-    <state x="588" y="319" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1606305879430">
-      <screen x="67" y="27" width="1853" height="1173" />
+    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1606324047792">
+      <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/67.27.1853.1053@67.27.1853.1053" timestamp="1606240731984" />
+    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/67.27.1853.1053@67.27.1853.1053" timestamp="1606324047792" />
     <state x="588" y="319" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1606305879430" />
     <state x="774" y="468" width="438" height="177" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1606324006780">
       <screen x="67" y="27" width="1853" height="1053" />
