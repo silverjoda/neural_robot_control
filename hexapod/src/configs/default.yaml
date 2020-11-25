@@ -1,5 +1,5 @@
 "policy_straight" : "XWJ_SB_policy.zip"
-"policy_straight_rough" : "XWJ_SB_policy.zip"
+"policy_straight_rough" : "HEXAPOD_TILES_STRAIGHT.zip"
 "motors_on" : True 
 "target_vel_source" : "joystick" # rnd/joystick/ros
 "ahrs_source" : "rs"
