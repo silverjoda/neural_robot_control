@@ -104,9 +104,10 @@ class JoyController():
 
 
 class AHRS_RS:
+    # TODO: Change read frame to callback method
+    # TODO: Try add debug logger (log_to_console(), after setting severity)to realsense so that we see why it timeouts
     def __init__(self):
         print("Initializing the rs_t265. ")
-
         self.rs_to_world_mat = np.array([[0, 0, 1],
                                          [1, 0, 0],
                                          [0, 1, 0]])
@@ -114,11 +115,17 @@ class AHRS_RS:
         self.pipe = rs.pipeline()
         self.cfg = rs.config()
         self.cfg.enable_stream(rs.stream.pose)
-        self.pipe.start(self.cfg)
+        self.pipe.start(self.cfg) # , callback=self.rs_cb
         self.timestamp = time.time()
+        self.rs_lock = threading.Lock()
+        #rs.log_severity(rs.log_severity.debug)
 
         self.frames = None
         print("Finished initializing the rs_t265. ")
+
+    def rs_cb(self, data_frame):
+        with self.rs_lock:
+            self.rs_frame = data_frame
 
     def _quat_to_euler(self, w, x, y, z):
         pitch =  -m.asin(2.0 * (x*z - w*y))
@@ -136,6 +143,7 @@ class AHRS_RS:
             print("T265 skipped a frame for some reason, returning previous frame values")
 
         pose = self.frames.get_pose_frame()
+        #rs.log_to_console()
         if pose:
             data = pose.get_pose_data()
 
@@ -249,7 +257,6 @@ class Controller:
         '''
 
         print("Starting the control loop")
-        #while not rospy.is_shutdown():
         while True:
             iteration_starttime = time.time()
 

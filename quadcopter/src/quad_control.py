@@ -337,10 +337,7 @@ class Controller:
             self.AHRS = AHRS()
 
         self.PWMDriver = PWMDriver(self.motors_on)
-        #self.ROSInterface = ROSInterface(update_rate=50)
         self.JOYStick = JoyController(self.config)
-
-        #self.ros_rate = self.ROSInterface.ros_rate
         self.policy = self.load_policy(self.config)
         self.setup_stabilization_control()
 
@@ -365,10 +362,8 @@ class Controller:
         return policy
 
     def get_policy_action(self, obs):
-        with T.no_grad():
-            act, _ = self.policy.predict(obs)
-        act_clipped = np.clip(act, -1, 1) * 0.5 + 0.5
-        return act_clipped
+        (m1, m2, m3, m4), _ = self.policy.predict(obs)
+        return [m1, m2, m3, m4]
 
     def calculate_stabilization_action(self, orientation_euler, angular_velocities, targets):
         roll, pitch, _ = orientation_euler
@@ -412,7 +407,7 @@ class Controller:
             print("Warning: motor commands exceed 1.0. This signifies an error in the system", m_1, m_2, m_3, m_4,
                   t_throttle)
 
-        return m_1, m_2, m_3, m_4
+        return [m_1, m_2, m_3, m_4]
 
     def loop_control(self):
         '''
@@ -426,7 +421,7 @@ class Controller:
             iteration_starttime = time.time()
 
             # Read target control inputs
-            throttle, -t_roll, t_pitch, t_yaw, autonomous_control  = self.JOYStick.get_joystick_input()
+            throttle, t_roll, t_pitch, t_yaw, autonomous_control  = self.JOYStick.get_joystick_input()
 
             # Update sensor data
             position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
@@ -440,7 +435,8 @@ class Controller:
 
             # Calculate stabilization actions
             if self.config["controller_source"] == "nn" and autonomous_control:
-                m_1, m_2, m_3, m_4 = self.get_policy_action(obs)
+                nn_act = self.get_policy_action(obs)
+                m_1, m_2, m_3, m_4 = np.clip(nn_act, -1, 1) * 0.5 + 0.5
             else:
                 m_1, m_2, m_3, m_4 = self.calculate_stabilization_action(euler_rob,
                                                                          angular_vel_rob,
