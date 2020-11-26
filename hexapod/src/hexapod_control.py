@@ -9,7 +9,7 @@ import logging
 import smbus
 import math
 import sys
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 import pypot.dynamixel
 import pygame
 from gyro import IMU

@@ -7,7 +7,7 @@ import sys
 import threading
 import copy
 import logging
-logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 import time
 import torch as T
 import torch.nn as nn
@@ -16,7 +16,6 @@ import numpy as np
 import logging
 import smbus
 import pyrealsense2 as rs
-logging.basicConfig(level=logging.INFO)
 import pygame
 import os
 import yaml

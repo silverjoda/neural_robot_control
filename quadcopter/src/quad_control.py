@@ -3,7 +3,7 @@ import sys
 import threading
 import copy
 import logging
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 import time
 import torch as T
 import torch.nn as nn
