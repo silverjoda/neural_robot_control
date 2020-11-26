@@ -61,22 +61,22 @@ class JoyController():
         pygame.event.pump()
         throttle, t_roll, t_pitch, t_yaw = \
                 [self.joystick.get_axis(self.config["joystick_mapping"][i]) for i in range(4)]
-        button_x = self.joystick.get_button(1)
+        button_x = self.joystick.get_button(0)
         pygame.event.clear()
 
         # button_x only when upon press
-        if self.button_x_state == 0 and button_x == 1:
-            self.button_x_state = 1
-            button_x = 1
-        elif self.button_x_state == 1 and button_x == 0:
-            self.button_x_state = 0
-            button_x = 0
-        elif self.button_x_state == 1 and button_x == 1:
-            self.button_x_state = 1
-            button_x = 0
-        else:
-            self.button_x_state = 0
-            button_x = 0
+        # if self.button_x_state == 0 and button_x == 1:
+        #     self.button_x_state = 1
+        #     button_x = 1
+        # elif self.button_x_state == 1 and button_x == 0:
+        #     self.button_x_state = 0
+        #     button_x = 0
+        # elif self.button_x_state == 1 and button_x == 1:
+        #     self.button_x_state = 1
+        #     button_x = 0
+        # else:
+        #     self.button_x_state = 0
+        #     button_x = 0
 
         return -throttle, t_roll, -t_pitch, -t_yaw, button_x
 
