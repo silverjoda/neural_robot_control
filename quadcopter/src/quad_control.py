@@ -193,7 +193,7 @@ class AHRS:
             (self.roll + self.gyro_x * dt) + \
             self.acc_integration_coeff * acc_y_dir
         self.pitch = self.gyro_integration_coeff * \
-            (self.pitch - self.gyro_y * dt) + \
+            (self.pitch + self.gyro_y * dt) + \
             self.acc_integration_coeff * acc_x_dir
         self.yaw = self.yaw + self.gyro_z * dt
         quat = quaternion.from_euler_angles(self.roll, self.pitch, self.yaw)
