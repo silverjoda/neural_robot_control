@@ -78,7 +78,7 @@ class JoyController():
             self.button_x_state = 0
             button_x = 0
 
-        return throttle, -t_roll, t_pitch, t_yaw, button_x
+        return -throttle, t_roll, -t_pitch, -t_yaw, button_x
 
 
 class AHRS:
@@ -417,7 +417,7 @@ class Controller:
             iteration_starttime = time.time()
 
             # Read target control inputs
-            throttle, t_roll, t_pitch, t_yaw, autonomous_control  = self.JOYStick.get_joystick_input()
+            throttle, t_roll, t_pitch, t_yaw, autonomous_control = self.JOYStick.get_joystick_input()
 
             # Update sensor data
             position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
