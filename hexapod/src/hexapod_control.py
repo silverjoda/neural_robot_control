@@ -210,26 +210,29 @@ class AHRS_RS:
                                         [0, 1, 0],
                                         [1, 0, 0]])
         self.pitch_corr_quat = quaternion.from_rotation_matrix(self.pitch_corr_mat)
-        
+
         self.pipe = rs.pipeline()
         self.cfg = rs.config()
         self.cfg.enable_stream(rs.stream.pose)
-        self.pipe.start(self.cfg)
-
-        self.yaw_offset = 0
-        self.current_heading = 0
+        self.pipe.start(self.cfg, callback=self.rs_cb)
         self.timestamp = time.time()
+        self.rs_lock = threading.Lock()
+
+        self.rs_frame = None
 
         print("Finished initializing the rs_t265. ")
+
+    def rs_cb(self, data_frame):
+        with self.rs_lock:
+            self.rs_frame = data_frame
 
     def update(self, heading_spoof_angle=0):
         heading_spoof_angle -= self.yaw_offset
         self.timestamp = time.time()
 
-        frames = self.pipe.wait_for_frames()
-        pose = frames.get_pose_frame()
-        if pose:
-            data = pose.get_pose_data()
+        if self.rs_frame is not None:
+            with self.rs_lock:
+                data = self.rs_frame.as_pose_frame().get_pose_data()
 
             # Position
             position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])

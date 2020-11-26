@@ -104,8 +104,6 @@ class JoyController():
 
 
 class AHRS_RS:
-    # TODO: Change read frame to callback method
-    # TODO: Try add debug logger (log_to_console(), after setting severity)to realsense so that we see why it timeouts
     def __init__(self):
         print("Initializing the rs_t265. ")
         self.rs_to_world_mat = np.array([[0, 0, 1],
@@ -118,9 +116,7 @@ class AHRS_RS:
         self.pipe.start(self.cfg, callback=self.rs_cb)
         self.timestamp = time.time()
         self.rs_lock = threading.Lock()
-        #rs.log_severity(rs.log_severity.debug)
 
-        #self.frames = None
         self.rs_frame = None
         print("Finished initializing the rs_t265. ")
 
@@ -137,14 +133,6 @@ class AHRS_RS:
     def update(self):
         self.timestamp = time.time()
 
-        #try:
-        #    frames = self.pipe.wait_for_frames(timeout_ms=10)
-        #    self.frames = frames
-        #except:
-        #    print("T265 skipped a frame for some reason, returning previous frame values")
-
-        #pose = self.frames.get_pose_frame()
-        #rs.log_to_console(rs.log_severity.debug)
         if self.rs_frame is not None:
             with self.rs_lock:
                 data = self.rs_frame.as_pose_frame().get_pose_data()
