@@ -59,8 +59,8 @@ class JoyController():
 
     def get_joystick_input(self):
         pygame.event.pump()
-        t_roll, t_pitch, t_yaw, throttle = \
-            [self.joystick.get_axis(self.config["joystick_mapping"][i]) for i in range(4)]
+        throttle, t_roll, t_pitch, t_yaw = \
+                [self.joystick.get_axis(self.config["joystick_mapping"][i]) for i in range(4)]
         button_x = self.joystick.get_button(1)
         pygame.event.clear()
 
@@ -386,6 +386,8 @@ class Controller:
         self.e_pitch_prev = e_pitch
         self.e_yaw_prev = e_yaw
 
+        print(roll_act, pitch_act, yaw_act)
+
         m_1_act_total = + roll_act - pitch_act + yaw_act
         m_2_act_total = - roll_act - pitch_act - yaw_act
         m_3_act_total = + roll_act + pitch_act - yaw_act
@@ -421,13 +423,13 @@ class Controller:
 
             # Update sensor data
             position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
-
             pos_delta = np.array(position_rob) - np.array(self.config["target_pos"])
 
             # Make neural network observation vector
             obs = np.concatenate((pos_delta, rotation_rob, vel_rob, angular_vel_rob)).astype(np.float32)
 
             velocity_targets = -throttle, -t_roll, -t_pitch, -t_yaw
+            pid_targets = throttle, t_roll, t_pitch, t_yaw
 
             # Calculate stabilization actions
             if self.config["controller_source"] == "nn" and autonomous_control:
@@ -436,7 +438,7 @@ class Controller:
             else:
                 m_1, m_2, m_3, m_4 = self.calculate_stabilization_action(euler_rob,
                                                                          angular_vel_rob,
-                                                                         velocity_targets)
+                                                                         pid_targets)
 
             # Write control to servos
             self.PWMDriver.write_servos([m_1, m_2, m_3, m_4])
@@ -462,6 +464,7 @@ class Controller:
                 # Read target control inputs
                 throttle, t_yaw, t_roll, t_pitch, autonomous_control = self.JOYStick.get_joystick_input()
                 velocity_target = -throttle, -t_roll, -t_pitch, -t_yaw
+                pid_target = None
 
                 # Update sensor data
                 position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
