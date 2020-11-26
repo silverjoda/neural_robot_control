@@ -370,7 +370,7 @@ class Controller:
         t_yaw_vel *= 5
 
         # print(f"Throttle_target: {t_throttle}, Roll_target: {t_roll}, Pitch_target: {t_pitch}, Yaw_vel_target: {t_yaw_vel}")
-        # print(f"Roll: {roll}, Pitch: {pitch}, Yaw_vel: {yaw_vel}")
+        print(f"Roll: {roll}, Pitch: {pitch}, Yaw_vel: {yaw_vel}")
 
         # Target errors
         e_roll = t_roll - roll
@@ -385,8 +385,6 @@ class Controller:
         self.e_roll_prev = e_roll
         self.e_pitch_prev = e_pitch
         self.e_yaw_prev = e_yaw
-
-        print(roll_act, pitch_act, yaw_act)
 
         m_1_act_total = + roll_act - pitch_act + yaw_act
         m_2_act_total = - roll_act - pitch_act - yaw_act
