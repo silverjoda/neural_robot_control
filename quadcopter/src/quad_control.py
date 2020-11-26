@@ -426,7 +426,7 @@ class Controller:
             # Make neural network observation vector
             obs = np.concatenate((pos_delta, rotation_rob, vel_rob, angular_vel_rob)).astype(np.float32)
 
-            velocity_targets = -throttle, -t_roll, -t_pitch, -t_yaw
+            velocity_targets = throttle, -t_roll, t_pitch, t_yaw
             pid_targets = throttle, t_roll, t_pitch, t_yaw
 
             # Calculate stabilization actions
