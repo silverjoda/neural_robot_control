@@ -200,8 +200,7 @@ class PWMDriver:
         time.sleep(0.3)
 
 
-class Controller:
-    def __init__(self):
+class Controller:    def __init__(self):
         with open('configs/default.yaml') as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
         self.motors_on = self.config["motors_on"]

@@ -421,7 +421,8 @@ class Controller:
 
             # Update sensor data
             position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
-            pos_delta = np.array(position_rob) - np.array(self.config["target_pos"])
+
+            pos_delta = np.array(position_rob) + np.array(self.config["starting_pos"]) - np.array(self.config["target_pos"])
 
             # Make neural network observation vector
             obs = np.concatenate((pos_delta, rotation_rob, vel_rob, angular_vel_rob)).astype(np.float32)
