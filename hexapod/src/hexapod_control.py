@@ -210,6 +210,7 @@ class AHRS_RS:
                                         [0, 1, 0],
                                         [1, 0, 0]])
         self.pitch_corr_quat = quaternion.from_rotation_matrix(self.pitch_corr_mat)
+        self.current_heading = 0 
 
         self.pipe = rs.pipeline()
         self.cfg = rs.config()
@@ -467,7 +468,7 @@ class HexapodController:
 
         # Read IMU (for now spoof perfect orientation)
         roll, pitch, yaw, quat, xd, timestamp = self.Ahrs.update(heading_spoof_angle=heading_spoof_angle)
-        print(xd)
+        #print(xd)
         #quat_only_yaw = self.Ahrs.e2q(0, 0, yaw)
 
         # Turn servo positions into [-1,1] for nn
