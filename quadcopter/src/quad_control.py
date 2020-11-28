@@ -424,9 +424,7 @@ class Controller:
 
             # Update sensor data
             position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
-
             pos_delta = np.array(position_rob) + np.array(self.config["starting_pos"]) - np.array(self.config["target_pos"])
-
 
             # Make neural network observation vector
             obs = np.concatenate((pos_delta, rotation_rob, vel_rob, angular_vel_rob)).astype(np.float32)
@@ -444,7 +442,7 @@ class Controller:
                                                                          pid_targets)
 
             # Virtual safety net for autonomous control
-            if (np.abs(np.array(position_rob)) > 6).any():
+            if (np.abs(np.array(position_rob)) > 6).any() and autonomous_control:
                 print(f"Current position is: {position_rob} which is outside the safety net, shutting down motors")
                 m_1, m_2, m_3, m_4 = 0,0,0,0
 
