@@ -51,6 +51,8 @@ class WPGenerator:
         self.wp_sequence = None
         if self.config["wp_sequence"] == "two_pole":
             self.wp_sequence = [[2, 0], [-2, 0]]
+        if self.config["wp_sequence"] == "three_pole":
+            self.wp_sequence = [[2, 0], [1, 2], [0, 0]]
         if self.config["wp_sequence"] == "four_pole":
             self.wp_sequence = [[2, 0], [0, -2], [-2, 0], [0, 2]]
         if self.config["wp_sequence"] == "rnd":
@@ -200,7 +202,8 @@ class PWMDriver:
         time.sleep(0.3)
 
 
-class Controller:    def __init__(self):
+class Controller:  
+    def __init__(self):
         with open('configs/default.yaml') as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
         self.motors_on = self.config["motors_on"]
