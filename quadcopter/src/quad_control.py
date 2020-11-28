@@ -187,7 +187,7 @@ class AHRS:
         acc_z_dir = np.arctan2(self.acc_z, np.sqrt(
             self.acc_x ** 2 + self.acc_y ** 2))
 
-        acc_z_dir_gravity_corrected = acc_z_dir - 9.81
+        acc_z_dir_gravity_corrected = acc_z_dir + 9.81
 
         self.roll = self.gyro_integration_coeff * \
             (self.roll + self.gyro_x * dt) + \
@@ -340,9 +340,9 @@ class Controller:
         print("Finished initializing the Controller")
 
     def setup_stabilization_control(self):
-        self.p_roll = 0.1
-        self.p_pitch = 0.1
-        self.p_yaw = 0.1
+        self.p_roll = 0.5
+        self.p_pitch = 0.5
+        self.p_yaw = 0.5
 
         self.d_roll = 1.8
         self.d_pitch = 1.8
@@ -365,6 +365,7 @@ class Controller:
         roll, pitch, _ = orientation_euler
         roll_vel, pitch_vel, yaw_vel = angular_velocities
         t_throttle, t_roll, t_pitch, t_yaw_vel = targets
+        #print(orientation_euler, targets)
 
         # Increase t_yaw_vel because it's slow as shit
         t_yaw_vel *= 5
@@ -386,6 +387,8 @@ class Controller:
         self.e_pitch_prev = e_pitch
         self.e_yaw_prev = e_yaw
 
+        print(e_roll, roll_act)
+
         m_1_act_total = + roll_act - pitch_act + yaw_act
         m_2_act_total = - roll_act - pitch_act - yaw_act
         m_3_act_total = + roll_act + pitch_act - yaw_act
@@ -397,7 +400,7 @@ class Controller:
         m_3 = np.clip(t_throttle + m_3_act_total, 0, 1)
         m_4 = np.clip(t_throttle + m_4_act_total, 0, 1)
 
-        # print([m_1, m_2, m_3, m_4])
+        #print([m_1, m_2, m_3, m_4])
 
         if np.max([m_1, m_2, m_3, m_4]) > 1.1:
             print("Warning: motor commands exceed 1.0. This signifies an error in the system", m_1, m_2, m_3, m_4,
@@ -424,6 +427,7 @@ class Controller:
 
             pos_delta = np.array(position_rob) + np.array(self.config["starting_pos"]) - np.array(self.config["target_pos"])
 
+
             # Make neural network observation vector
             obs = np.concatenate((pos_delta, rotation_rob, vel_rob, angular_vel_rob)).astype(np.float32)
 
@@ -438,6 +442,11 @@ class Controller:
                 m_1, m_2, m_3, m_4 = self.calculate_stabilization_action(euler_rob,
                                                                          angular_vel_rob,
                                                                          pid_targets)
+
+            # Virtual safety net for autonomous control
+            if (np.abs(np.array(position_rob)) > 6).any():
+                print(f"Current position is: {position_rob} which is outside the safety net, shutting down motors")
+                m_1, m_2, m_3, m_4 = 0,0,0,0
 
             # Write control to servos
             self.PWMDriver.write_servos([m_1, m_2, m_3, m_4])
