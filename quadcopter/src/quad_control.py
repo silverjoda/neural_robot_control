@@ -342,11 +342,11 @@ class Controller:
     def setup_stabilization_control(self):
         self.p_roll = 0.5
         self.p_pitch = 0.5
-        self.p_yaw = 0.5
+        self.p_yaw = 0.05
 
-        self.d_roll = 1.8
-        self.d_pitch = 1.8
-        self.d_yaw = 0.1
+        self.d_roll = 0.1
+        self.d_pitch = 0.1
+        self.d_yaw = 0.0
 
         self.e_roll_prev = 0
         self.e_pitch_prev = 0
@@ -365,7 +365,7 @@ class Controller:
         roll, pitch, _ = orientation_euler
         roll_vel, pitch_vel, yaw_vel = angular_velocities
         t_throttle, t_roll, t_pitch, t_yaw_vel = targets
-        #print(orientation_euler, targets)
+        print(orientation_euler, targets)
 
         # Increase t_yaw_vel because it's slow as shit
         t_yaw_vel *= 5
@@ -387,7 +387,7 @@ class Controller:
         self.e_pitch_prev = e_pitch
         self.e_yaw_prev = e_yaw
 
-        print(e_roll, roll_act)
+        #print(e_roll, roll_act)
 
         m_1_act_total = + roll_act - pitch_act + yaw_act
         m_2_act_total = - roll_act - pitch_act - yaw_act
