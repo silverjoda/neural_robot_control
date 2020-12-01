@@ -340,12 +340,12 @@ class Controller:
         print("Finished initializing the Controller")
 
     def setup_stabilization_control(self):
-        self.p_roll = 0.5
-        self.p_pitch = 0.5
-        self.p_yaw = 0.05
+        self.p_roll = 0.4
+        self.p_pitch = 0.4
+        self.p_yaw = 0.0
 
-        self.d_roll = 0.1
-        self.d_pitch = 0.1
+        self.d_roll = 0.2
+        self.d_pitch = 0.2
         self.d_yaw = 0.0
 
         self.e_roll_prev = 0
@@ -365,7 +365,7 @@ class Controller:
         roll, pitch, _ = orientation_euler
         roll_vel, pitch_vel, yaw_vel = angular_velocities
         t_throttle, t_roll, t_pitch, t_yaw_vel = targets
-        print(orientation_euler, targets)
+        #print(orientation_euler, targets)
 
         # Increase t_yaw_vel because it's slow as shit
         t_yaw_vel *= 5
@@ -432,8 +432,11 @@ class Controller:
             velocity_targets = throttle, -t_roll, t_pitch, t_yaw
             pid_targets = throttle, t_roll, t_pitch, t_yaw
 
+
+            print(f"Pos: {position_rob}, pos_delta: {pos_delta}")
+
             # Calculate stabilization actions
-            if self.config["controller_source"] == "nn" and autonomous_control:
+            if autonomous_control:
                 nn_act = self.get_policy_action(obs)
                 m_1, m_2, m_3, m_4 = np.clip(nn_act, -1, 1) * 0.5 + 0.5
             else:
