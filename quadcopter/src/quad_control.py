@@ -344,8 +344,8 @@ class Controller:
         self.p_pitch = 0.3
         self.p_yaw = 0.0
 
-        self.d_roll = 2.0
-        self.d_pitch = 2.0
+        self.d_roll = 1.5
+        self.d_pitch = 1.5   
         self.d_yaw = 0.0
 
         self.e_roll_prev = 0
@@ -427,7 +427,7 @@ class Controller:
             pos_delta = np.array(position_rob) + np.array(self.config["starting_pos"]) - np.array(self.config["target_pos"])
 
             # Make neural network observation vector
-            obs = np.concatenate((pos_delta, [rotation_rob[1:],rotation_rob[0]], vel_rob, angular_vel_rob)).astype(np.float32)
+            obs = np.concatenate((pos_delta, [*rotation_rob[1:],rotation_rob[0]], vel_rob, angular_vel_rob)).astype(np.float32)
 
             velocity_targets = throttle, -t_roll, t_pitch, t_yaw
             pid_targets = throttle, t_roll, t_pitch, t_yaw
