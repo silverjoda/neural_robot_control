@@ -409,6 +409,7 @@ class Controller:
         print("Starting the control loop")
         frame_ctr = 0
         bundle_starttime = time.time()
+        slowest_frame = .0001
         while True:
             iteration_starttime = time.time()
 
@@ -445,12 +446,14 @@ class Controller:
             self.PWMDriver.write_servos([m_1, m_2, m_3, m_4])
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
+            if time.time() - iteration_starttime > slowest_frame:
+                slowest_frame = time.time() - iteration_starttime
 
             frame_ctr += 1
 
-            if frame_ctr % 100 == 0:
-                print(frame_ctr, time.time() - bundle_starttime)
-                bundle_starttime = time.time()
+            #if frame_ctr % 100 == 0:
+            #    print(frame_ctr, time.time() - bundle_starttime, slowest_frame)
+            #    bundle_starttime = time.time()
 
 
     def gather_data(self, n_iterations=20000):
