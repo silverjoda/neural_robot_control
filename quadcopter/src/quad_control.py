@@ -340,12 +340,12 @@ class Controller:
         print("Finished initializing the Controller")
 
     def setup_stabilization_control(self):
-        self.p_roll = 0.3
-        self.p_pitch = 0.3
+        self.p_roll = 0.2
+        self.p_pitch = 0.2
         self.p_yaw = 0.0
 
-        self.d_roll = 1.5
-        self.d_pitch = 1.5   
+        self.d_roll = 15.
+        self.d_pitch = 15.
         self.d_yaw = 0.0
 
         self.e_roll_prev = 0
