@@ -42,7 +42,7 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/quadcopter" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -156,7 +156,14 @@
       <option name="project" value="LOCAL" />
       <updated>1606417851244</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="M">
+      <created>1606417930849</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1606417930849</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -175,32 +182,5 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="M" />
     <option name="LAST_COMMIT_MESSAGE" value="M" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="451" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606331817893">
-      <screen x="67" y="27" width="1853" height="1053" />
-    </state>
-    <state x="451" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1606331817893" />
-    <state x="532" y="161" width="912" height="904" key="CommitChangelistDialog2" timestamp="1606305877771">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state x="532" y="161" width="912" height="904" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1606305877771" />
-    <state x="808" y="453" width="370" height="207" key="Github.ShareDialog" timestamp="1606233420781">
-      <screen x="67" y="27" width="1853" height="1053" />
-    </state>
-    <state x="808" y="453" width="370" height="207" key="Github.ShareDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1606233420781" />
-    <state x="723" y="233" width="530" height="647" key="Github.UntrackedFilesDialog" timestamp="1606233437023">
-      <screen x="67" y="27" width="1853" height="1053" />
-    </state>
-    <state x="723" y="233" width="530" height="647" key="Github.UntrackedFilesDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1606233437023" />
-    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1606417852795">
-      <screen x="67" y="27" width="1853" height="1053" />
-    </state>
-    <state x="588" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/67.27.1853.1053@67.27.1853.1053" timestamp="1606417852795" />
-    <state x="588" y="319" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1606305879430" />
-    <state x="774" y="468" width="438" height="177" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1606417558705">
-      <screen x="67" y="27" width="1853" height="1053" />
-    </state>
-    <state x="774" y="468" width="438" height="177" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/67.27.1853.1053@67.27.1853.1053" timestamp="1606417558705" />
   </component>
 </project>
