@@ -2,7 +2,7 @@
 "motors_on" : False
 "controller_source" : "pid" # nn/pid
 "target_vel_source" : "joystick" # still/rnd/joystick
-"ahrs_source" : "rs"
+"ahrs_source" : "imu"
 "target_pos" : [0, 0, 2.0]
 "starting_pos" : [0, 0, 2.0]
 "update_period" : 0.005

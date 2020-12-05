@@ -426,7 +426,7 @@ class Controller:
             velocity_targets = throttle, -t_roll, t_pitch, t_yaw
             pid_targets = throttle, t_roll, t_pitch, t_yaw
 
-            #print(f"Pos: {position_rob}, pos_delta: {pos_delta}, targets: {velocity_targets}")
+            print(f"Pos: {position_rob}, pos_delta: {pos_delta}, targets: {velocity_targets}")
 
             # Calculate stabilization actions
             if autonomous_control:
@@ -445,7 +445,7 @@ class Controller:
             # Write control to servos
             self.PWMDriver.write_servos([m_1, m_2, m_3, m_4])
 
-            print(time.time() - iteration_starttime)
+            #print(time.time() - iteration_starttime)
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
             if time.time() - iteration_starttime > slowest_frame:
