@@ -276,7 +276,7 @@ class PWMDriver:
     def __init__(self, motors_on):
         self.motors_on = motors_on
 
-        self.pwm_freq = 100
+        self.pwm_freq = 140
         self.servo_ids = [0, 1, 2, 3]
 
         print("Initializing the PWMdriver. ")
@@ -331,13 +331,13 @@ class Controller:
         print("Finished initializing the Controller")
 
     def setup_stabilization_control(self):
-        self.p_roll = 0.4
-        self.p_pitch = 0.4
-        self.p_yaw = 0.03
+        self.p_roll = 0.7
+        self.p_pitch = 0.7
+        self.p_yaw = 0.1
 
-        self.d_roll = 1.2
-        self.d_pitch = 1.2
-        self.d_yaw = 0.03
+        self.d_roll = 0.5
+        self.d_pitch = 0.5
+        self.d_yaw = 0.01
 
         self.e_roll_prev = 0
         self.e_pitch_prev = 0
@@ -426,7 +426,7 @@ class Controller:
             velocity_targets = throttle, -t_roll, t_pitch, t_yaw
             pid_targets = throttle, t_roll, t_pitch, t_yaw
 
-            #print(f"Pos: {position_rob}, pos_delta: {pos_delta}")
+            #print(f"Pos: {position_rob}, pos_delta: {pos_delta}, targets: {velocity_targets}")
 
             # Calculate stabilization actions
             if autonomous_control:
@@ -444,6 +444,8 @@ class Controller:
 
             # Write control to servos
             self.PWMDriver.write_servos([m_1, m_2, m_3, m_4])
+
+            print(time.time() - iteration_starttime)
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
             if time.time() - iteration_starttime > slowest_frame:
