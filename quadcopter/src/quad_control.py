@@ -333,11 +333,11 @@ class Controller:
     def setup_stabilization_control(self):
         self.p_roll = 0.4
         self.p_pitch = 0.4
-        self.p_yaw = 0.0
+        self.p_yaw = 0.03
 
-        self.d_roll = 1.4
-        self.d_pitch = 1.7
-        self.d_yaw = 0.0
+        self.d_roll = 1.2
+        self.d_pitch = 1.2
+        self.d_yaw = 0.03
 
         self.e_roll_prev = 0
         self.e_pitch_prev = 0
