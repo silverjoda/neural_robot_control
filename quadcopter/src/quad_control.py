@@ -331,12 +331,12 @@ class Controller:
         print("Finished initializing the Controller")
 
     def setup_stabilization_control(self):
-        self.p_roll = 0.7
-        self.p_pitch = 0.7
+        self.p_roll = 0.6
+        self.p_pitch = 0.6
         self.p_yaw = 0.1
 
-        self.d_roll = 0.5
-        self.d_pitch = 0.5
+        self.d_roll = 0.3
+        self.d_pitch = 0.3
         self.d_yaw = 0.01
 
         self.e_roll_prev = 0
@@ -357,9 +357,6 @@ class Controller:
         roll_vel, pitch_vel, yaw_vel = angular_velocities
         t_throttle, t_roll, t_pitch, t_yaw_vel = targets
         #print(orientation_euler, targets)
-
-        # Increase t_yaw_vel because it's slow as shit
-        t_yaw_vel *= 5
 
         # print(f"Throttle_target: {t_throttle}, Roll_target: {t_roll}, Pitch_target: {t_pitch}, Yaw_vel_target: {t_yaw_vel}")
         # print(f"Roll: {roll}, Pitch: {pitch}, Yaw_vel: {yaw_vel}")
