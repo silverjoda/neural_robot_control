@@ -276,7 +276,7 @@ class PWMDriver:
     def __init__(self, motors_on):
         self.motors_on = motors_on
 
-        self.pwm_freq = 140
+        self.pwm_freq = 200 
         self.servo_ids = [0, 1, 2, 3]
 
         print("Initializing the PWMdriver. ")
@@ -331,12 +331,12 @@ class Controller:
         print("Finished initializing the Controller")
 
     def setup_stabilization_control(self):
-        self.p_roll = 0.6
-        self.p_pitch = 0.6
+        self.p_roll = 0.3
+        self.p_pitch = 0.3
         self.p_yaw = 0.1
 
-        self.d_roll = 0.3
-        self.d_pitch = 0.3
+        self.d_roll = 1.8
+        self.d_pitch = 1.8
         self.d_yaw = 0.01
 
         self.e_roll_prev = 0
