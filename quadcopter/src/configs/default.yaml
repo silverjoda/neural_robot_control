@@ -2,7 +2,7 @@
 "motors_on" : True 
 "controller_source" : "pid" # nn/pid
 "target_vel_source" : "joystick" # still/rnd/joystick
-"ahrs_source" : "imu"
+"ahrs_source" : "rs"
 "obs_input" : 2
 "act_input" : 2
 "rew_input" : 2
