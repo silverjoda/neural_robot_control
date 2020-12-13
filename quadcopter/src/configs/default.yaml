@@ -1,4 +1,4 @@
-"policy_path" : "QUADCOPTER_STAB_2METRES.zip"
+"policy_path" : "QUADCOPTER_STAB_2METRES_222.zip"
 "motors_on" : True 
 "controller_source" : "pid" # nn/pid
 "target_vel_source" : "joystick" # still/rnd/joystick
