@@ -3,6 +3,9 @@
 "controller_source" : "pid" # nn/pid
 "target_vel_source" : "joystick" # still/rnd/joystick
 "ahrs_source" : "imu"
+"obs_input" : 2
+"act_input" : 2
+"rew_input" : 2
 "target_pos" : [0, 0, 2.0]
 "starting_pos" : [0, 0, 2.0]
 "update_period" : 0.005

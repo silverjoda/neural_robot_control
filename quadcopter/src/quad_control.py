@@ -328,6 +328,13 @@ class Controller:
         self.policy = self.load_policy(self.config)
         self.setup_stabilization_control()
 
+        self.obs_queue = [np.zeros(self.config["obs_dim"], dtype=np.float32) for _ in range(
+            np.maximum(1, self.config["obs_input"]))]
+        self.act_queue = [np.zeros(self.config["act_dim"], dtype=np.float32) for _ in range(
+            np.maximum(1, self.config["act_input"]))]
+        self.rew_queue = [np.zeros(1, dtype=np.float32) for _ in range(
+            np.maximum(1, self.config["rew_input"]))]
+
         print("Finished initializing the Controller")
 
     def setup_stabilization_control(self):
@@ -415,44 +422,64 @@ class Controller:
 
             # Update sensor data
             position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
+            roll, pitch, yaw = euler_rob
             pos_delta = np.array(position_rob) + np.array(self.config["starting_pos"]) - np.array(self.config["target_pos"])
 
             # Make neural network observation vector
-            obs = np.concatenate((pos_delta, [*rotation_rob[1:],rotation_rob[0]], vel_rob, angular_vel_rob)).astype(np.float32)
+            obs_list = [*pos_delta, *rotation_rob[1:], *rotation_rob[0:1], *vel_rob, *angular_vel_rob]
+            self.obs_queue.append(obs_list)
+            self.obs_queue.pop(0)
+            obs_raw_unqueued = self.obs_queue
+
+            p_position = np.clip(np.mean(np.square(pos_delta)) * 2.0, -1, 1)
+            p_rp = np.clip(np.mean(np.square(np.array([yaw]))) * 1.0, -1, 1)
+            r = 0.5 - p_position - p_rp
+
+            self.rew_queue.append([r])
+            self.rew_queue.pop(0)
+            r_unqueued = self.rew_queue
 
             velocity_targets = throttle, -t_roll, t_pitch, t_yaw
             pid_targets = throttle, t_roll, t_pitch, t_yaw
 
             print(f"Pos: {position_rob}, pos_delta: {pos_delta}, targets: {velocity_targets}")
 
+            act_raw_unqueued = self.act_queue
+
+            aux_obs = []
+            if self.config["obs_input"] > 0:
+                [aux_obs.extend(c) for c in obs_raw_unqueued]
+            if self.config["act_input"] > 0:
+                [aux_obs.extend(c) for c in act_raw_unqueued]
+            if self.config["rew_input"] > 0:
+                [aux_obs.extend(c) for c in r_unqueued]
+
+            obs = np.array(aux_obs).astype(np.float32)
+
             # Calculate stabilization actions
             if autonomous_control:
                 nn_act = self.get_policy_action(obs)
-                m_1, m_2, m_3, m_4 = np.clip(nn_act, -1, 1) * 0.5 + 0.5
+                act = np.clip(nn_act, -1, 1) * 0.5 + 0.5
             else:
-                m_1, m_2, m_3, m_4 = self.calculate_stabilization_action(euler_rob,
-                                                                         angular_vel_rob,
-                                                                         pid_targets)
+                act = self.calculate_stabilization_action(euler_rob,angular_vel_rob,pid_targets)
+
+            # Start "step"
+            self.act_queue.append(act)
+            self.act_queue.pop(0)
 
             # Virtual safety net for autonomous control
             if (np.abs(np.array(position_rob)) > 6).any() and autonomous_control:
                 print(f"Current position is: {position_rob} which is outside the safety net, shutting down motors")
-                m_1, m_2, m_3, m_4 = 0,0,0,0
+                act = 0,0,0,0
 
             # Write control to servos
-            self.PWMDriver.write_servos([m_1, m_2, m_3, m_4])
-
-            #print(time.time() - iteration_starttime)
+            self.PWMDriver.write_servos(act)
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
             if time.time() - iteration_starttime > slowest_frame:
                 slowest_frame = time.time() - iteration_starttime
 
             frame_ctr += 1
-
-            #if frame_ctr % 100 == 0:
-            #    print(frame_ctr, time.time() - bundle_starttime, slowest_frame)
-            #    bundle_starttime = time.time()
 
 
     def gather_data(self, n_iterations=20000):
