@@ -338,17 +338,23 @@ class Controller:
         print("Finished initializing the Controller")
 
     def setup_stabilization_control(self):
-        self.p_roll = 0.3
-        self.p_pitch = 0.3
+        self.p_roll = 0.2
+        self.p_pitch = 0.2
         self.p_yaw = 0.1
 
-        self.d_roll = 1.8
-        self.d_pitch = 1.8
+        self.d_roll = 2.0
+        self.d_pitch = 2.0
         self.d_yaw = 0.01
+
+        self.i_roll = -0.03
+        self.i_pitch = -0.03
 
         self.e_roll_prev = 0
         self.e_pitch_prev = 0
         self.e_yaw_prev = 0
+
+        self.e_roll_accum = 0
+        self.e_pitch_accum = 0
 
     def load_policy(self, config):
         logging.info("Loading policy from: \"{}\" ".format(config["policy_path"]))
@@ -373,9 +379,13 @@ class Controller:
         e_pitch = t_pitch - pitch
         e_yaw = t_yaw_vel - yaw_vel
 
+        decay_fac = 0.7
+        self.e_roll_accum = self.e_roll_accum * decay_fac + e_roll
+        self.e_pitch_accum = self.e_pitch_accum * decay_fac + e_pitch
+
         # Desired correction action
-        roll_act = e_roll * self.p_roll + (e_roll - self.e_roll_prev) * self.d_roll
-        pitch_act = e_pitch * self.p_pitch + (e_pitch - self.e_pitch_prev) * self.d_pitch
+        roll_act = e_roll * self.p_roll + (e_roll - self.e_roll_prev) * self.d_roll + self.e_roll_accum * self.config["i_roll"]
+        pitch_act = e_pitch * self.p_pitch + (e_pitch - self.e_pitch_prev) * self.d_pitch + self.e_pitch_accum * self.config["i_pitch"]
         yaw_act = e_yaw * self.p_yaw + (e_yaw - self.e_yaw_prev) * self.d_yaw
 
         self.e_roll_prev = e_roll
