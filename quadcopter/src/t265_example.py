@@ -22,13 +22,13 @@ cfg.enable_stream(rs.stream.pose)
 # Start streaming with requested config
 pipe.start(cfg)
 
-sensor = pipe.get_active_profile().get_device().query_sensors()[0]
-avail_options = sensor.get_supported_options()
-print(avail_options)
-print(sensor.get_option_description(rs.option.frames_queue_size))
-print([(opt, sensor.get_option(opt)) for opt in avail_options])
+#sensor = pipe.get_active_profile().get_device().query_sensors()[0]
+#avail_options = sensor.get_supported_options()
+#print(avail_options)
+#print(sensor.get_option_description(rs.option.frames_queue_size))
+#print([(opt, sensor.get_option(opt)) for opt in avail_options])
 #sensor.set_option(rs.option.frames_queue_size, 5)
-exit()
+#exit()
 
 try:
     while True:

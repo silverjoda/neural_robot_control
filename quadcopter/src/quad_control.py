@@ -384,8 +384,8 @@ class Controller:
         self.e_pitch_accum = self.e_pitch_accum * decay_fac + e_pitch
 
         # Desired correction action
-        roll_act = e_roll * self.p_roll + (e_roll - self.e_roll_prev) * self.d_roll + self.e_roll_accum * self.config["i_roll"]
-        pitch_act = e_pitch * self.p_pitch + (e_pitch - self.e_pitch_prev) * self.d_pitch + self.e_pitch_accum * self.config["i_pitch"]
+        roll_act = e_roll * self.p_roll + (e_roll - self.e_roll_prev) * self.d_roll + self.e_roll_accum * self.i_roll
+        pitch_act = e_pitch * self.p_pitch + (e_pitch - self.e_pitch_prev) * self.d_pitch + self.e_pitch_accum * self.i_pitch
         yaw_act = e_yaw * self.p_yaw + (e_yaw - self.e_yaw_prev) * self.d_yaw
 
         self.e_roll_prev = e_roll
@@ -471,10 +471,11 @@ class Controller:
                 nn_act = self.get_policy_action(obs)
                 act = np.clip(nn_act, -1, 1) * 0.5 + 0.5
             else:
+                nn_act = [0,0,0,0]
                 act = self.calculate_stabilization_action(euler_rob,angular_vel_rob,pid_targets)
 
             # Start "step"
-            self.act_queue.append(act)
+            self.act_queue.append(nn_act)
             self.act_queue.pop(0)
 
             # Virtual safety net for autonomous control
