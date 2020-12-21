@@ -333,6 +333,8 @@ class Controller:
 
         self.policy_m1, self.policy_m2, self.policy_m3, self.policy_m4 = [0] * 4
 
+        self.complete_obs_dim = self.config["obs_dim"] * self.config["obs_input"] + self.config["act_dim"] * self.config["act_input"] + self.config["rew_input"]
+
         self.obs_queue = [np.zeros(self.config["obs_dim"], dtype=np.float32) for _ in range(
             np.maximum(1, self.config["obs_input"]))]
         self.act_queue = [np.zeros(self.config["act_dim"], dtype=np.float32) for _ in range(
@@ -371,7 +373,7 @@ class Controller:
 
     def get_policy_action(self, obs):
         try:
-            self.policy_m1, self.policy_m2, self.policy_m3, self.policy_m4 = func_timeout(0.010, self.policy.predict, args=(obs))
+            (self.policy_m1, self.policy_m2, self.policy_m3, self.policy_m4), _ = func_timeout(0.010, self.policy.predict, args=(obs,))
         except FunctionTimedOut:
             print("NN fw pass timed out!")
         return [self.policy_m1, self.policy_m2, self.policy_m3, self.policy_m4]
@@ -494,7 +496,7 @@ class Controller:
         print("Starting the control loop")
         frame_ctr = 0
         slowest_frame = .0001
-        obs = np.zeros(self.config["obs_dim"])
+        obs = np.zeros(self.complete_obs_dim)
         obs_dict = {"euler_rob": [0,0,0], "angular_vel_rob": [0,0,0], "pid_targets": [0,0,0,0],
                     "velocity_targets": [0,0,0,0], "position_rob": [0,0,0], "pos_delta": [0,0,0],
                     "autonomous_control": False}
