@@ -68,9 +68,8 @@ class JoyController():
             button_x = self.joystick.get_button(0)
             pygame.event.clear()
             return throttle, t_roll, t_pitch, t_yaw, button_x
-
         try:
-            self.throttle, self.t_roll, self.t_pitch, self.t_yaw, self.button_x = func_timeout(1.002, _read_js, args=())
+            self.throttle, self.t_roll, self.t_pitch, self.t_yaw, self.button_x = func_timeout(0.002, _read_js, args=())
         except FunctionTimedOut:
             print("JS Timed out!")
 
@@ -230,6 +229,7 @@ class AHRS_RS:
         self.rs_lock = threading.Lock()
 
         self.rs_frame = None
+        self.timestamp = time.time()
         print("Finished initializing the rs_t265. ")
 
     def rs_cb(self, data_frame):
@@ -242,7 +242,7 @@ class AHRS_RS:
         yaw   =  m.atan2(2.0 * (w*z + x*y), w*w + x*x - y*y - z*z)
         return (roll, pitch, yaw)
 
-    def update(self):
+    def _update(self):
         self.timestamp = time.time()
 
         if self.rs_frame is not None:
@@ -265,7 +265,14 @@ class AHRS_RS:
             angular_vel_rob = [0., 0., 0.]
             euler_rob = [0., 0., 0.]
 
-        return position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, self.timestamp
+        return position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob
+
+    def update(self):
+        try:
+            self.position_rob, self.vel_rob, self.rotation_rob, self.angular_vel_rob, self.euler_rob = func_timeout(0.004, self._update, args=())
+        except FunctionTimedOut:
+            print("AHRS update timed out!")
+        return self.position_rob, self.vel_rob, self.rotation_rob, self.angular_vel_rob, self.euler_rob, self.timestamp
 
 
 class PWMDriver:
@@ -324,6 +331,8 @@ class Controller:
         self.policy = self.load_policy(self.config)
         self.setup_stabilization_control()
 
+        self.policy_m1, self.policy_m2, self.policy_m3, self.policy_m4 = [0] * 4
+
         self.obs_queue = [np.zeros(self.config["obs_dim"], dtype=np.float32) for _ in range(
             np.maximum(1, self.config["obs_input"]))]
         self.act_queue = [np.zeros(self.config["act_dim"], dtype=np.float32) for _ in range(
@@ -361,8 +370,11 @@ class Controller:
         return policy
 
     def get_policy_action(self, obs):
-        (m1, m2, m3, m4), _ = self.policy.predict(obs)
-        return [m1, m2, m3, m4]
+        try:
+            self.policy_m1, self.policy_m2, self.policy_m3, self.policy_m4 = func_timeout(0.010, self.policy.predict, args=(obs))
+        except FunctionTimedOut:
+            print("NN fw pass timed out!")
+        return [self.policy_m1, self.policy_m2, self.policy_m3, self.policy_m4]
 
     def calculate_stabilization_action(self, orientation_euler, angular_velocities, targets):
         roll, pitch, _ = orientation_euler
@@ -486,6 +498,10 @@ class Controller:
         obs_dict = {"euler_rob": [0,0,0], "angular_vel_rob": [0,0,0], "pid_targets": [0,0,0,0],
                     "velocity_targets": [0,0,0,0], "position_rob": [0,0,0], "pos_delta": [0,0,0],
                     "autonomous_control": False}
+
+        # Perform a forward pass of the nn to cache weights before starting:
+        _ = self.get_policy_action(obs)
+
         while True:
             iteration_starttime = time.time()
 
