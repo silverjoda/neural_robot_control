@@ -11,5 +11,5 @@
 "starting_pos" : [0, 0, 2.0]
 "update_period" : 0.01
 "joystick_mapping" : [1,3,4,0]
-"startup_delay" : 0
+"startup_delay" : 5
 

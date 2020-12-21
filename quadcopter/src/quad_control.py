@@ -525,7 +525,7 @@ class Controller:
 
             obs, r, done, obs_dict = self.step(act)
 
-            #print(f"Pos: {obs_dict['position_rob']}, pos_delta: {obs_dict['pos_delta']}, targets: {obs_dict['pid_targets']}")
+            print(f"Pos: {obs_dict['position_rob']}, pos_delta: {obs_dict['pos_delta']}, targets: {obs_dict['pid_targets']}")
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
             if time.time() - iteration_starttime > slowest_frame:
