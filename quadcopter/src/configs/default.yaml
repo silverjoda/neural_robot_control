@@ -1,5 +1,5 @@
 "policy_path" : "QUADCOPTER_STAB_2METRES_222_LP.zip"
-"motors_on" : True
+"motors_on" : False
 "time_prints" : True
 "controller_source" : "nn" # nn/pid
 "target_vel_source" : "joystick" # still/rnd/joystick
