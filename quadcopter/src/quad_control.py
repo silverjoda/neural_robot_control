@@ -63,14 +63,14 @@ class JoyController():
     def get_joystick_input(self):
         def _read_js():
             pygame.event.pump()
-            self.throttle, self.t_roll, self.t_pitch, self.t_yaw, self.button_x = \
+            throttle, t_roll, t_pitch, t_yaw = \
                     [self.joystick.get_axis(self.config["joystick_mapping"][i]) for i in range(4)]
             button_x = self.joystick.get_button(0)
             pygame.event.clear()
             return throttle, t_roll, t_pitch, t_yaw, button_x
 
         try:
-            throttle, t_roll, t_pitch, t_yaw, button_x = func_timeout(1.002, _read_js, args=())
+            self.throttle, self.t_roll, self.t_pitch, self.t_yaw, self.button_x = func_timeout(1.002, _read_js, args=())
         except FunctionTimedOut:
             print("JS Timed out!")
 
@@ -435,7 +435,9 @@ class Controller:
         t_ahrs_1 = time.time()
         position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
         t_ahrs_2 = time.time()
-        if self.config["time_prints"]: print(f"AHRS read $ process pass took: {t_ahrs_2 - t_ahrs_1}")
+        #if self.config["time_prints"]: print(f"AHRS read $ process pass took: {t_ahrs_2 - t_ahrs_1}")
+        if self.config["time_prints"] and (t_ahrs_2 - t_ahrs_1) > 0.002:
+            print(f"=========== HIGH TIME PASS: AHRS - {t_ahrs_2 - t_ahrs_1}")
         roll, pitch, yaw = euler_rob
         pos_delta = np.array(position_rob) + np.array(self.config["starting_pos"]) - np.array(self.config["target_pos"])
 
@@ -505,12 +507,12 @@ class Controller:
 
             obs, r, done, obs_dict = self.step(act)
 
-            print(f"Pos: {obs_dict['position_rob']}, pos_delta: {obs_dict['pos_delta']}, targets: {obs_dict['pid_targets']}")
+            #print(f"Pos: {obs_dict['position_rob']}, pos_delta: {obs_dict['pos_delta']}, targets: {obs_dict['pid_targets']}")
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
             if time.time() - iteration_starttime > slowest_frame:
                 slowest_frame = time.time() - iteration_starttime
-            if self.config["time_prints"]: print(f"Slowest frame: {slowest_frame}")
+            #if self.config["time_prints"]: print(f"Slowest frame: {slowest_frame}")
 
             frame_ctr += 1
 
