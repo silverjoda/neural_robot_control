@@ -337,6 +337,9 @@ class Controller:
 
         print("Finished initializing the Controller")
 
+        print("Startup delay: {self.config['startup_delay']}")
+        time.sleep(self.config['startup_delay'])
+
     def setup_stabilization_control(self):
         self.p_roll = 0.2
         self.p_pitch = 0.2
@@ -500,7 +503,7 @@ class Controller:
 
             obs, r, done, obs_dict = self.step(act)
 
-            print(f"Pos: {obs_dict['position_rob']}, pos_delta: {obs_dict['pos_delta']}, targets: {obs_dict['targets']}")
+            print(f"Pos: {obs_dict['position_rob']}, pos_delta: {obs_dict['pos_delta']}, targets: {obs_dict['pid_targets']}")
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
             if time.time() - iteration_starttime > slowest_frame:
