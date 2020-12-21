@@ -1,6 +1,7 @@
 "policy_straight" : "HEXAPOD_TILES_STRAIGHT.zip" # "XWJ_SB_policy.zip"
 "policy_straight_rough" : "HEXAPOD_TILES_STRAIGHT.zip"
-"motors_on" : True 
+"motors_on" : True
+"time_prints" : True
 "target_vel_source" : "joystick" # rnd/joystick/ros
 "ahrs_source" : "rs"
 "imu_ahrs_update_period" : 0.01

@@ -369,7 +369,7 @@ class Controller:
         roll, pitch, _ = orientation_euler
         roll_vel, pitch_vel, yaw_vel = angular_velocities
         t_throttle, t_roll, t_pitch, t_yaw_vel = targets
-        #print(orientation_euler, targets)
+        # print(orientation_euler, targets)
 
         # print(f"Throttle_target: {t_throttle}, Roll_target: {t_roll}, Pitch_target: {t_pitch}, Yaw_vel_target: {t_yaw_vel}")
         # print(f"Roll: {roll}, Pitch: {pitch}, Yaw_vel: {yaw_vel}")
@@ -400,18 +400,72 @@ class Controller:
         m_4_act_total = - roll_act + pitch_act + yaw_act
 
         # Translate desired correction actions to servo commands
-        m_1 = np.clip(t_throttle + m_1_act_total, 0, 1)
-        m_2 = np.clip(t_throttle + m_2_act_total, 0, 1)
-        m_3 = np.clip(t_throttle + m_3_act_total, 0, 1)
-        m_4 = np.clip(t_throttle + m_4_act_total, 0, 1)
-
-        #print([m_1, m_2, m_3, m_4])
-
-        if np.max([m_1, m_2, m_3, m_4]) > 1.1:
-            print("Warning: motor commands exceed 1.0. This signifies an error in the system", m_1, m_2, m_3, m_4,
-                  t_throttle)
+        m_1 = np.clip(t_throttle + m_1_act_total, 0, 1) * 2 - 1
+        m_2 = np.clip(t_throttle + m_2_act_total, 0, 1) * 2 - 1
+        m_3 = np.clip(t_throttle + m_3_act_total, 0, 1) * 2 - 1
+        m_4 = np.clip(t_throttle + m_4_act_total, 0, 1) * 2 - 1
 
         return [m_1, m_2, m_3, m_4]
+
+    def step(self, ctrl_raw):
+        self.act_queue.append(ctrl_raw)
+        self.act_queue.pop(0)
+        act_raw_unqueued = self.act_queue
+
+        act_normed = np.clip(ctrl_raw, -1, 1) * 0.5 + 0.5
+
+        # Write control to servos
+        t_pwm_1 = time.time()
+        self.PWMDriver.write_servos(act_normed)
+        t_pwm_2 = time.time()
+        if self.config["time_prints"]: print(f"PWM write pass took: {t_pwm_2 - t_pwm_1}")
+
+        # Read target control inputs
+        t_js_1 = time.time()
+        throttle, t_roll, t_pitch, t_yaw, autonomous_control = self.JOYStick.get_joystick_input()
+        t_js_2 = time.time()
+        if self.config["time_prints"]: print(f"JS read pass took: {t_js_2 - t_js_1}")
+        velocity_targets = throttle, -t_roll, t_pitch, t_yaw
+        pid_targets = throttle, t_roll, t_pitch, t_yaw
+
+        # Update sensor data
+        t_ahrs_1 = time.time()
+        position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
+        t_ahrs_2 = time.time()
+        if self.config["time_prints"]: print(f"AHRS read $ process pass took: {t_ahrs_2 - t_ahrs_1}")
+        roll, pitch, yaw = euler_rob
+        pos_delta = np.array(position_rob) + np.array(self.config["starting_pos"]) - np.array(self.config["target_pos"])
+
+        # Calculate reward
+        p_position = np.clip(np.mean(np.square(pos_delta)) * 2.0, -1, 1)
+        p_rp = np.clip(np.mean(np.square(np.array([yaw]))) * 1.0, -1, 1)
+        r = 0.5 - p_position - p_rp
+
+        self.rew_queue.append([r])
+        self.rew_queue.pop(0)
+        r_unqueued = self.rew_queue
+
+        # Make neural network observation vector
+        obs_list = [*pos_delta, *rotation_rob[1:], *rotation_rob[0:1], *vel_rob, *angular_vel_rob]
+        self.obs_queue.append(obs_list)
+        self.obs_queue.pop(0)
+        obs_raw_unqueued = self.obs_queue
+
+        aux_obs = []
+        if self.config["obs_input"] > 0:
+            [aux_obs.extend(c) for c in obs_raw_unqueued]
+        if self.config["act_input"] > 0:
+            [aux_obs.extend(c) for c in act_raw_unqueued]
+        if self.config["rew_input"] > 0:
+            [aux_obs.extend(c) for c in r_unqueued]
+
+        obs = np.array(aux_obs).astype(np.float32)
+
+        obs_dict = {"euler_rob" : euler_rob, "angular_vel_rob" : angular_vel_rob, "pid_targets" : pid_targets,
+                    "velocity_targets" : velocity_targets, "position_rob": position_rob, "pos_delta": pos_delta,
+                    "autonomous_control" : autonomous_control}
+
+        return obs, r, False, obs_dict
 
     def loop_control(self):
         '''
@@ -422,73 +476,36 @@ class Controller:
 
         print("Starting the control loop")
         frame_ctr = 0
-        bundle_starttime = time.time()
         slowest_frame = .0001
+        obs = np.zeros(self.config["obs_dim"])
+        obs_dict = {"euler_rob": [0,0,0], "angular_vel_rob": [0,0,0], "pid_targets": [0,0,0,0],
+                    "velocity_targets": [0,0,0,0], "position_rob": [0,0,0], "pos_delta": [0,0,0],
+                    "autonomous_control": False}
         while True:
             iteration_starttime = time.time()
 
-            # Read target control inputs
-            throttle, t_roll, t_pitch, t_yaw, autonomous_control = self.JOYStick.get_joystick_input()
-
-            # Update sensor data
-            position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
-            roll, pitch, yaw = euler_rob
-            pos_delta = np.array(position_rob) + np.array(self.config["starting_pos"]) - np.array(self.config["target_pos"])
-
-            # Make neural network observation vector
-            obs_list = [*pos_delta, *rotation_rob[1:], *rotation_rob[0:1], *vel_rob, *angular_vel_rob]
-            self.obs_queue.append(obs_list)
-            self.obs_queue.pop(0)
-            obs_raw_unqueued = self.obs_queue
-
-            p_position = np.clip(np.mean(np.square(pos_delta)) * 2.0, -1, 1)
-            p_rp = np.clip(np.mean(np.square(np.array([yaw]))) * 1.0, -1, 1)
-            r = 0.5 - p_position - p_rp
-
-            self.rew_queue.append([r])
-            self.rew_queue.pop(0)
-            r_unqueued = self.rew_queue
-
-            velocity_targets = throttle, -t_roll, t_pitch, t_yaw
-            pid_targets = throttle, t_roll, t_pitch, t_yaw
-
-            print(f"Pos: {position_rob}, pos_delta: {pos_delta}, targets: {velocity_targets}")
-
-            act_raw_unqueued = self.act_queue
-
-            aux_obs = []
-            if self.config["obs_input"] > 0:
-                [aux_obs.extend(c) for c in obs_raw_unqueued]
-            if self.config["act_input"] > 0:
-                [aux_obs.extend(c) for c in act_raw_unqueued]
-            if self.config["rew_input"] > 0:
-                [aux_obs.extend(c) for c in r_unqueued]
-
-            obs = np.array(aux_obs).astype(np.float32)
-
             # Calculate stabilization actions
-            if autonomous_control:
-                nn_act = self.get_policy_action(obs)
-                act = np.clip(nn_act, -1, 1) * 0.5 + 0.5
+            if obs_dict["autonomous_control"]:
+                t_pa_1 = time.time()
+                act = self.get_policy_action(obs)
+                t_pa_2 = time.time()
+                if self.config["time_prints"]: print(f"NN fw pass took: {t_pa_2 - t_pa_1}")
             else:
-                nn_act = [0,0,0,0]
-                act = self.calculate_stabilization_action(euler_rob,angular_vel_rob,pid_targets)
-
-            # Start "step"
-            self.act_queue.append(nn_act)
-            self.act_queue.pop(0)
+                act = self.calculate_stabilization_action(obs_dict["euler_rob"], obs_dict["angular_vel_rob"], obs_dict["pid_targets"])
 
             # Virtual safety net for autonomous control
-            if (np.abs(np.array(position_rob)) > 6).any() and autonomous_control:
-                print(f"Current position is: {position_rob} which is outside the safety net, shutting down motors")
-                act = 0,0,0,0
+            if (np.abs(np.array(obs_dict['position_rob'])) > 6).any() and obs_dict["autonomous_control"]:
+                print(f"Current position is: {obs_dict['position_rob']} which is outside the safety net, shutting down motors")
+                act = 0, 0, 0, 0
 
-            # Write control to servos
-            self.PWMDriver.write_servos(act)
+            obs, r, done, obs_dict = self.step(act)
+
+            print(f"Pos: {obs_dict['position_rob']}, pos_delta: {obs_dict['pos_delta']}, targets: {obs_dict['targets']}")
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
             if time.time() - iteration_starttime > slowest_frame:
                 slowest_frame = time.time() - iteration_starttime
+            if self.config["time_prints"]: print(f"Slowest frame: {slowest_frame}")
 
             frame_ctr += 1
 
