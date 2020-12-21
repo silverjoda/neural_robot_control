@@ -21,8 +21,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="M">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/quadcopter/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/quadcopter/src/configs/default.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/quadcopter/src/quad_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/quadcopter/src/quad_control.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -283,7 +281,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608293015695</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="M">
+      <created>1608546095876</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1608546095876</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

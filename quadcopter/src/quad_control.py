@@ -20,6 +20,8 @@ import math as m
 import quaternion
 import random
 from stable_baselines import A2C
+from func_timeout import func_timeout, FunctionTimedOut
+
 
 
 # root = logging.getLogger()
@@ -56,29 +58,23 @@ class JoyController():
             logging.info("No joystick found")
         logging.info("Finished initializing the joystick controller.")
         self.button_x_state = 0
+        self.throttle, self.t_roll, self.t_pitch, self.t_yaw, self.button_x = [0,0,0,0,0]
 
     def get_joystick_input(self):
-        pygame.event.pump()
-        throttle, t_roll, t_pitch, t_yaw = \
-                [self.joystick.get_axis(self.config["joystick_mapping"][i]) for i in range(4)]
-        button_x = self.joystick.get_button(0)
-        pygame.event.clear()
+        def _read_js():
+            pygame.event.pump()
+            self.throttle, self.t_roll, self.t_pitch, self.t_yaw, self.button_x = \
+                    [self.joystick.get_axis(self.config["joystick_mapping"][i]) for i in range(4)]
+            button_x = self.joystick.get_button(0)
+            pygame.event.clear()
+            return throttle, t_roll, t_pitch, t_yaw, button_x
 
-        # button_x only when upon press
-        # if self.button_x_state == 0 and button_x == 1:
-        #     self.button_x_state = 1
-        #     button_x = 1
-        # elif self.button_x_state == 1 and button_x == 0:
-        #     self.button_x_state = 0
-        #     button_x = 0
-        # elif self.button_x_state == 1 and button_x == 1:
-        #     self.button_x_state = 1
-        #     button_x = 0
-        # else:
-        #     self.button_x_state = 0
-        #     button_x = 0
+        try:
+            throttle, t_roll, t_pitch, t_yaw, button_x = func_timeout(1.002, _read_js, args=())
+        except FunctionTimedOut:
+            print("JS Timed out!")
 
-        return -throttle, t_roll, -t_pitch, -t_yaw, button_x
+        return -self.throttle, self.t_roll, -self.t_pitch, -self.t_yaw, self.button_x
 
 
 class AHRS:
@@ -421,13 +417,17 @@ class Controller:
         t_pwm_1 = time.time()
         self.PWMDriver.write_servos(act_normed)
         t_pwm_2 = time.time()
-        if self.config["time_prints"]: print(f"PWM write pass took: {t_pwm_2 - t_pwm_1}")
+        #if self.config["time_prints"]: print(f"PWM write pass took: {t_pwm_2 - t_pwm_1}")
+        if self.config["time_prints"] and (t_pwm_2 - t_pwm_1) > 0.003:
+            print(f"=========== HIGH TIME PASS: PWM - {t_pwm_2 - t_pwm_1}")
 
         # Read target control inputs
         t_js_1 = time.time()
         throttle, t_roll, t_pitch, t_yaw, autonomous_control = self.JOYStick.get_joystick_input()
         t_js_2 = time.time()
-        if self.config["time_prints"]: print(f"JS read pass took: {t_js_2 - t_js_1}")
+        #if self.config["time_prints"]: print(f"JS read pass took: {t_js_2 - t_js_1}")
+        if self.config["time_prints"] and (t_js_2 - t_js_1) > 0.002:
+            print(f"=========== HIGH TIME PASS: JS - {t_js_2 - t_js_1}")
         velocity_targets = throttle, -t_roll, t_pitch, t_yaw
         pid_targets = throttle, t_roll, t_pitch, t_yaw
 
@@ -492,7 +492,9 @@ class Controller:
                 t_pa_1 = time.time()
                 act = self.get_policy_action(obs)
                 t_pa_2 = time.time()
-                if self.config["time_prints"]: print(f"NN fw pass took: {t_pa_2 - t_pa_1}")
+                #if self.config["time_prints"]: print(f"NN fw pass took: {t_pa_2 - t_pa_1}")
+                if self.config["time_prints"] and (t_pa_2 - t_pa_1) > 0.003:
+                    print(f"=========== HIGH TIME PASS: NN - {t_pa_2 - t_pa_1}")
             else:
                 act = self.calculate_stabilization_action(obs_dict["euler_rob"], obs_dict["angular_vel_rob"], obs_dict["pid_targets"])
 
