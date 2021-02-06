@@ -19,7 +19,7 @@ import yaml
 import threading
 import quaternion
 # Torques are positive upwards and when leg is being pushed backward
-from stable_baselines import A2C
+from stable_baselines3 import A2C
 import RPi.GPIO as GPIO
 import pybullet as p
     
