@@ -501,7 +501,7 @@ class HexapodController:
 
         # Make nn observation
         # compiled_obs = torso_quat, torso_vel, [signed_deviation, (self.angle % (np.pi * 2) - np.pi)], joint_angles, current_phases_obs, offset_obs, contacts
-        obs = np.concatenate((quat, vel_rob, vel_rob, [yaw, 0], joint_angles_rads, [0] * 6, [0,0], contacts, [0]))
+        obs = np.concatenate((quat, vel_rob, [yaw, 0], joint_angles_rads, [0] * 6, [0,0], contacts, [0]))
 
         return obs
 
@@ -535,7 +535,7 @@ class HexapodController:
         sjoints = np.array(targets)
         sjoints = ((sjoints - self.joints_rads_low) / self.joints_rads_diff) * 2 - 1
 
-        self.angle += 0.006
+        self.angle += 0.016
 
         # Map [-1,1] to correct 10 bit servo value, respecting the scaling limits imposed during training
         scaled_act = np.array([(np.asscalar(sjoints[i]) * 0.5 + 0.5) * self.joints_10bit_diff[i] + self.joints_10bit_low[i] for i in range(18)]).astype(np.uint16)
