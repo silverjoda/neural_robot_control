@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 
-inputs = [9,10,11,17,22,27]
+inputs = [11,17,27,10,22,9]
 
 GPIO.setmode(GPIO.BCM)
 for ipt in inputs:

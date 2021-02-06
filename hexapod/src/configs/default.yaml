@@ -1,12 +1,13 @@
-"policy_straight" : "HEXAPOD_TILES_STRAIGHT.zip" # "XWJ_SB_policy.zip"
-"policy_straight_rough" : "HEXAPOD_TILES_STRAIGHT.zip"
+"policy_straight" : "JMA_SB_policy.zip"
+"policy_straight_rough" : "JMA_SB_policy.zip"
+"urdf_name" : "hexapod_normal.urdf"
 "motors_on" : True
-"time_prints" : True
+"time_prints" : False
 "target_vel_source" : "joystick" # rnd/joystick/ros
 "ahrs_source" : "rs"
 "imu_ahrs_update_period" : 0.01
-"update_period" : 0.120
-"max_servo_speed" : 200
-"max_servo_torque" : 1023
-"policy_hid_dim" : 256
-"use_contacts" : False
+"update_period" : 0.01
+"max_servo_speed" : 300
+"max_servo_torque" : 800
+"policy_hid_dim" : 128
+"use_contacts" : True

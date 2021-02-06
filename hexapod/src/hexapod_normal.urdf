@@ -1,0 +1,586 @@
+<?xml version="1.0"?>
+<robot name="quadruped">
+  <material name="green">
+        <color rgba="0 .8 .8 1"/>
+  </material>
+
+  <material name="blue">
+        <color rgba="0 .0 1 1"/>
+  </material>
+
+  <material name="black">
+        <color rgba="0 0 0 1"/>
+  </material>
+
+  <link name="torso">
+    <visual>
+      <geometry>
+        <box size="0.20 0.12 0.01"/>
+      </geometry>
+      <origin xyz="0 0 0"/>
+      <material name="green"/>
+    </visual>
+
+    <collision>
+      <geometry>
+        <box size="0.20 0.12 0.01"/>
+      </geometry>
+      <origin xyz="0 0 0"/>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="1.8"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <contact_coefficients mu="0.9" />
+  </link>
+
+    <!-- FL leg (1) /-->
+    <link name="coxa_fl">
+      <visual>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.052"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.052"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <joint name="torso_coxa_fl" type="revolute">
+      <axis xyz="0 0 1"/>
+      <origin xyz="0.12 0.06 0" rpy="0 0 -0.7854"/>
+      <parent link="torso"/>
+      <child link="coxa_fl"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--coxa-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <link name="femur_fl">
+      <visual>
+        <origin xyz=".0 .033 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.066"/>
+        </geometry>
+        <material name="blue"/>
+      </visual>
+
+      <inertial>
+        <origin xyz=".0 .033 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <joint name="coxa_femur_fl" type="revolute">
+      <axis xyz="-1 0 0"/>
+      <origin xyz="0.0 0.052 0"/>
+      <parent link="coxa_fl"/>
+      <child link="femur_fl"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--femur-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <link name="tibia_fl">
+      <visual>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.132"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <collision>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.132"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+
+    </link>
+
+    <joint name="femur_tibia_fl" type="revolute">
+      <axis xyz="-1 0 0"/>
+      <origin xyz="0.0 0.066 -0.014" rpy="-0.7854 0 0"/>
+      <parent link="femur_fl"/>
+      <child link="tibia_fl"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--tibia-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <!-- FR leg (2) /-->
+    <link name="coxa_fr">
+      <visual>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.052"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.052"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <joint name="torso_coxa_fr" type="revolute">
+      <axis xyz="0 0 -1"/>
+      <origin xyz="0.12 -0.06 0" rpy="0 0 -2.3562"/>
+      <parent link="torso"/>
+      <child link="coxa_fr"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--coxa-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <link name="femur_fr">
+      <visual>
+        <origin xyz=".0 .033 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.066"/>
+        </geometry>
+        <material name="blue"/>
+      </visual>
+
+      <inertial>
+        <origin xyz=".0 .033 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <joint name="coxa_femur_fr" type="revolute">
+      <axis xyz="-1 0 0"/>
+      <origin xyz="0.0 0.052 0"/>
+      <parent link="coxa_fr"/>
+      <child link="femur_fr"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--femur-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <link name="tibia_fr">
+      <visual>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.132"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <collision>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.132"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+      <contact_coefficients mu="0.9" />
+    </link>
+
+    <joint name="femur_tibia_fr" type="revolute">
+      <axis xyz="-1 0 0"/>
+      <origin xyz="0.0 0.066 -0.014" rpy="-0.7854 0 0"/>
+      <parent link="femur_fr"/>
+      <child link="tibia_fr"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--tibia-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+
+  <!-- ML leg (3 Midleft) /-->
+   <link name="coxa_ml">
+      <visual>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.052"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.052"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <joint name="torso_coxa_ml" type="revolute">
+      <axis xyz="0 0 1"/>
+      <origin xyz="0.0 0.1 0" rpy="0 0 0"/>
+      <parent link="torso"/>
+      <child link="coxa_ml"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--coxa-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <link name="femur_ml">
+      <visual>
+        <origin xyz=".0 .033 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.066"/>
+        </geometry>
+        <material name="blue"/>
+      </visual>
+
+      <inertial>
+        <origin xyz=".0 .033 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <joint name="coxa_femur_ml" type="revolute">
+      <axis xyz="-1 0 0"/>
+      <origin xyz="0.0 0.052 0"/>
+      <parent link="coxa_ml"/>
+      <child link="femur_ml"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--femur-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <link name="tibia_ml">
+      <visual>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.132"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <collision>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.132"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+      <contact_coefficients mu="0.9" />
+    </link>
+
+    <joint name="femur_tibia_ml" type="revolute">
+      <axis xyz="-1 0 0"/>
+      <origin xyz="0.0 0.066 -0.014" rpy="-0.7854 0 0"/>
+      <parent link="femur_ml"/>
+      <child link="tibia_ml"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--tibia-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+      <!-- MR leg (4 Midright) /-->
+   <link name="coxa_mr">
+      <visual>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.052"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.052"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <joint name="torso_coxa_mr" type="revolute">
+      <axis xyz="0 0 -1"/>
+      <origin xyz="0 -0.1 0" rpy="0 0 -3.1416"/>
+      <parent link="torso"/>
+      <child link="coxa_mr"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--coxa-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <link name="femur_mr">
+      <visual>
+        <origin xyz=".0 .033 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.066"/>
+        </geometry>
+        <material name="blue"/>
+      </visual>
+
+      <inertial>
+        <origin xyz=".0 .033 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <joint name="coxa_femur_mr" type="revolute">
+      <axis xyz="-1 0 0"/>
+      <origin xyz="0.0 0.052 0"/>
+      <parent link="coxa_mr"/>
+      <child link="femur_mr"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--femur-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <link name="tibia_mr">
+      <visual>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.132"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <collision>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.132"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+      <contact_coefficients mu="0.9" />
+    </link>
+
+    <joint name="femur_tibia_mr" type="revolute">
+      <axis xyz="-1 0 0"/>
+      <origin xyz="0.0 0.066 -0.014" rpy="-0.7854 0 0"/>
+      <parent link="femur_mr"/>
+      <child link="tibia_mr"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--tibia-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+
+    <!-- RL leg (5) /-->
+   <link name="coxa_rl">
+      <visual>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.052"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.052"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <joint name="torso_coxa_rl" type="revolute">
+      <axis xyz="0 0 1"/>
+      <origin xyz="-0.12 0.06 0" rpy="0 0 0.7854"/>
+      <parent link="torso"/>
+      <child link="coxa_rl"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--coxa-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <link name="femur_rl">
+      <visual>
+        <origin xyz=".0 .033 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.066"/>
+        </geometry>
+        <material name="blue"/>
+      </visual>
+
+      <inertial>
+        <origin xyz=".0 .033 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <joint name="coxa_femur_rl" type="revolute">
+      <axis xyz="-1 0 0"/>
+      <origin xyz="0.0 0.052 0"/>
+      <parent link="coxa_rl"/>
+      <child link="femur_rl"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--femur-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <link name="tibia_rl">
+      <visual>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.132"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <collision>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.132"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+      <contact_coefficients mu="0.9" />
+    </link>
+
+    <joint name="femur_tibia_rl" type="revolute">
+      <axis xyz="-1 0 0"/>
+      <origin xyz="0.0 0.066 -0.014" rpy="-0.7854 0 0"/>
+      <parent link="femur_rl"/>
+      <child link="tibia_rl"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--tibia-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <!-- RR leg (6) /-->
+    <link name="coxa_rr">
+      <visual>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.052"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.052"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz="0 0.026 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <joint name="torso_coxa_rr" type="revolute">
+      <axis xyz="0 0 -1"/>
+      <origin xyz="-0.12 -0.06 0" rpy="0 0 2.3561"/>
+      <parent link="torso"/>
+      <child link="coxa_rr"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--coxa-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <link name="femur_rr">
+      <visual>
+        <origin xyz=".0 .033 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.066"/>
+        </geometry>
+        <material name="blue"/>
+      </visual>
+
+      <inertial>
+        <origin xyz=".0 .033 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <joint name="coxa_femur_rr" type="revolute">
+      <axis xyz="-1 0 0"/>
+      <origin xyz="0.0 0.052 0"/>
+      <parent link="coxa_rr"/>
+      <child link="femur_rr"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--femur-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+
+    <link name="tibia_rr">
+      <visual>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.132"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <collision>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <geometry>
+          <cylinder radius="0.015" length="0.132"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz=".0 .066 0.0" rpy="-1.5708 0 0" />
+        <mass value="0.1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+      <contact_coefficients mu="0.9" />
+    </link>
+
+    <joint name="femur_tibia_rr" type="revolute">
+      <axis xyz="-1 0 0"/>
+      <origin xyz="0.0 0.066 -0.014" rpy="-0.7854 0 0"/>
+      <parent link="femur_rr"/>
+      <child link="tibia_rr"/>
+      <limit effort="1.4" lower="-6.0" upper="6.0" velocity="1"/><!--tibia-->
+      <dynamics damping="0.01" friction="0.01"/>
+    </joint>
+</robot>
