@@ -42,7 +42,7 @@ class JoyController():
 
         turn = -turn / 2 # [-0.5, 0.5]
         vel = np.maximum(vel * -1, 0)  # [0, 1]  
-        print(f"Turn: {turn}, Vel: {vel}, Button: {button_x}")
+        #print(f"Turn: {turn}, Vel: {vel}, Button: {button_x}")
 
         # button_x only when upon press
         if self.button_x_state == 0 and button_x == 1:
@@ -222,6 +222,7 @@ class AHRS_RS:
         self.rs_lock = threading.Lock()
 
         self.rs_frame = None
+        self.yaw_offset = 0
 
         print("Finished initializing the rs_t265. ")
 
@@ -268,7 +269,7 @@ class AHRS_RS:
             quat_yaw_corrected = [0, 0, 0, 1]
 
         self.current_heading = yaw
-        print(f"Yaw: {yaw}, yaw_corrected: {yaw_corrected}, heading_spoof: {heading_spoof_angle}")
+        #print(f"Yaw: {yaw}, yaw_corrected: {yaw_corrected}, heading_spoof: {heading_spoof_angle}")
 
         return roll, pitch, yaw_corrected, quat_yaw_corrected, vel_rob, self.timestamp
 
@@ -318,7 +319,7 @@ class HexapodController:
 
         obs_dim = 42
         self.angle = 0
-        self.angle_increment = 0.024
+        self.angle_increment = 0.026
 
         self.leg_sensor_gpio_inputs = [11,17,27,10,22,9]
 
@@ -330,7 +331,7 @@ class HexapodController:
         self.phases_op = np.array([3.4730, 0.3511, 0.4637, -3.4840, -2.8000, -0.4658])
         self.current_phases = self.phases_op
         self.x_mult, self.y_offset, self.z_mult, self.z_offset, self.phase_offset = [
-            np.tanh(0.2) * 0.075 * 0.5 + 0.075,
+            np.tanh(0.0) * 0.075 * 0.5 + 0.075,
             np.tanh(-0.6724) * 0.085 * 0.5 + 0.085,
             np.tanh(-0.8629) * 0.075 * 0.5 + 0.075,
             np.tanh(-1.0894) * 0.1 * 0.5 + 0.1,
@@ -392,11 +393,12 @@ class HexapodController:
                 self.hex_write_ctrl([0, 0, 0] * 6)
                 self.idling = False
                 print("Awakening...")
-                time.sleep(0.5)
-
+                time.sleep(0.2)
+                self.Ahrs.reset_yaw()
+            
             if not self.idling:
                 # Read robot servos and hardware and turn into observation for nn
-                policy_obs = self.hex_get_obs(turn)
+                policy_obs = self.hex_get_obs(-turn*3)
 
                 # Perform forward pass on nn policy
                 policy_act, _ = self.current_nn_policy.predict(policy_obs, deterministic=True)
@@ -469,12 +471,13 @@ class HexapodController:
         # Read IMU (for now spoof perfect orientation)
         roll, pitch, yaw, quat, vel_rob, timestamp = self.Ahrs.update(heading_spoof_angle=heading_spoof_angle)
         contacts = self.read_contacts()
+        print(yaw)
 
         # Turn servo positions into [-1,1] for nn
         joints_normed = ((servo_positions - self.joints_10bit_low) / self.joints_10bit_diff) * 2 - 1
         joint_angles_rads = (joints_normed * 0.5 + 0.5) * self.joints_rads_diff + self.joints_rads_low
 
-        # Make nn observation
+        # Make nn observationFalse
         # compiled_obs = torso_quat, torso_vel, [signed_deviation, (self.angle % (np.pi * 2) - np.pi)], joint_angles, current_phases_obs, offset_obs, contacts
         obs = np.concatenate((quat, vel_rob, [yaw, 0], joint_angles_rads, [0] * 6, [0,0], contacts, [0]))
 
@@ -510,7 +513,7 @@ class HexapodController:
         sjoints = np.array(targets)
         sjoints = ((sjoints - self.joints_rads_low) / self.joints_rads_diff) * 2 - 1
 
-        self.angle += 0.02
+        self.angle += self.angle_increment
 
         # Map [-1,1] to correct 10 bit servo value, respecting the scaling limits imposed during training
         scaled_act = np.array([(np.asscalar(sjoints[i]) * 0.5 + 0.5) * self.joints_10bit_diff[i] + self.joints_10bit_low[i] for i in range(18)]).astype(np.uint16)
