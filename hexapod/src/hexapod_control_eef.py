@@ -9,7 +9,7 @@ import logging
 import smbus
 import math
 import sys
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+#logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 import pypot.dynamixel
 import pygame
 from gyro import IMU
@@ -42,7 +42,7 @@ class JoyController():
 
         turn = -turn / 2 # [-0.5, 0.5]
         vel = np.maximum(vel * -1, 0)  # [0, 1]  
-        print(f"Turn: {turn}, Vel: {vel}")
+        print(f"Turn: {turn}, Vel: {vel}, Button: {button_x}")
 
         # button_x only when upon press
         if self.button_x_state == 0 and button_x == 1:
@@ -268,6 +268,7 @@ class AHRS_RS:
             quat_yaw_corrected = [0, 0, 0, 1]
 
         self.current_heading = yaw
+        print(f"Yaw: {yaw}, yaw_corrected: {yaw_corrected}, heading_spoof: {heading_spoof_angle}")
 
         return roll, pitch, yaw_corrected, quat_yaw_corrected, vel_rob, self.timestamp
 
@@ -290,6 +291,7 @@ class AHRS_RS:
 
     def reset_yaw(self):
         self.yaw_offset = self.current_heading
+
 
 
 class HexapodController:
@@ -316,6 +318,7 @@ class HexapodController:
 
         obs_dim = 42
         self.angle = 0
+        self.angle_increment = 0.024
 
         self.leg_sensor_gpio_inputs = [11,17,27,10,22,9]
 
@@ -327,7 +330,7 @@ class HexapodController:
         self.phases_op = np.array([3.4730, 0.3511, 0.4637, -3.4840, -2.8000, -0.4658])
         self.current_phases = self.phases_op
         self.x_mult, self.y_offset, self.z_mult, self.z_offset, self.phase_offset = [
-            np.tanh(0.7135) * 0.075 * 0.5 + 0.075,
+            np.tanh(0.2) * 0.075 * 0.5 + 0.075,
             np.tanh(-0.6724) * 0.085 * 0.5 + 0.085,
             np.tanh(-0.8629) * 0.075 * 0.5 + 0.075,
             np.tanh(-1.0894) * 0.1 * 0.5 + 0.1,
@@ -349,9 +352,6 @@ class HexapodController:
         
         # Load policies
         self.nn_policy_straight = A2C.load("agents/{}".format(self.config["policy_straight"]))
-        self.nn_policy_straight_rough = A2C.load("agents/{}".format(self.config["policy_straight_rough"]))
-        self.nn_policy_turn_left = A2C.load("agents/{}".format(self.config["policy_straight"]))
-        self.nn_policy_turn_right = A2C.load("agents/{}".format(self.config["policy_straight_rough"]))
 
         self.current_nn_policy = self.nn_policy_straight
         self.current_nn_policy_ID = "straight"
@@ -380,31 +380,6 @@ class HexapodController:
                 self.dxl_io.set_moving_speed(speed)
                 print("Setting servo speed: {}".format(self.max_servo_speed))
             
-            if button_x == 1:
-                if self.current_nn_policy_ID == "straight":
-                    self.current_nn_policy = self.nn_policy_straight_rough
-                    self.current_nn_policy_ID = "straight_rough"
-                elif self.current_nn_policy_ID == "straight_rough":
-                    self.current_nn_policy = self.nn_policy_straight
-                    self.current_nn_policy_ID = "straight"
-                print("Switched to {} policy".format(self.current_nn_policy_ID))
-
-            if turn >= self.turn_transition_thresh:
-                self.current_nn_policy = self.nn_policy_turn_left
-                self.max_servo_speed = 150
-                speed = dict(zip(self.ids, itertools.repeat(self.max_servo_speed)))
-                self.dxl_io.set_moving_speed(speed)
-            if turn <= -self.turn_transition_thresh:
-                self.current_nn_policy = self.nn_policy_turn_right
-                self.max_servo_speed = 150
-                speed = dict(zip(self.ids, itertools.repeat(self.max_servo_speed)))
-                self.dxl_io.set_moving_speed(speed)
-            if abs(turn) < 0.4:
-                if self.current_nn_policy_ID == "straight":
-                    self.current_nn_policy = self.nn_policy_straight
-                else:
-                    self.current_nn_policy = self.nn_policy_straight_rough
-
             # Idle
             if vel < 0.1 and abs(turn) < 0.1:
                 if not self.idling:
@@ -421,7 +396,7 @@ class HexapodController:
 
             if not self.idling:
                 # Read robot servos and hardware and turn into observation for nn
-                policy_obs = self.hex_get_obs()
+                policy_obs = self.hex_get_obs(turn)
 
                 # Perform forward pass on nn policy
                 policy_act, _ = self.current_nn_policy.predict(policy_obs, deterministic=True)
@@ -535,7 +510,7 @@ class HexapodController:
         sjoints = np.array(targets)
         sjoints = ((sjoints - self.joints_rads_low) / self.joints_rads_diff) * 2 - 1
 
-        self.angle += 0.016
+        self.angle += 0.02
 
         # Map [-1,1] to correct 10 bit servo value, respecting the scaling limits imposed during training
         scaled_act = np.array([(np.asscalar(sjoints[i]) * 0.5 + 0.5) * self.joints_10bit_diff[i] + self.joints_10bit_low[i] for i in range(18)]).astype(np.uint16)
@@ -563,20 +538,6 @@ class HexapodController:
         normalized_torques_corrected = normalized_torques * torque_dirs_corrected
         return normalized_torques_corrected
 
-    def _update_legtip_contact(self):
-        def _leg_is_in_contact(servo_vec):
-            return servo_vec[1] > 0.04 or servo_vec[2] > 0.03
-
-        servo_torques = self.get_normalized_torques()
-        for i in range(6):
-            if _leg_is_in_contact(servo_torques[i * 3: (i + 1) * 3]):
-                self.contacts_avg[i] = np.minimum(self.contacts_avg[i] + 0.55, 1)
-                #self.contacts[i] = 1
-            else:
-                self.contacts_avg[i] = np.maximum(self.contacts_avg[i] - 0.55, -1)
-                #self.contacts[i] = -1
-        #self.contacs = np.sign(self.contacts_avg)
-        self.contacts = np.ones(6)
                 
     def test_leg_coordination(self):
         '''
