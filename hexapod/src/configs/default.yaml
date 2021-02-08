@@ -1,5 +1,5 @@
-"policy_straight" : "JMA_SB_policy.zip" #"JMA_SB_policy.zip"
-"policy_straight_rough" : "JMA_SB_policy.zip"# "JMA_SB_policy.zip"
+"policy_straight" : "KXG_SB_policy.zip" #"JMA_SB_policy.zip"
+"policy_straight_rough" : "KXG_SB_policy.zip"# "JMA_SB_policy.zip"
 "urdf_name" : "hexapod_normal.urdf"
 "motors_on" : True
 "time_prints" : False
