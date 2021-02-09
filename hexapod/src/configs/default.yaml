@@ -6,7 +6,7 @@
 "ahrs_source" : "rs"
 "imu_ahrs_update_period" : 0.01
 "update_period" : 0.01
-"max_servo_speed" : 300
-"max_servo_torque" : 1000
+"max_servo_speed" : 500
+"max_servo_torque" : 1024
 "policy_hid_dim" : 128
 "use_contacts" : True
