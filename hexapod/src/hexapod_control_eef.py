@@ -378,7 +378,8 @@ class HexapodController:
                 self.current_discrete_velocity_level = new_discrete_velocity_level
                 self.max_servo_speed = self.current_discrete_velocity_level * 100
                 speed = dict(zip(self.ids, itertools.repeat(self.max_servo_speed)))
-                self.dxl_io.set_moving_speed(speed)
+                self.angle_increment = vel * 0.04
+                #self.dxl_io.set_moving_speed(speed)
                 print("Setting servo speed: {}".format(self.max_servo_speed))
             
             # Idle
