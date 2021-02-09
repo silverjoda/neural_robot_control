@@ -1,4 +1,4 @@
-"policy_straight" : "ZTA_SB_policy.zip" #"JMA_SB_policy.zip"
+"policy_straight" : "ZTA_SB_policy.zip" 
 "urdf_name" : "hexapod_normal.urdf"
 "motors_on" : True 
 "time_prints" : False

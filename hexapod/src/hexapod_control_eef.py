@@ -331,7 +331,7 @@ class HexapodController:
         self.phases_op = np.array([3.4730, 0.3511, 0.4637, -3.4840, -2.8000, -0.4658])
         self.current_phases = self.phases_op
         self.x_mult, self.y_offset, self.z_mult, self.z_offset, self.phase_offset = [
-            np.tanh(0.2) * 0.075 * 0.5 + 0.075,
+            np.tanh(0.1) * 0.075 * 0.5 + 0.075,
             np.tanh(-0.6724) * 0.085 * 0.5 + 0.085,
             np.tanh(-0.8629) * 0.075 * 0.5 + 0.075,
             np.tanh(-1.0894) * 0.1 * 0.5 + 0.1,
@@ -378,7 +378,7 @@ class HexapodController:
                 self.current_discrete_velocity_level = new_discrete_velocity_level
                 self.max_servo_speed = self.current_discrete_velocity_level * 100
                 speed = dict(zip(self.ids, itertools.repeat(self.max_servo_speed)))
-                self.angle_increment = vel * 0.05
+                self.angle_increment = vel * 0.035
                 #self.dxl_io.set_moving_speed(speed)
                 print("Setting servo speed: {}".format(self.max_servo_speed))
             
