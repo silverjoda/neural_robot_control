@@ -373,7 +373,7 @@ class Controller:
 
     def get_policy_action(self, obs):
         try:
-            (self.policy_m1, self.policy_m2, self.policy_m3, self.policy_m4), _ = func_timeout(0.010, self.policy.predict, args=(obs,))
+            (self.policy_m1, self.policy_m2, self.policy_m3, self.policy_m4), _ = func_timeout(0.010, lambda x : self.policy.predict(x, deterministic=True), args=(obs,))
         except FunctionTimedOut:
             print("NN fw pass timed out!")
         return [self.policy_m1, self.policy_m2, self.policy_m3, self.policy_m4]
