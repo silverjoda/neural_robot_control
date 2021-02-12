@@ -19,7 +19,7 @@ def set_servo_cmd(channel, val):
 
 servo_id = 0
 set_servo_cmd(servo_id, 0)
-time.sleep(1)
+time.sleep(7)
 print("Starting test: ")
 set_servo_cmd(servo_id, 1)
 time.sleep(0.5)

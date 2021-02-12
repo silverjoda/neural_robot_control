@@ -421,7 +421,7 @@ class Controller:
         return [m_1, m_2, m_3, m_4]
 
     def step(self, ctrl_raw):
-        print(ctrl_raw)
+        #print(ctrl_raw)
         self.act_queue.append(ctrl_raw)
         self.act_queue.pop(0)
         act_raw_unqueued = self.act_queue
@@ -449,7 +449,7 @@ class Controller:
         # Update sensor data
         t_ahrs_1 = time.time()
         position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
-        print(vel_rob, angular_vel_rob)
+        #print(vel_rob, angular_vel_rob)
         t_ahrs_2 = time.time()
         #if self.config["time_prints"]: print(f"AHRS read $ process pass took: {t_ahrs_2 - t_ahrs_1}")
         if self.config["time_prints"] and (t_ahrs_2 - t_ahrs_1) > 0.002:
@@ -527,7 +527,7 @@ class Controller:
 
             obs, r, done, obs_dict = self.step(act)
 
-            #print(f"Pos: {obs_dict['position_rob']}, pos_delta: {obs_dict['pos_delta']}, targets: {obs_dict['pid_targets']}")
+            print(f"Pos: {obs_dict['position_rob']}, pos_delta: {obs_dict['pos_delta']}, targets: {obs_dict['pid_targets']}")
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
             if time.time() - iteration_starttime > slowest_frame:
