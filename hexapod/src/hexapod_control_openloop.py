@@ -241,7 +241,7 @@ class HexapodController:
         :return: None
         '''
     
-        x_mult, y_offset, z_mult, z_offset, phase_offset_l, phase_offset_r, *phases = normalized_act
+        x_mult, y_offset, z_mult, z_offset, phase_offset_l, phase_offset_r, *phases = [0.0600, 0.1500, 0.0300, -0.0900, 0.1719, 0.6840, 2.2731, -2.1205, -0.1978, 1.6163, -2.8159, 0.1489]
 
         targets = []
         for i in range(6):
