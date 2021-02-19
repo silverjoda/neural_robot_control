@@ -31,7 +31,7 @@ class FF_HEX_EEF(nn.Module):
         clipped_params = [0.06, # x_mult
                           0.15, # y_offset
                           0.03, # z_mult
-                          0.09, # z_offset
+                          -0.09, # z_offset
                           0.17186029255390167, # phase_offset_l
                           0.684008061, # phase_offset_r
                           2.273112,
@@ -99,19 +99,6 @@ class HexapodController:
         GPIO.setmode(GPIO.BCM)
         for ipt in self.leg_sensor_gpio_inputs:
             GPIO.setup(ipt, GPIO.IN)
-
-        #[1.230578899383545, -0.8904486298561096, -0.33200976252555847, -0.5583759546279907, 0.17186029255390167,
-        #     0.6840080618858337, 2.2731125354766846, -2.1205337047576904, -0.19777145981788635, 1.6162649393081665,
-        #     -2.815896987915039, 0.1488673835992813]
-
-        self.phases_op = np.array([3.4730, 0.3511, 0.4637, -3.4840, -2.8000, -0.4658])
-        self.current_phases = self.phases_op
-        self.x_mult, self.y_offset, self.z_mult, self.z_offset, self.phase_offset = [
-            np.tanh(0.1) * 0.075 * 0.5 + 0.075,
-            np.tanh(-0.6724) * 0.085 * 0.5 + 0.085,
-            np.tanh(-0.8629) * 0.075 * 0.5 + 0.075,
-            np.tanh(-1.0894) * 0.1 * 0.5 + 0.1,
-            0.0725]
 
         self.current_discrete_velocity_level = 1
 
