@@ -20,6 +20,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control_openloop.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" afterDir="false" />
     </list>
@@ -49,12 +50,12 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/hexapod/src/agents" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/hexapod/src" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/hexapod/src/agents" />
       <recent name="$PROJECT_DIR$/hexapod/src" />
+      <recent name="$PROJECT_DIR$/hexapod/src/agents" />
       <recent name="$PROJECT_DIR$/quadcopter" />
     </key>
   </component>
