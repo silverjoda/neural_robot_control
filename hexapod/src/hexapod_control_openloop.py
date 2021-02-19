@@ -100,7 +100,7 @@ class HexapodController:
         self.joints_10bit_diff = self.joints_10bit_high - self.joints_10bit_low
 
         self.angle = 0
-        self.angle_increment = 0.001
+        self.angle_increment = 0.004
 
         self.leg_sensor_gpio_inputs = [11,17,27,10,22,9]
 
@@ -141,7 +141,7 @@ class HexapodController:
                 self.current_discrete_velocity_level = new_discrete_velocity_level
                 self.max_servo_speed = self.current_discrete_velocity_level * 100
                 speed = dict(zip(self.ids, itertools.repeat(self.max_servo_speed)))
-                self.angle_increment = vel * 0.035
+                self.angle_increment = vel * 0.08
                 #self.dxl_io.set_moving_speed(speed)
                 print("Setting servo speed: {}".format(self.max_servo_speed))
             
