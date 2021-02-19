@@ -91,6 +91,14 @@ class HexapodController:
         self.max_servo_speed = self.config["max_servo_speed"] # [0:1024]
         self.max_servo_torque = self.config["max_servo_torque"]  # [0:1024]
 
+        self.joints_rads_low = np.array([-0.5, -1.0, 0.4] * 6)
+        self.joints_rads_high = np.array([0.5, 0.4, 1.0] * 6)
+        self.joints_rads_diff = self.joints_rads_high - self.joints_rads_low
+
+        self.joints_10bit_low = (self.joints_rads_low / 5.23599 + 0.5) * 1024
+        self.joints_10bit_high = ((self.joints_rads_high) / (5.23599) + 0.5) * 1024
+        self.joints_10bit_diff = self.joints_10bit_high - self.joints_10bit_low
+
         self.angle = 0
         self.angle_increment = 0.001
 
