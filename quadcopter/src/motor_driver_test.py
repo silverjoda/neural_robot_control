@@ -20,6 +20,7 @@ pwm = Adafruit_PCA9685.PCA9685()
 #pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)
 
 pwm_freq = 100 
+servo_maximum = 0.1
 
 # Set frequency to 60hz, good for servos.
 pwm.set_pwm_freq(pwm_freq)
@@ -39,7 +40,7 @@ time.sleep(2)
 while True:
     for i in range(4):
         for j in range(10):
-            set_servo_cmd(i, np.minimum(j / 10, 1.0))
+            set_servo_cmd(i, np.minimum(j / 10, servo_maximum))
             time.sleep(0.3)
         set_servo_cmd(i, 0)
         time.sleep(0.5)

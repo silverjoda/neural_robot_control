@@ -1,15 +1,15 @@
-"policy_path" : "QUADCOPTER_STAB_2METRES_222_LP.zip"
-"motors_on" : False
-"time_prints" : True
+"policy_path" : "220_properly_trained.zip"
+"motors_on" : True
+"time_prints" : False 
 "controller_source" : "nn" # nn/pid
 "target_vel_source" : "joystick" # still/rnd/joystick
 "ahrs_source" : "rs"
 "obs_input" : 2
 "act_input" : 2
-"rew_input" : 2
+"rew_input" : 0
 "target_pos" : [0, 0, 2.0]
 "starting_pos" : [0, 0, 2.0]
 "update_period" : 0.01
 "joystick_mapping" : [1,3,4,0]
-"startup_delay" : 0
+"startup_delay" : 3
 
