@@ -1,6 +1,6 @@
 "policy_straight" : "ZTA_SB_policy.zip" 
 "urdf_name" : "hexapod_normal.urdf"
-"motors_on" : True 
+"motors_on" : False 
 "time_prints" : False
 "target_vel_source" : "joystick" # rnd/joystick/ros
 "ahrs_source" : "rs"

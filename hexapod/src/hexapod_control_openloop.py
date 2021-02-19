@@ -113,6 +113,8 @@ class HexapodController:
             np.tanh(-1.0894) * 0.1 * 0.5 + 0.1,
             0.0725]
 
+        self.current_discrete_velocity_level = 1
+
         # Make joystick controller
         self.joystick_controller = JoyController()
         logging.info("Loading policies: ")
