@@ -459,32 +459,39 @@ class HexapodController:
         Read robot hardware and return observation tensor for pytorch
         :return:
         '''
-     
+
         servo_positions = self.dxl_io.get_present_position(self.ids)
-                
+
         # Reverse servo observations
         servo_positions = np.array(servo_positions).astype(np.float32)
-        servo_positions[np.array([4,5,6,10,11,12,16,17,18])-1] = 1024 - servo_positions[np.array([4,5,6,10,11,12,16,17,18])-1]  
+        servo_positions[np.array([4, 5, 6, 10, 11, 12, 16, 17, 18]) - 1] = 1024 - servo_positions[
+            np.array([4, 5, 6, 10, 11, 12, 16, 17, 18]) - 1]
 
         # Read IMU (for now spoof perfect orientation)
-        roll, pitch, yaw, quat, xd, timestamp = self.Ahrs.update(heading_spoof_angle=heading_spoof_angle)
-        #print(xd)
-        #quat_only_yaw = self.Ahrs.e2q(0, 0, yaw)
+        roll, pitch, yaw, quat, vel_rob, timestamp = self.Ahrs.update(heading_spoof_angle=heading_spoof_angle)
 
         # Turn servo positions into [-1,1] for nn
-        obs = ((servo_positions - self.joints_10bit_low) / self.joints_10bit_diff) * 2 - 1
-        
-        # Clip to [-1, 1]
-        obs = np.clip(obs, -1, 1)
+        joints_normed = ((servo_positions - self.joints_10bit_low) / self.joints_10bit_diff) * 2 - 1
+        joint_angles_rads = (joints_normed * 0.5 + 0.5) * self.joints_rads_diff + self.joints_rads_low
 
-        # Make nn observation
-        obs = np.concatenate((obs, quat, [xd]))
-        
-        if self.config["use_contacts"]:
-            obs = np.concatenate((obs, self.contacts))   
-        
-        # Add the counter variable at the end
-        obs = np.concatenate((obs, [0.0]))
+        # Torques
+        if self.config["read_true_torques"]:
+            torques = self.get_normalized_torques()
+        else:
+            torques = [0] * 18
+
+        # Velocities
+        dt = time.time() - self.observation_timestamp
+        velocities = (joint_angles_rads - self.previous_joint_angles) / (dt + 1e-5)
+        self.previous_joint_angles = joint_angles_rads
+
+        # Contacts
+        contacts = self.read_contacts()
+
+        # Make nn observationFalse
+        # compiled_obs = torso_quat, torso_vel, [signed_deviation], joint_angles, contacts, [(float(self.step_ctr) / self.config["max_steps"]) * 2 - 1] <- eef
+        # compiled_obs = torso_quat, torso_vel, [signed_deviation], time_feature, scaled_joint_angles, contacts, joint_torques, joint_velocities <- This one for wp_* and hexapod configs
+        obs = np.concatenate((quat, vel_rob, [yaw], joint_angles_rads, contacts, [0]))
 
         return obs
 
