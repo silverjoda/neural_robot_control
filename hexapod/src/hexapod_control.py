@@ -191,6 +191,7 @@ class HexapodController:
 
         # Contacts
         contacts = self.read_contacts()
+        #contacts = [0] * 6
 
         # Make nn observationFalse
         # compiled_obs = torso_quat, torso_vel, [signed_deviation], joint_angles, contacts, [(float(self.step_ctr) / self.config["max_steps"]) * 2 - 1] <- eef

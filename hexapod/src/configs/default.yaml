@@ -1,5 +1,5 @@
 "policy_eef" : "EEF_PERLIN_21_02.zip"
-"policy_straight" : "PERLIN_TV_21_02.zip"
+"policy_straight" : "JZM_SB_policy.zip"
 "urdf_name" : "hexapod_normal.urdf"
 "motors_on" : True
 "time_prints" : False
@@ -11,12 +11,12 @@
 "max_servo_speed" : 300
 "max_servo_torque" : 1024
 "use_contacts" : True
-"velocities_and_torques" : True
+"velocities_and_torques" : False
 "phase_scalar" : 0.25
 "z_aux_scalar" : 0.05
 "phase_offset_scalar" : 1.2
 "joints_rads_low" : [-0.5, -1.2, 0.2] # perlin
 "joints_rads_high" : [0.5, 0.2, 1.6] # perlin
-#"joints_rads_low" : [-0.6, -1.6, -0.6] # Obstacle
-#"joints_rads_high" : [0.6, 1.2, 1.8] # Obstacle
+"joints_rads_low" : [-0.6, -1.6, -0.6] # Obstacle
+"joints_rads_high" : [0.6, 1.2, 1.8] # Obstacle
 "turn_transition_thresh" : 0.4
