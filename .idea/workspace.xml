@@ -21,9 +21,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control_eef.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control_eef.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
