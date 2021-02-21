@@ -19,7 +19,7 @@ import yaml
 import threading
 import quaternion
 # Torques are positive upwards and when leg is being pushed backward
-from stable_baselines import A2C, TD3
+from stable_baselines3 import A2C, TD3
 import RPi.GPIO as GPIO
     
 from peripherals import *
@@ -89,6 +89,8 @@ class HexapodController:
                 self.hex_write_ctrl([0, -0.5, 0.5] * 6)
                 self.Ahrs.reset_yaw()
                 self.dynamic_time_feature = -1.
+                print_sometimes("Idling",0.1)
+                time.sleep(0.1)
             else:
                 # Read robot servos and hardware and turn into observation for nn
                 policy_obs = self.hex_get_obs(-turn * 3)
