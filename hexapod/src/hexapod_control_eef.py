@@ -21,7 +21,6 @@ import quaternion
 # Torques are positive upwards and when leg is being pushed backward
 from stable_baselines3 import A2C
 import RPi.GPIO as GPIO
-import pybullet as p
     
 from peripherals import *
 
@@ -33,8 +32,7 @@ class HexapodController:
         
         self.action_queue = []
 
-        self.turn_transition_thresh = 0.4
-        self.angle = 0
+        self.turn_transition_thresh = self.config["turn_transition_thresh"]
         self.angle_increment = self.config["angle_increment"]
 
         self.leg_sensor_gpio_inputs = [11,17,27,10,22,9]
@@ -55,11 +53,6 @@ class HexapodController:
             0.33068275451660156,
             0.41586756706237793]
 
-        self.urdf_name = self.config["urdf_name"]
-        self.client_ID = p.connect(p.DIRECT)
-        self.robot = p.loadURDF(os.path.join(os.path.dirname(os.path.realpath(__file__)), self.urdf_name),
-                           physicsClientId=self.client_ID)
-
         self.left_offset, self.right_offset = np.array([self.phase_offset_l, self.phase_offset_r])
 
         # Make joystick controller
@@ -70,17 +63,18 @@ class HexapodController:
         self.Ahrs = AHRS_RS()
         
         # Load policies
-        self.nn_policy_straight = A2C.load("agents/{}".format(self.config["policy_straight"]))
+        self.nn_policy_straight = A2C.load("agents/{}".format(self.config["policy_eef"]))
 
         self.current_nn_policy = self.nn_policy_straight
         self.current_nn_policy_ID = "straight"
-        self.idling = False
 
         logging.info("Initializing robot hardware")
         self.init_hardware()
 
         self.observation_timestamp = time.time()
         self.previous_joint_angles = [0] * 18
+        self.angle = 0
+        self.dynamic_time_feature = -1
 
     def read_contacts(self):
         return [GPIO.input(ipt) for ipt in self.leg_sensor_gpio_inputs]
@@ -100,6 +94,7 @@ class HexapodController:
             if vel < 0.1 and abs(turn) < 0.1:
                 self.hex_write_ctrl([0, -0.5, 0.5] * 6)
                 self.Ahrs.reset_yaw()
+                self.dynamic_time_feature = -1
             else:
                 # Read robot servos and hardware and turn into observation for nn
                 policy_obs = self.hex_get_obs(-turn * 3)
@@ -109,6 +104,8 @@ class HexapodController:
 
                 # Calculate servo commands from policy action and write to servos
                 self.hex_write_ctrl(policy_act)
+
+                self.dynamic_time_feature = np.minimum(self.dynamic_time_feature + 0.02, 0)
 
             #while time.time() - iteration_starttime < self.config["update_period"]: pass
 
@@ -197,9 +194,7 @@ class HexapodController:
         contacts = self.read_contacts()
 
         # Make nn observation
-        # compiled_obs = torso_quat, torso_vel, [signed_deviation], joint_angles, contacts, [(float(self.step_ctr) / self.config["max_steps"]) * 2 - 1] <- eef
-        # compiled_obs = torso_quat, torso_vel, [signed_deviation], time_feature, scaled_joint_angles, contacts, joint_torques, joint_velocities <- This one for wp_* and hexapod configs
-        obs = np.concatenate((quat, vel_rob, [yaw], joint_angles_rads, contacts, [0]))
+        obs = np.concatenate((quat, vel_rob, [yaw], joint_angles_rads, contacts, [self.dynamic_time_feature]))
 
         return obs
 
