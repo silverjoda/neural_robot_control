@@ -33,15 +33,6 @@ class HexapodController:
         
         self.action_queue = []
 
-        # TODO: remove this
-        self.joints_rads_low = np.array([-0.5, -1.0, 0.4] * 6)
-        self.joints_rads_high = np.array([0.5, 0.4, 1.0] * 6)
-        self.joints_rads_diff = self.joints_rads_high - self.joints_rads_low
-
-        self.joints_10bit_low = (self.joints_rads_low / 5.23599 + 0.5) * 1024
-        self.joints_10bit_high = ((self.joints_rads_high) / (5.23599) + 0.5) * 1024
-        self.joints_10bit_diff = self.joints_10bit_high - self.joints_10bit_low
-
         self.turn_transition_thresh = 0.4
         self.angle = 0
         self.angle_increment = self.config["angle_increment"]
@@ -103,31 +94,13 @@ class HexapodController:
             #print(turn, vel, button_x)
 
             # Calculate discrete velocity level
-            new_discrete_velocity_level = np.ceil((vel + 0.0001) / 0.34).astype(np.int16)
-            if new_discrete_velocity_level != self.current_discrete_velocity_level:
-                self.current_discrete_velocity_level = new_discrete_velocity_level
-                self.max_servo_speed = self.current_discrete_velocity_level * 100
-                speed = dict(zip(self.ids, itertools.repeat(self.max_servo_speed)))
-                self.angle_increment = vel * 0.035
-                #self.dxl_io.set_moving_speed(speed)
-                print("Setting servo speed: {}".format(self.max_servo_speed))
+            self.angle_increment = vel * self.angle_increment
             
             # Idle
             if vel < 0.1 and abs(turn) < 0.1:
-                if not self.idling:
-                    self.hex_write_ctrl([0, -0.5, 0.5] * 6)
-                    self.idling = True
-                    print("Idling...")
-                    time.sleep(0.2)
-                    self.Ahrs.reset_yaw()
-            elif self.idling:
-                self.hex_write_ctrl([0, 0, 0] * 6)
-                self.idling = False
-                print("Awakening...")
-                time.sleep(0.2)
+                self.hex_write_ctrl([0, -0.5, 0.5] * 6)
                 self.Ahrs.reset_yaw()
-            
-            if not self.idling:
+            else:
                 # Read robot servos and hardware and turn into observation for nn
                 policy_obs = self.hex_get_obs(-turn * 3)
 
@@ -136,7 +109,6 @@ class HexapodController:
 
                 # Calculate servo commands from policy action and write to servos
                 self.hex_write_ctrl(policy_act)
-
 
             #while time.time() - iteration_starttime < self.config["update_period"]: pass
 
@@ -192,9 +164,12 @@ class HexapodController:
         Read robot hardware and return observation tensor for pytorch
         :return:
         '''
-     
-        servo_positions = self.dxl_io.get_present_position(self.ids)
-                
+
+        scrambled_ids = range(1,19)
+        np.random.shuffle(scrambled_ids)
+        scrambled_servo_positions = self.dxl_io.get_present_position(scrambled_ids)
+        servo_positions = [scrambled_servo_positions[scrambled_ids.index(i+1)] for i in range(18)]
+
         # Reverse servo observations
         servo_positions = np.array(servo_positions).astype(np.float32)
         servo_positions[np.array([4,5,6,10,11,12,16,17,18])-1] = 1023 - servo_positions[np.array([4,5,6,10,11,12,16,17,18])-1]
@@ -260,19 +235,31 @@ class HexapodController:
 
         # Reverse servo signs for right hand servos (This part is retarded and will need to be fixed)
         scaled_act[np.array([4,5,6,10,11,12,16,17,18])-1] = 1023 - scaled_act[np.array([4,5,6,10,11,12,16,17,18])-1]
-        scaled_act_dict = dict(zip(self.ids, scaled_act))
+
+        scrambled_ids = range(1, 19)
+        np.random.shuffle(scrambled_ids)
+        scrambled_acts = [scaled_act[si - 1] for si in scrambled_ids]
+        scaled_act_dict = dict(zip(scrambled_ids, scrambled_acts))
 
         if self.config["motors_on"]:
             self.dxl_io.set_goal_position(scaled_act_dict)
 
     def hex_write_servos_direct(self, act):
-        scaled_act = dict(zip(self.ids, act))
+        scrambled_ids = range(1, 19)
+        np.random.shuffle(scrambled_ids)
+        scrambled_acts = [act[si-1] for si in scrambled_ids]
+
+        scaled_act = dict(zip(scrambled_ids, scrambled_acts))
         if self.config["motors_on"]:
             self.dxl_io.set_goal_position(scaled_act)
         return 0
 
     def get_normalized_torques(self):
-        servo_torques = np.array(self.dxl_io.get_present_load(self.ids))
+        scrambled_ids = range(1, 19)
+        np.random.shuffle(scrambled_ids)
+        scrambled_servo_torques = np.array(self.dxl_io.get_present_load(self.ids))
+        servo_torques = np.array([scrambled_servo_torques[scrambled_ids.index(i + 1)] for i in range(18)])
+
         torque_dirs = (servo_torques >> 10).astype(np.float32) * 2 - 1
         torque_dirs_corrected = torque_dirs * np.tile([-1, 1, 1, 1, -1, -1], 3)
         raw_torques = (servo_torques % 1023).astype(np.float32)
@@ -318,35 +305,6 @@ class HexapodController:
         th2 = np.pi - q2 - b
 
         return -psi, th1, th2
-                
-    def test_leg_coordination(self):
-        '''
-        Perform leg test to determine correct mapping and range
-        :return:
-        '''
-
-        if not self.config["motors_on"]:
-            print("Motors are off, not performing test")
-
-        logging.info("Starting leg coordination test")
-        VERBOSE = True
-        sc = 1.0
-        test_acts = [[0, 0, 0], [0, sc, sc], [0, -sc, -sc], [0, sc, -sc], [0, -sc, sc], [sc, 0, 0], [-sc, 0, 0]]
-        for i, a in enumerate(test_acts):
-            self.hex_write_ctrl(np.array(a * 6))
-            time.sleep(3)
-            joints_normed = self.hex_get_obs()[0].detach().numpy()[:18] # rads
-            joints_rads = (((joints_normed + 1) / 2) * self.joints_rads_diff) + self.joints_rads_low 
-            act_rads = (np.array(a * 6) * 0.5 + 0.5) * self.joints_rads_diff + self.joints_rads_low
-            
-            if VERBOSE:
-                print("Obs rads: ", joints_rads) 
-                print("Obs norm: ", joints_normed) 
-                print("For action rads: ", act_rads) 
-                print("action norm: ", a) 
-            
-        logging.info("Finished leg coordination test, exiting")
-        quit()
 
     def test_AHRS_RS(self):
         while True:
