@@ -401,10 +401,6 @@ class HexapodController:
                 # Calculate servo commands from policy action and write to servos
                 self.hex_write_ctrl(policy_act)
 
-            if self.config["use_contacts"]:
-                self._update_legtip_contact()
-                #print(self.contacts)
-
             while time.time() - iteration_starttime < self.config["update_period"]: pass
 
 
@@ -529,21 +525,7 @@ class HexapodController:
         normalized_torques_corrected = normalized_torques * torque_dirs_corrected
         return normalized_torques_corrected
 
-    def _update_legtip_contact(self):
-        def _leg_is_in_contact(servo_vec):
-            return servo_vec[1] > 0.04 or servo_vec[2] > 0.03
 
-        servo_torques = self.get_normalized_torques()
-        for i in range(6):
-            if _leg_is_in_contact(servo_torques[i * 3: (i + 1) * 3]):
-                self.contacts_avg[i] = np.minimum(self.contacts_avg[i] + 0.55, 1)
-                #self.contacts[i] = 1
-            else:
-                self.contacts_avg[i] = np.maximum(self.contacts_avg[i] - 0.55, -1)
-                #self.contacts[i] = -1
-        #self.contacs = np.sign(self.contacts_avg)
-        self.contacts = np.ones(6)
-                
     def test_leg_coordination(self):
         '''
         Perform leg test to determine correct mapping and range
