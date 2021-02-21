@@ -20,7 +20,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/hexapod/src/agents/EEF_PERLIN_21_02.pkl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hexapod/src/agents/EEF_PERLIN_21_02.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hexapod/src/agents/OBSTACLE_NTV_21_02.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hexapod/src/agents/PERLIN_NTV_21_02.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hexapod/src/agents/PERLIN_TV_21_02.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/agents/HEXAPOD_TILES_STRAIGHT.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/agents/JMA_SB_policy.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/agents/JMA_vecnorm.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/agents/KXG_SB_policy.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/agents/KXG_vecnorm.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/agents/LZZ_SB_policy.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/agents/XWJ_SB_policy.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/agents/ZTA_SB_policy.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/agents/ZTA_vecnorm.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
