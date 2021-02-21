@@ -1,14 +1,14 @@
 "policy_eef" : "EEF_PERLIN_21_02.zip"
 "policy_straight" : "PERLIN_NTV_21_02.zip"
 "urdf_name" : "hexapod_normal.urdf"
-"motors_on" : False
+"motors_on" : True
 "time_prints" : False
 "target_vel_source" : "joystick" # rnd/joystick/ros
 "ahrs_source" : "rs"
 "imu_ahrs_update_period" : 0.01
 "update_period" : 0.01
 "angle_increment" : 0.026
-"max_servo_speed" : 400
+"max_servo_speed" : 300
 "max_servo_torque" : 1024
 "use_contacts" : True
 "read_true_torques" : False

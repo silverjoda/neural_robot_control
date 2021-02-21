@@ -88,13 +88,17 @@ class HexapodController:
             #print(turn, vel, button_x)
 
             # Calculate discrete velocity level
-            self.angle_increment = vel * self.angle_increment
+            self.angle_increment = vel * self.config["angle_increment"]
             
+            #print(self.angle, self.angle_increment, vel)
+
             # Idle
             if vel < 0.1 and abs(turn) < 0.1:
                 self.hex_write_ctrl([0, -0.5, 0.5] * 6)
                 self.Ahrs.reset_yaw()
                 self.dynamic_time_feature = -1
+                print_sometimes("Idling", 0.1)
+                time.sleep(0.1)
             else:
                 # Read robot servos and hardware and turn into observation for nn
                 policy_obs = self.hex_get_obs(-turn * 3)
@@ -106,6 +110,7 @@ class HexapodController:
                 self.hex_write_ctrl(policy_act)
 
                 self.dynamic_time_feature = np.minimum(self.dynamic_time_feature + 0.02, 0)
+
 
             #while time.time() - iteration_starttime < self.config["update_period"]: pass
 

@@ -292,3 +292,7 @@ class AHRS_RS:
 
     def reset_yaw(self):
         self.yaw_offset = self.current_heading
+
+def print_sometimes(msg, prob=0.01):
+    if np.random.rand() < prob:
+        print(msg)

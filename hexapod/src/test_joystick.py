@@ -56,4 +56,5 @@ class JoyController():
 
 jc = JoyController()
 while True:
+    time.sleep(0.1)
     jc.get_joystick_input()
