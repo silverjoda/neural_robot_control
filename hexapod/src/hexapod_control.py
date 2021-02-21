@@ -192,7 +192,7 @@ class HexapodController:
         # Make nn observationFalse
         # compiled_obs = torso_quat, torso_vel, [signed_deviation], joint_angles, contacts, [(float(self.step_ctr) / self.config["max_steps"]) * 2 - 1] <- eef
         # compiled_obs = torso_quat, torso_vel, [signed_deviation], time_feature, scaled_joint_angles, contacts, joint_torques, joint_velocities <- This one for wp_* and hexapod configs
-        obs = np.concatenate((quat, vel_rob, [yaw], [self.dynamic_time_feature], joint_angles_rads, contacts))
+        obs = np.concatenate((quat, vel_rob, [yaw], [self.dynamic_time_feature], joints_normed, contacts))
         #obs = np.concatenate((quat, vel_rob, [yaw], [self.dynamic_time_feature], joint_angles_rads, contacts, joint_torques, joint_velocities))
 
         return obs
