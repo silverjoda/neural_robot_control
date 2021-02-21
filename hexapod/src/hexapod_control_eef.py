@@ -162,7 +162,7 @@ class HexapodController:
         :return:
         '''
 
-        scrambled_ids = range(1,19)
+        scrambled_ids = list(range(1,19))
         np.random.shuffle(scrambled_ids)
         scrambled_servo_positions = self.dxl_io.get_present_position(scrambled_ids)
         servo_positions = [scrambled_servo_positions[scrambled_ids.index(i+1)] for i in range(18)]
@@ -231,7 +231,7 @@ class HexapodController:
         # Reverse servo signs for right hand servos (This part is retarded and will need to be fixed)
         scaled_act[np.array([4,5,6,10,11,12,16,17,18])-1] = 1023 - scaled_act[np.array([4,5,6,10,11,12,16,17,18])-1]
 
-        scrambled_ids = range(1, 19)
+        scrambled_ids = list(range(1, 19))
         np.random.shuffle(scrambled_ids)
         scrambled_acts = [scaled_act[si - 1] for si in scrambled_ids]
         scaled_act_dict = dict(zip(scrambled_ids, scrambled_acts))
@@ -240,7 +240,7 @@ class HexapodController:
             self.dxl_io.set_goal_position(scaled_act_dict)
 
     def hex_write_servos_direct(self, act):
-        scrambled_ids = range(1, 19)
+        scrambled_ids = list(range(1, 19))
         np.random.shuffle(scrambled_ids)
         scrambled_acts = [act[si-1] for si in scrambled_ids]
 
@@ -250,7 +250,7 @@ class HexapodController:
         return 0
 
     def get_normalized_torques(self):
-        scrambled_ids = range(1, 19)
+        scrambled_ids = list(range(1, 19))
         np.random.shuffle(scrambled_ids)
         scrambled_servo_torques = np.array(self.dxl_io.get_present_load(self.ids))
         servo_torques = np.array([scrambled_servo_torques[scrambled_ids.index(i + 1)] for i in range(18)])

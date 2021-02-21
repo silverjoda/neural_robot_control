@@ -1,7 +1,7 @@
 "policy_eef" : "EEF_PERLIN_21_02.zip"
 "policy_straight" : "PERLIN_NTV_21_02.zip"
 "urdf_name" : "hexapod_normal.urdf"
-"motors_on" : True 
+"motors_on" : False
 "time_prints" : False
 "target_vel_source" : "joystick" # rnd/joystick/ros
 "ahrs_source" : "rs"
