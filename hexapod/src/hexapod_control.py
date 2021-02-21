@@ -92,6 +92,8 @@ class HexapodController:
                 print_sometimes("Idling",0.1)
                 time.sleep(0.1)
             else:
+                self.dxl_io.set_moving_speed(self.max_servo_speed * vel)
+
                 # Read robot servos and hardware and turn into observation for nn
                 policy_obs = self.hex_get_obs(-turn * 3)
 
@@ -103,7 +105,7 @@ class HexapodController:
 
                 self.dynamic_time_feature = np.minimum(self.dynamic_time_feature + 0.02, 0)
 
-            # while time.time() - iteration_starttime < self.config["update_period"]: pass
+            print(time.time() - iteration_starttime)
 
     def init_hardware(self):
         '''
