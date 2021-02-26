@@ -104,23 +104,18 @@ class HexapodController:
                 time.sleep(0.1)
             else:
                 # Read robot servos and hardware and turn into observation for nn
-                clipped_turn = np.clip(-turn * 3, -self.config["turn_clip_value"], self.config["turn_clip_value"])
-
-                if self.control_modes[self.current_control_mode_idx] == "direct":
-                    policy_obs = self.hex_get_obs_direct(clipped_turn)
-                else:
-                    policy_obs = self.hex_get_obs_eef(clipped_turn)
-
-                # Perform forward pass on nn policy
-                policy_act, _ = self.current_nn_policy.predict(policy_obs, deterministic=True)
+                clipped_turn = np.clip(-turn * 2, -self.config["turn_clip_value"], self.config["turn_clip_value"])
 
                 if self.control_modes[self.current_control_mode_idx] == "direct":
                     speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * vel))))
                     self.dxl_io.set_moving_speed(speed)
-                    # Calculate servo commands from policy action and write to servos
+
+                    policy_obs = self.hex_get_obs_direct(clipped_turn)
+                    policy_act, _ = self.nn_policy_direct.predict(policy_obs, deterministic=True)
                     self.hex_write_ctrl_direct(policy_act)
                 else:
-                    # Calculate servo commands from policy action and write to servos
+                    policy_obs = self.hex_get_obs_eef(clipped_turn)
+                    policy_act, _ = self.nn_policy_eef.predict(policy_obs, deterministic=True)
                     self.hex_write_ctrl_eef(policy_act)
 
                 self.dynamic_time_feature = np.minimum(self.dynamic_time_feature + 0.010, 1)
