@@ -97,7 +97,8 @@ class HexapodController:
                 self.dxl_io.set_moving_speed(speed)
 
                 # Read robot servos and hardware and turn into observation for nn
-                policy_obs = self.hex_get_obs(-turn * 3)
+                clipped_turn = np.clip(-turn * 3, -self.config["turn_clip_value"], self.config["turn_clip_value"])
+                policy_obs = self.hex_get_obs(clipped_turn)
 
                 # Perform forward pass on nn policy
                 policy_act, _ = self.current_nn_policy.predict(policy_obs, deterministic=True)
@@ -108,6 +109,7 @@ class HexapodController:
                 self.dynamic_time_feature = np.minimum(self.dynamic_time_feature + 0.003, 0)
 
             while (time.time() - iteration_starttime) < self.config["update_period"]: pass
+            print_sometimes(f"Actual iteration took {(time.time() - iteration_starttime)} s", 0.1)
 
     def init_hardware(self):
         '''
