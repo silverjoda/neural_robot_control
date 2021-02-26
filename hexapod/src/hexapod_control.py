@@ -69,9 +69,10 @@ class HexapodController:
         self.previous_joint_angles = [0] * 18
         self.angle = 0
         self.dynamic_time_feature = -1
+        self.xd_queue = []
 
     def read_contacts(self):
-        return [GPIO.input(ipt) for ipt in self.leg_sensor_gpio_inputs]
+        return [GPIO.input(ipt) * 2 - 1 for ipt in self.leg_sensor_gpio_inputs]
 
     def start_ctrl_loop(self):
         logging.info("Starting control loop")
@@ -173,6 +174,15 @@ class HexapodController:
         # Read IMU (for now spoof perfect orientation)
         roll, pitch, yaw, quat, vel_rob, timestamp = self.Ahrs.update(heading_spoof_angle=heading_spoof_angle)
 
+        xd, yd, zd = vel_rob
+
+        # Avg vel
+        self.xd_queue.append(xd)
+        if len(self.xd_queue) > 15:
+            del self.xd_queue[0]
+        avg_vel = sum(self.xd_queue) / len(self.xd_queue)
+        avg_vel = avg_vel / 0.15 - 1
+
         # Turn servo positions into [-1,1] for nn
         joints_normed = ((servo_positions - self.joints_10bit_low) / self.joints_10bit_diff) * 2 - 1
         joint_angles_rads = (joints_normed * 0.5 + 0.5) * self.joints_rads_diff + self.joints_rads_low
@@ -185,22 +195,14 @@ class HexapodController:
             joint_torques = [0] * 18
 
         # Velocities
-        dt = time.time() - self.observation_timestamp
-        joint_velocities = (joint_angles_rads - self.previous_joint_angles) / (dt + 1e-5)
-        self.previous_joint_angles = joint_angles_rads
+        # dt = time.time() - self.observation_timestamp
+        joint_velocities = [0] * 18#(joint_angles_rads - self.previous_joint_angles) / (dt + 1e-5)
+        # self.previous_joint_angles = joint_angles_rads
 
-        # Contacts
-        contacts = self.read_contacts()
-        #contacts = [0] * 6
-
-        # Make nn observationFalse
-        # compiled_obs = torso_quat, torso_vel, [signed_deviation], joint_angles, contacts, [(float(self.step_ctr) / self.config["max_steps"]) * 2 - 1] <- eef
-        # compiled_obs = torso_quat, torso_vel, [signed_deviation], time_feature, scaled_joint_angles, contacts, joint_torques, joint_velocities <- This one for wp_* and hexapod configs
-        
         if not self.config["velocities_and_torques"]:
-            obs = np.concatenate((quat, vel_rob, [yaw], [self.dynamic_time_feature], joints_normed, contacts))
+            obs = np.concatenate((quat, vel_rob, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed))
         else:
-            obs = np.concatenate((quat, vel_rob, [yaw], [self.dynamic_time_feature], joint_angles_rads, contacts, joint_torques, joint_velocities))
+            obs = np.concatenate((quat, vel_rob, [yaw], [self.dynamic_time_feature], [avg_vel], joint_angles_rads, joint_torques, joint_velocities))
 
         return obs
 
