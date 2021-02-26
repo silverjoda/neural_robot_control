@@ -84,7 +84,8 @@ class HexapodController:
             # Calculate discrete velocity level
             self.angle_increment = vel * self.config["angle_increment"]
             
-            print(self.angle, self.angle_increment, vel)
+            print(turn,vel,button_x)
+            #print(self.angle, self.angle_increment, vel)
 
             # Idle
             if vel < 0.1 and abs(turn) < 0.1:
@@ -97,6 +98,8 @@ class HexapodController:
                 # Read robot servos and hardware and turn into observation for nn
                 clipped_turn = np.clip(-turn * 3, -self.config["turn_clip_value"], self.config["turn_clip_value"])
                 policy_obs = self.hex_get_obs(clipped_turn)
+
+                #print(clipped_turn)
 
                 # Perform forward pass on nn policy
                 policy_act, _ = self.current_nn_policy.predict(policy_obs, deterministic=True)
