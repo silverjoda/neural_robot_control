@@ -19,7 +19,7 @@ import yaml
 import threading
 import quaternion
 # Torques are positive upwards and when leg is being pushed backward
-from stable_baselines3 import A2C
+from stable_baselines3 import TD3
 import RPi.GPIO as GPIO
     
 from peripherals import *
@@ -58,7 +58,7 @@ class HexapodController:
         self.Ahrs = AHRS_RS()
         
         # Load policies
-        self.nn_policy_straight = A2C.load("agents/{}".format(self.config["policy_eef"]))
+        self.nn_policy_straight = TD3.load("agents/{}".format(self.config["policy_eef"]))
 
         self.current_nn_policy = self.nn_policy_straight
         self.current_nn_policy_ID = "straight"
