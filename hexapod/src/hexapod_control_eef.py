@@ -107,7 +107,9 @@ class HexapodController:
                 # Calculate servo commands from policy action and write to servos
                 self.hex_write_ctrl(policy_act)
 
-                self.dynamic_time_feature = np.minimum(self.dynamic_time_feature + 0.02, 0)
+                self.dynamic_time_feature = np.minimum(self.dynamic_time_feature
+                                                       + self.config["dynamic_time_feature_increment"],
+                                                       self.config["dynamic_time_feature_ub"])
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
 

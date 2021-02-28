@@ -21,7 +21,10 @@
   <component name="ChangeListManager">
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control_combined.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control_combined.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control_eef.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control_eef.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,7 +52,7 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../adaptive_neural_control" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">

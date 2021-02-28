@@ -19,3 +19,5 @@
 "joints_rads_high" : [0.6, 0.534, 0.9]
 "turn_transition_thresh" : 0.4
 "turn_clip_value" : 0.5
+"dynamic_time_feature_increment" : 0.003
+"dynamic_time_feature_ub" : 0.0

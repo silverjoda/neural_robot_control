@@ -118,7 +118,9 @@ class HexapodController:
                     policy_act, _ = self.nn_policy_eef.predict(policy_obs, deterministic=True)
                     self.hex_write_ctrl_eef(policy_act)
 
-                self.dynamic_time_feature = np.minimum(self.dynamic_time_feature + 0.010, 1)
+                self.dynamic_time_feature = np.minimum(self.dynamic_time_feature
+                                                       + self.config["dynamic_time_feature_increment"],
+                                                       self.config["dynamic_time_feature_ub"])
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
 
