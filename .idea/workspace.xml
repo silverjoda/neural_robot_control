@@ -20,11 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control_cyc.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control_combined.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control_combined.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control_eef.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control_eef.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/peripherals.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/peripherals.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +51,7 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/hexapod/src" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -61,7 +60,28 @@
       <recent name="$PROJECT_DIR$/quadcopter" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.t265_example">
+  <component name="RunManager" selected="Python.hexapod_control_combined">
+    <configuration name="hexapod_control_combined" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="neural_robot_control" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/hexapod/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/hexapod_control_combined.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="quad_control" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="neural_robot_control" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -107,9 +127,11 @@
     <list>
       <item itemvalue="Python.quad_control" />
       <item itemvalue="Python.t265_example" />
+      <item itemvalue="Python.hexapod_control_combined" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.hexapod_control_combined" />
         <item itemvalue="Python.t265_example" />
         <item itemvalue="Python.quad_control" />
       </list>

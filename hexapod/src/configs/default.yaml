@@ -21,3 +21,5 @@
 "turn_clip_value" : 0.5
 "dynamic_time_feature_increment" : 0.003
 "dynamic_time_feature_ub" : 0.0
+"sdev_coeff" : 0.04
+"z_pressure_coeff" : 0.02

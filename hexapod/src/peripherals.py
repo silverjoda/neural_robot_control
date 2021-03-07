@@ -22,7 +22,6 @@ import quaternion
 from stable_baselines3 import A2C
 import RPi.GPIO as GPIO
 
-
 class JoyController():
     def __init__(self):
         logging.info("Initializing joystick controller")
