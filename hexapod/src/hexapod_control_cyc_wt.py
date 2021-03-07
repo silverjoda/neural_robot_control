@@ -42,7 +42,7 @@ class HexapodController:
             GPIO.setup(ipt, GPIO.IN)
 
         self.phases = np.array([-2.0515174865722656, 0.9547860622406006, 1.4069218635559082, -1.3016775846481323, -0.8473407030105591, 2.331017017364502])
-        self.x_mult, self.y_offset, self.z_mult, self.z_offset, self.z_lb = [0.06, 0.125, 0.07, -0.12, 0]
+        self.x_mult, self.y_offset, self.z_mult, self.z_offset, self.z_lb = [0.06, 0.125, 0.08, -0.12, 0]
         self.dyn_z_array = np.array([self.z_lb] * 6)
 
         self.joints_rads_low = np.array(self.config["joints_rads_low"] * 6)
@@ -140,9 +140,9 @@ class HexapodController:
 
                     policy_obs = self.hex_get_obs_turn(clipped_turn)
                     if clipped_turn > 0:
-                        policy_act, _ = self.nn_policy_ccw.predict(policy_obs, deterministic=True)
-                    else:
                         policy_act, _ = self.nn_policy_cw.predict(policy_obs, deterministic=True)
+                    else:
+                        policy_act, _ = self.nn_policy_ccw.predict(policy_obs, deterministic=True)
                     self.hex_write_ctrl_turn(policy_act)
                 else:
                     target_angles = self.calc_target_angles(clipped_turn)
