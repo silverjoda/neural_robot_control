@@ -1,7 +1,7 @@
 "policy_eef" : "EEF_TD3_OPTUNA_policy.zip"
 "policy_direct" : "OBSTACLE_TD3_OPTUNA_policy.zip"
 "urdf_name" : "hexapod_normal.urdf"
-"motors_on" : True
+"motors_on" : False
 "time_prints" : False
 "target_vel_source" : "joystick" # rnd/joystick/ros
 "ahrs_source" : "rs"
