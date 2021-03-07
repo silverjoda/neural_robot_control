@@ -172,6 +172,31 @@ class HexapodController:
         if self.config["motors_on"]:
             self.dxl_io.set_goal_position(scaled_act_dict)
 
+    def hex_write_ctrl_turn(self, nn_act):
+        '''
+        Turn policy action tensor into servo commands and write them to servos
+        :return: None
+        '''
+
+        nn_act_clipped = np.tanh(nn_act)
+
+        # Map [-1,1] to correct 10 bit servo value, respecting the scaling limits imposed during training
+        scaled_act = np.array(
+            [(np.asscalar(nn_act_clipped[i]) * 0.5 + 0.5) * self.joints_10bit_diff[i] + self.joints_10bit_low[i] for i
+             in range(18)]).astype(np.uint16)
+
+        # Reverse servo signs for right hand servos (This part is retarded and will need to be fixed)
+        scaled_act[np.array([4, 5, 6, 10, 11, 12, 16, 17, 18]) - 1] = 1023 - scaled_act[
+            np.array([4, 5, 6, 10, 11, 12, 16, 17, 18]) - 1]
+
+        scrambled_ids = list(range(1, 19))
+        np.random.shuffle(scrambled_ids)
+        scrambled_acts = [scaled_act[si - 1] for si in scrambled_ids]
+        scaled_act_dict = dict(zip(scrambled_ids, scrambled_acts))
+
+        if self.config["motors_on"]:
+            self.dxl_io.set_goal_position(scaled_act_dict)
+
     def hex_write_servos_direct(self, act):
         scrambled_ids = list(range(1, 19))
         np.random.shuffle(scrambled_ids)
