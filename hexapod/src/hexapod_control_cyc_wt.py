@@ -71,6 +71,7 @@ class HexapodController:
         self.observation_timestamp = time.time()
         self.angle = 0
         self.dynamic_time_feature = -1
+        self.dyn_speed = 0
 
     def init_hardware(self):
         '''
@@ -118,7 +119,7 @@ class HexapodController:
             # Read joystick
             turn, vel, height, button_x = self.joystick_controller.get_joystick_input()
 
-            self.z_mult = self.z_mult_static + height * 0.03
+            self.z_mult = self.z_mult_static + height * 0.04
 
             # Calculate discrete velocity level
             self.angle_increment = vel * self.config["angle_increment"]
@@ -136,9 +137,10 @@ class HexapodController:
                 # Read robot servos and hardware and turn into observation for nn
                 clipped_turn = np.clip(-turn, -self.config["turn_clip_value"], self.config["turn_clip_value"])
 
-                if abs(clipped_turn) > 0.45:
-                    speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * np.maximum(vel, 0.1)))))
+                if abs(clipped_turn) > 0.47:
+                    speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * np.maximum(vel, 0.3)))))
                     self.dxl_io.set_moving_speed(speed)
+                    self.dyn_speed = vel
 
                     policy_obs = self.hex_get_obs_turn(clipped_turn)
                     if clipped_turn > 0:
@@ -147,6 +149,12 @@ class HexapodController:
                         policy_act, _ = self.nn_policy_ccw.predict(policy_obs, deterministic=True)
                     self.hex_write_ctrl_turn(policy_act)
                 else:
+                    if self.dyn_speed < 0.95:
+                        self.dyn_speed = 1.0
+
+                        speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed))))
+                        self.dxl_io.set_moving_speed(speed)
+
                     target_angles = self.calc_target_angles(clipped_turn)
                     self.hex_write_ctrl(target_angles)
 
