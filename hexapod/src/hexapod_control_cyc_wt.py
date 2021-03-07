@@ -42,7 +42,8 @@ class HexapodController:
             GPIO.setup(ipt, GPIO.IN)
 
         self.phases = np.array([-2.0515174865722656, 0.9547860622406006, 1.4069218635559082, -1.3016775846481323, -0.8473407030105591, 2.331017017364502])
-        self.x_mult, self.y_offset, self.z_mult, self.z_offset, self.z_lb = [0.06, 0.125, 0.08, -0.12, 0]
+        self.x_mult, self.y_offset, self.z_mult_static, self.z_offset, self.z_lb = [0.06, 0.125, 0.07, -0.12, 0]
+        self.z_mult = self.z_mult_static
         self.dyn_z_array = np.array([self.z_lb] * 6)
 
         self.joints_rads_low = np.array(self.config["joints_rads_low"] * 6)
@@ -115,13 +116,14 @@ class HexapodController:
         while True:
             iteration_starttime = time.time()
             # Read joystick
-            turn, vel, button_x = self.joystick_controller.get_joystick_input()
-            #print(turn, vel, button_x)
+            turn, vel, height, button_x = self.joystick_controller.get_joystick_input()
+
+            self.z_mult = self.z_mult_static + height * 0.03
 
             # Calculate discrete velocity level
             self.angle_increment = vel * self.config["angle_increment"]
             
-            print(turn, vel, button_x)
+            print(turn, vel, height, button_x)
 
             # Idle
             if vel < 0.1 and abs(turn) < 0.1:
@@ -134,8 +136,8 @@ class HexapodController:
                 # Read robot servos and hardware and turn into observation for nn
                 clipped_turn = np.clip(-turn, -self.config["turn_clip_value"], self.config["turn_clip_value"])
 
-                if abs(clipped_turn) > 0.4:
-                    speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * vel))))
+                if abs(clipped_turn) > 0.45:
+                    speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * np.maximum(vel, 0.1)))))
                     self.dxl_io.set_moving_speed(speed)
 
                     policy_obs = self.hex_get_obs_turn(clipped_turn)

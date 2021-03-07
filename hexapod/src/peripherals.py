@@ -34,12 +34,13 @@ class JoyController():
 
     def get_joystick_input(self):
         pygame.event.pump()
-        turn, vel = [self.joystick.get_axis(3), self.joystick.get_axis(1)]
+        turn, vel, height = [self.joystick.get_axis(3), self.joystick.get_axis(1), self.joystick.get_axis(2)]
         button_x = self.joystick.get_button(0)
         pygame.event.clear()
 
         turn = -turn / 2 # [-0.5, 0.5]
         vel = np.maximum(vel * -1, 0)  # [0, 1]
+
         #print(f"Turn: {turn}, Vel: {vel}, Button: {button_x}")
 
         # button_x only when upon press
@@ -56,7 +57,7 @@ class JoyController():
             self.button_x_state = 0
             button_x = 0
 
-        return turn, vel, button_x
+        return turn, vel, height, button_x
 
 
 class AHRS:
