@@ -132,10 +132,6 @@ class HexapodController:
                 # Calculate servo commands from policy action and write to servos
                 self.hex_write_ctrl(target_angles)
 
-                self.dynamic_time_feature = np.minimum(self.dynamic_time_feature
-                                                       + self.config["dynamic_time_feature_increment"],
-                                                       self.config["dynamic_time_feature_ub"])
-
             while time.time() - iteration_starttime < self.config["update_period"]: pass
 
     def hex_write_ctrl(self, joint_angles):
@@ -146,8 +142,6 @@ class HexapodController:
 
         joint_angles_normed = np.clip(np.array(joint_angles) / 2.618, -1, 1) # [-1,1] corresponding to bounds on servos
         joint_angles_servo = (joint_angles_normed * 0.5 + 0.5) * 1023
-
-        self.angle += self.angle_increment
 
         scaled_act = np.array([np.asscalar(joint_angles_servo[i]) for i in range(18)]).astype(np.uint16)
 
@@ -200,6 +194,8 @@ class HexapodController:
                 print(f"WARNING, TARGET_Z: {target_z}")
 
         joint_angles = self.my_ikt(targets, self.y_offset)
+        self.angle += self.angle_increment
+
         return joint_angles
 
     def hex_get_obs(self, heading_spoof_angle=0):
