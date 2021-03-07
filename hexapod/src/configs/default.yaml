@@ -1,25 +1,26 @@
 "policy_eef" : "EEF_TD3_OPTUNA_policy.zip"
 "policy_direct" : "OBSTACLE_TD3_OPTUNA_policy.zip"
-"urdf_name" : "hexapod_normal.urdf"
-"motors_on" : False
+"policy_cw" : "CW_TD3_OPTUNA_policy.zip"
+"policy_ccw" : "CCW_TD3_OPTUNA_policy.zip"
+"motors_on" : True
 "time_prints" : False
 "target_vel_source" : "joystick" # rnd/joystick/ros
 "ahrs_source" : "rs"
 "imu_ahrs_update_period" : 0.01
 "update_period" : 0.05
-"angle_increment" : 0.06
-"max_servo_speed" : 400
+"angle_increment" : 0.08
+"max_servo_speed" : 500
 "max_servo_torque" : 1024
 "use_contacts" : True
 "velocities_and_torques" : False
 "phase_scalar": 0.175
 "z_aux_scalar" : 0.0386 # 0.05
 "x_mult_scalar" : 0.01992 # 0.05
-"joints_rads_low" : [-0.6, -0.853, -0.60]
-"joints_rads_high" : [0.6, 0.534, 0.9]
+"joints_rads_low" : [-0.5, -1.0, 0.5]
+"joints_rads_high" : [0.5, 0.0, 1.5]
 "turn_transition_thresh" : 0.4
-"turn_clip_value" : 0.5
+"turn_clip_value" : 0.6
 "dynamic_time_feature_increment" : 0.003
 "dynamic_time_feature_ub" : 0.0
-"sdev_coeff" : 0.03
+"sdev_coeff" : 0.06
 "z_pressure_coeff" : 0.02
