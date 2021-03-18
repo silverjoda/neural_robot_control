@@ -16,8 +16,10 @@
 "phase_scalar": 0.175
 "z_aux_scalar" : 0.0386 # 0.05
 "x_mult_scalar" : 0.01992 # 0.05
-"joints_rads_low" : [-0.5, -1.0, 0.5]
-"joints_rads_high" : [0.5, 0.0, 1.5]
+"turn_joints_rads_low" : [-0.5, -1.0, 0.5]
+"turn_joints_rads_high" : [0.5, 0.0, 1.5]
+"direct_joints_rads_low" : [-0.6, -0.97, 0.035]
+"direct_joints_rads_high" : [0.6, 0.79, 1.365]
 "turn_transition_thresh" : 0.4
 "turn_clip_value" : 0.6
 "dynamic_time_feature_increment" : 0.003

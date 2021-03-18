@@ -29,8 +29,6 @@ class HexapodController:
         self.config = config
         self.max_servo_speed = self.config["max_servo_speed"] # [0:1024]
         self.max_servo_torque = self.config["max_servo_torque"]  # [0:1024]
-        
-        self.action_queue = []
 
         self.turn_transition_thresh = self.config["turn_transition_thresh"]
         self.angle_increment = self.config["angle_increment"]
@@ -47,17 +45,26 @@ class HexapodController:
         self.dyn_z_lb_array = np.array([float(self.z_lb)] * 6)
         self.poc_array = np.array([float(self.z_lb)] * 6)
 
-        self.joints_rads_low = np.array(self.config["joints_rads_low"] * 6)
-        self.joints_rads_high = np.array(self.config["joints_rads_high"] * 6)
-        self.joints_rads_diff = self.joints_rads_high - self.joints_rads_low
+        self.turn_joints_rads_low = np.array(self.config["turn_joints_rads_low"] * 6)
+        self.turn_joints_rads_high = np.array(self.config["turn_joints_rads_high"] * 6)
+        self.turn_joints_rads_diff = self.turn_joints_rads_high - self.turn_joints_rads_low
 
-        self.joints_10bit_low = ((self.joints_rads_low) / (5.23599) + 0.5) * 1024
-        self.joints_10bit_high = ((self.joints_rads_high) / (5.23599) + 0.5) * 1024
-        self.joints_10bit_diff = self.joints_10bit_high - self.joints_10bit_low
+        self.turn_joints_10bit_low = ((self.turn_joints_rads_low) / (5.23599) + 0.5) * 1024
+        self.turn_joints_10bit_high = ((self.turn_joints_rads_high) / (5.23599) + 0.5) * 1024
+        self.turn_joints_10bit_diff = self.turn_joints_10bit_high - self.turn_joints_10bit_low
+
+        self.direct_joints_rads_low = np.array(self.config["direct_joints_rads_low"] * 6)
+        self.direct_joints_rads_high = np.array(self.config["direct_joints_rads_high"] * 6)
+        self.direct_joints_rads_diff = self.direct_joints_rads_high - self.direct_joints_rads_low
+
+        self.direct_joints_10bit_low = ((self.direct_joints_rads_low) / (5.23599) + 0.5) * 1024
+        self.direct_joints_10bit_high = ((self.direct_joints_rads_high) / (5.23599) + 0.5) * 1024
+        self.direct_joints_10bit_diff = self.direct_joints_10bit_high - self.direct_joints_10bit_low
 
         # Load policies
         self.nn_policy_cw = TD3.load("agents/{}".format(self.config["policy_cw"]))
         self.nn_policy_ccw = TD3.load("agents/{}".format(self.config["policy_ccw"]))
+        self.nn_policy_direct = TD3.load("agents/{}".format(self.config["policy_direct"]))
 
         # Make joystick controller
         self.joystick_controller = JoyController()
@@ -73,6 +80,7 @@ class HexapodController:
         self.angle = 0
         self.dynamic_time_feature = -1
         self.dyn_speed = 0
+        self.idling = True
 
     def init_hardware(self):
         '''
@@ -129,12 +137,24 @@ class HexapodController:
 
             # Idle
             if vel < 0.1 and abs(turn) < 0.1:
+                torque = dict(zip(self.ids, itertools.repeat(0)))
+                self.dxl_io.set_max_torque(torque)
+                self.dxl_io.set_torque_limit(torque)
+                self.idling = True
+
                 self.hex_write_ctrl([0, -0.5, 0.5] * 6)
                 self.Ahrs.reset_yaw()
                 self.dynamic_time_feature = -1
                 print_sometimes("Idling", 0.1)
                 time.sleep(0.1)
             else:
+                if self.idling:
+                    # Make legs soft
+                    torque = dict(zip(self.ids, itertools.repeat(self.max_servo_torque)))
+                    self.dxl_io.set_max_torque(torque)
+                    self.dxl_io.set_torque_limit(torque)
+                    self.idling = False
+
                 # Read robot servos and hardware and turn into observation for nn
                 clipped_turn = np.clip(-turn, -self.config["turn_clip_value"], self.config["turn_clip_value"])
 

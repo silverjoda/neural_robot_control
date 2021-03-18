@@ -39,9 +39,7 @@ class HexapodController:
         for ipt in self.leg_sensor_gpio_inputs:
             GPIO.setup(ipt, GPIO.IN)
 
-        self.phases_op = np.array(
-            [-0.45378223061561584, 2.0218961238861084, 2.984712839126587, -1.3525876998901367, -1.7097233533859253,
-             1.027929663658142])
+        self.phases = np.array([-4.280901908874512, 5.452933311462402, -0.7993605136871338, 2.3967010974884033, 2.4376134872436523, -0.6086690425872803])
         self.x_mult, self.y_offset, self.z_mult, self.z_offset = [
             0.06,
             0.12,
