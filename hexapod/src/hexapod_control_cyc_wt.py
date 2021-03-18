@@ -41,10 +41,11 @@ class HexapodController:
         for ipt in self.leg_sensor_gpio_inputs:
             GPIO.setup(ipt, GPIO.IN)
 
-        self.phases = np.array([-2.0515174865722656, 0.9547860622406006, 1.4069218635559082, -1.3016775846481323, -0.8473407030105591, 2.331017017364502])
-        self.x_mult, self.y_offset, self.z_mult_static, self.z_offset, self.z_lb = [0.06, 0.125, 0.07, -0.12, 0]
+        self.phases = np.array([-4.280901908874512, 5.452933311462402, -0.7993605136871338, 2.3967010974884033, 2.4376134872436523, -0.6086690425872803])
+        self.x_mult, self.y_offset, self.z_mult_static, self.z_offset, self.z_lb = [self.config["x_mult"], self.config["y_offset"], self.config["z_mult"], self.config["z_offset"], self.config["z_lb"]]
         self.z_mult = self.z_mult_static
-        self.dyn_z_array = np.array([self.z_lb] * 6)
+        self.dyn_z_lb_array = np.array([float(self.z_lb)] * 6)
+        self.poc_array = np.array([float(self.z_lb)] * 6)
 
         self.joints_rads_low = np.array(self.config["joints_rads_low"] * 6)
         self.joints_rads_high = np.array(self.config["joints_rads_high"] * 6)
@@ -220,7 +221,7 @@ class HexapodController:
     def calc_target_angles(self, turn):
         contacts = self.read_contacts()
 
-        x_mult_arr = [np.minimum(self.x_mult + turn * self.config["sdev_coeff"], 0.08), np.minimum(self.x_mult - turn * self.config["sdev_coeff"], 0.08)] * 3
+        x_mult_arr = [np.minimum(self.x_mult + turn * self.config["turn_coeff"], 0.08), np.minimum(self.x_mult - turn * self.config["turn_coeff"], 0.08)] * 3
 
         targets = []
         for i in range(6):
@@ -230,19 +231,19 @@ class HexapodController:
             target_x = x_cyc * x_mult_arr[i]
             target_y = self.y_offset
 
-            if x_cyc < 0 and z_cyc > 0:
-                self.dyn_z_array[i] = self.z_lb
+            if x_cyc < 0 and z_cyc > 0.0:
+                self.dyn_z_lb_array[i] = self.z_lb
 
             if contacts[i] < 0:
-                self.dyn_z_array[i] = z_cyc
+                self.dyn_z_lb_array[i] = z_cyc
+                self.poc_array[i] = 1
             else:
-                self.dyn_z_array[i] = np.maximum(-1, self.dyn_z_array[i] - self.config["z_pressure_coeff"])
+                if self.poc_array[i] == 1:
+                    self.poc_array[i] = z_cyc
+                self.dyn_z_lb_array[i] = self.poc_array[i] - self.config["z_pressure_coeff"]
 
-            target_z = np.maximum(z_cyc, self.dyn_z_array[i]) * self.z_mult + self.z_offset
+            target_z = np.maximum(z_cyc, self.dyn_z_lb_array[i]) * self.z_mult + self.z_offset
             targets.append([target_x, target_y, target_z])
-
-            if not (0.0 > target_z > -0.17):
-                print(f"WARNING, TARGET_Z: {target_z}")
 
         joint_angles = self.my_ikt(targets, self.y_offset)
         self.angle += self.angle_increment
@@ -293,21 +294,65 @@ class HexapodController:
         normalized_torques_corrected = normalized_torques * torque_dirs_corrected
         return normalized_torques_corrected
 
-    def my_ikt(self, target_positions, y_offset, rotation_overlay=None):
-        rotation_angles = np.array([np.pi/4,np.pi/4,0,0,-np.pi/4,-np.pi/4])
+    def my_ikt(self, target_positions, rotation_overlay=None):
+        # raise NotImplementedError
+        rotation_angles = np.array([np.pi / 4, np.pi / 4, 0, 0, -np.pi / 4, -np.pi / 4])
         if rotation_overlay is not None:
             rotation_angles += rotation_overlay
         joint_angles = []
         for i, tp in enumerate(target_positions):
-            tp_rotated = self.rotate_eef_pos(tp, rotation_angles[i], y_offset)
+            tp_rotated = self.rotate_eef_pos(tp, rotation_angles[i], tp[1])
             joint_angles.extend(self.single_leg_ikt(tp_rotated))
+        return joint_angles
+
+    def my_ikt_robust(self, target_positions, rotation_overlay=None):
+        # raise NotImplementedError
+        def find_nearest_valid_point(xyz_query, rot_angle=0):
+            sol = self.single_leg_ikt(xyz_query)
+            if not np.isnan(sol).any(): return sol
+
+            cur_valid_sol = None
+            cur_xyz_query = xyz_query
+            cur_delta = 0.03
+            n_iters = 10
+
+            if xyz_query[2] > -0.1:
+                search_dir = 1
+            else:
+                search_dir = -1
+
+            cur_xyz_query[0] = cur_xyz_query[0] - cur_delta * search_dir * np.sin(rot_angle)
+            cur_xyz_query[1] = cur_xyz_query[1] + cur_delta * search_dir * np.cos(rot_angle)
+            for _ in range(n_iters):
+                sol = self.single_leg_ikt(cur_xyz_query)
+                if not np.isnan(sol).any():  # If solution is good
+                    cur_valid_sol = sol
+                    cur_delta /= 2
+                    cur_xyz_query[0] = cur_xyz_query[0] + cur_delta * search_dir * np.sin(rot_angle)
+                    cur_xyz_query[1] = cur_xyz_query[1] - cur_delta * search_dir * np.cos(rot_angle)
+                else:
+                    if cur_valid_sol is not None:
+                        cur_delta /= 2
+                    cur_xyz_query[0] = cur_xyz_query[0] - cur_delta * search_dir * np.sin(rot_angle)
+                    cur_xyz_query[1] = cur_xyz_query[1] + cur_delta * search_dir * np.cos(rot_angle)
+
+            assert cur_valid_sol is not None and not np.isnan(cur_valid_sol).any()
+            return cur_valid_sol
+
+        rotation_angles = np.array([np.pi / 4, np.pi / 4, 0, 0, -np.pi / 4, -np.pi / 4])
+        if rotation_overlay is not None:
+            rotation_angles += rotation_overlay
+        joint_angles = []
+        for i, tp in enumerate(target_positions):
+            tp_rotated = self.rotate_eef_pos(tp, rotation_angles[i], tp[1])
+            joint_angles.extend(find_nearest_valid_point(tp_rotated, rotation_angles[i]))
         return joint_angles
 
     def rotate_eef_pos(self, eef_xyz, angle, y_offset):
         return [eef_xyz[0] * np.cos(angle), eef_xyz[0] * np.sin(angle) + y_offset, eef_xyz[2]]
 
     def single_leg_ikt(self, eef_xyz):
-        x,y,z = eef_xyz
+        x, y, z = eef_xyz
 
         q1 = 0.2137
         q2 = 0.785
@@ -316,17 +361,17 @@ class HexapodController:
         F = 0.0675
         T = 0.132
 
-        psi = np.arctan(x/y)
+        psi = np.arctan(x / y)
         Cx = C * np.sin(psi)
         Cy = C * np.cos(psi)
-        R = np.sqrt((x-Cx)**2 + (y-Cy)**2 + (z)**2)
-        alpha = np.arcsin(-z/R)
+        R = np.sqrt((x - Cx) ** 2 + (y - Cy) ** 2 + (z) ** 2)
+        alpha = np.arcsin(-z / R)
 
-        a = np.arccos((F**2 + R**2 - T**2) / (2 * F * R))
+        a = np.arccos((F ** 2 + R ** 2 - T ** 2) / (2 * F * R))
         b = np.arccos((F ** 2 + T ** 2 - R ** 2) / (2 * F * T))
 
-        if np.isnan(a) or np.isnan(b):
-            print(a,b)
+        # if np.isnan(a) or np.isnan(b):
+        #    print(a,b)
 
         assert 0 < a < np.pi or np.isnan(a)
         assert 0 < b < np.pi or np.isnan(b)
