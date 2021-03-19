@@ -1,4 +1,3 @@
-"policy_eef" : "EEF_TD3_OPTUNA_policy.zip"
 "policy_direct" : "OBSTACLE_TD3_OPTUNA_policy.zip"
 "policy_cw" : "CW_TD3_OPTUNA_policy.zip"
 "policy_ccw" : "CCW_TD3_OPTUNA_policy.zip"

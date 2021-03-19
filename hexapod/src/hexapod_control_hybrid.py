@@ -66,6 +66,9 @@ class HexapodController:
         self.nn_policy_ccw = TD3.load("agents/{}".format(self.config["policy_ccw"]))
         self.nn_policy_direct = TD3.load("agents/{}".format(self.config["policy_direct"]))
 
+        self.control_modes = ["cyc", "direct"]
+        self.current_control_mode_idx = 0
+
         # Make joystick controller
         self.joystick_controller = JoyController()
         logging.info("Loading policies: ")
@@ -81,6 +84,7 @@ class HexapodController:
         self.dynamic_time_feature = -1
         self.dyn_speed = 0
         self.idling = True
+        self.xd_queue = []
 
     def init_hardware(self):
         '''
@@ -128,12 +132,15 @@ class HexapodController:
             # Read joystick
             turn, vel, height, button_x = self.joystick_controller.get_joystick_input()
 
-            self.z_mult = self.z_mult_static + height * 0.04
+            self.z_mult = self.z_mult_static + height * 0.03
 
             # Calculate discrete velocity level
             self.angle_increment = vel * self.config["angle_increment"]
-            
-            print(turn, vel, height, button_x)
+
+            if button_x:
+                self.current_control_mode_idx = not self.current_control_mode_idx
+                if self.current_control_mode_idx == 1:
+                    self.Ahrs.reset_relative_position()
 
             # Idle
             if vel < 0.1 and abs(turn) < 0.1:
@@ -156,7 +163,7 @@ class HexapodController:
                     self.idling = False
 
                 # Read robot servos and hardware and turn into observation for nn
-                clipped_turn = np.clip(-turn, -self.config["turn_clip_value"], self.config["turn_clip_value"])
+                clipped_turn = -turn
 
                 if abs(clipped_turn) > 0.47:
                     speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * np.maximum(vel, 0.3)))))
@@ -168,7 +175,7 @@ class HexapodController:
                         policy_act, _ = self.nn_policy_cw.predict(policy_obs, deterministic=True)
                     else:
                         policy_act, _ = self.nn_policy_ccw.predict(policy_obs, deterministic=True)
-                    self.hex_write_ctrl_turn(policy_act)
+                    self.hex_write_ctrl_nn(policy_act, mode="turn")
                 else:
                     if self.dyn_speed < 0.95:
                         self.dyn_speed = 1.0
@@ -176,8 +183,16 @@ class HexapodController:
                         speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed))))
                         self.dxl_io.set_moving_speed(speed)
 
-                    target_angles = self.calc_target_angles(clipped_turn)
-                    self.hex_write_ctrl(target_angles)
+                    if self.control_modes[self.current_control_mode_idx] == "direct":
+                        speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * vel))))
+                        self.dxl_io.set_moving_speed(speed)
+
+                        policy_obs = self.hex_get_obs_direct(clipped_turn)
+                        policy_act, _ = self.nn_policy_direct.predict(policy_obs, deterministic=True)
+                        self.hex_write_ctrl_nn(policy_act, mode="direct")
+                    if self.control_modes[self.current_control_mode_idx] == "cyc":
+                        target_angles = self.calc_target_angles(clipped_turn)
+                        self.hex_write_ctrl(target_angles)
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
 
@@ -203,7 +218,7 @@ class HexapodController:
         if self.config["motors_on"]:
             self.dxl_io.set_goal_position(scaled_act_dict)
 
-    def hex_write_ctrl_turn(self, nn_act):
+    def hex_write_ctrl_nn(self, nn_act, mode="direct"):
         '''
         Turn policy action tensor into servo commands and write them to servos
         :return: None
@@ -212,9 +227,17 @@ class HexapodController:
         nn_act_clipped = np.tanh(nn_act)
 
         # Map [-1,1] to correct 10 bit servo value, respecting the scaling limits imposed during training
-        scaled_act = np.array(
-            [(np.asscalar(nn_act_clipped[i]) * 0.5 + 0.5) * self.joints_10bit_diff[i] + self.joints_10bit_low[i] for i
-             in range(18)]).astype(np.uint16)
+        scaled_act = None
+        if mode == "direct":
+            scaled_act = np.array(
+                [(np.asscalar(nn_act_clipped[i]) * 0.5 + 0.5) * self.direct_joints_10bit_diff[i] + self.direct_joints_10bit_low[i] for i
+                 in range(18)]).astype(np.uint16)
+        if mode == "turn":
+            scaled_act = np.array(
+                [(np.asscalar(nn_act_clipped[i]) * 0.5 + 0.5) * self.turn_joints_10bit_diff[i] + self.turn_joints_10bit_low[i] for
+                 i
+                 in range(18)]).astype(np.uint16)
+        assert scaled_act is not None
 
         # Reverse servo signs for right hand servos (This part is retarded and will need to be fixed)
         scaled_act[np.array([4, 5, 6, 10, 11, 12, 16, 17, 18]) - 1] = 1023 - scaled_act[
@@ -291,10 +314,56 @@ class HexapodController:
         xd, yd, zd = vel_rob
 
         # Turn servo positions into [-1,1] for nn
-        joints_normed = ((servo_positions - self.joints_10bit_low) / self.joints_10bit_diff) * 2 - 1
-        joint_angles_rads = (joints_normed * 0.5 + 0.5) * self.joints_rads_diff + self.joints_rads_low
-
+        joints_normed = ((servo_positions - self.turn_joints_10bit_low) / self.turn_joints_10bit_diff) * 2 - 1
         obs = np.concatenate((quat, vel_rob, [yaw], [0], joints_normed))
+
+        return obs
+
+    def hex_get_obs_direct(self, heading_spoof_angle=0):
+        '''
+        Read robot hardware and return observation tensor for pytorch
+        :return:
+        '''
+
+        scrambled_ids = list(range(1, 19))
+        np.random.shuffle(scrambled_ids)
+        scrambled_servo_positions = self.dxl_io.get_present_position(scrambled_ids)
+        servo_positions = [scrambled_servo_positions[scrambled_ids.index(i + 1)] for i in range(18)]
+
+        # Reverse servo observations
+        servo_positions = np.array(servo_positions).astype(np.float32)
+        servo_positions[np.array([4, 5, 6, 10, 11, 12, 16, 17, 18]) - 1] = 1023 - servo_positions[
+            np.array([4, 5, 6, 10, 11, 12, 16, 17, 18]) - 1]
+
+        # Read IMU (for now spoof perfect orientation)
+        roll, pitch, yaw, quat, vel_rob, timestamp = self.Ahrs.update(heading_spoof_angle=heading_spoof_angle)
+        xd, yd, zd = vel_rob
+
+        pos_rob_relative = self.Ahrs.get_relative_position()
+
+        # Avg vel
+        self.xd_queue.append(xd)
+        if len(self.xd_queue) > 15:
+            del self.xd_queue[0]
+        avg_vel = sum(self.xd_queue) / len(self.xd_queue)
+        avg_vel = avg_vel / 0.15 - 1
+
+        # Turn servo positions into [-1,1] for nn
+        joints_normed = ((servo_positions - self.direct_joints_10bit_low) / self.direct_joints_10bit_diff) * 2 - 1
+
+        # Torques
+        if self.config["velocities_and_torques"]:
+            torques_normed = self.get_normalized_torques()
+            joint_torques = torques_normed * 1.5
+        else:
+            joint_torques = [0] * 18
+
+        joint_velocities = [0] * 18
+
+        if not self.config["velocities_and_torques"]:
+            obs = np.concatenate((quat, vel_rob, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed))
+        else:
+            obs = np.concatenate((quat, vel_rob, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed, joint_torques, joint_velocities))
 
         return obs
 

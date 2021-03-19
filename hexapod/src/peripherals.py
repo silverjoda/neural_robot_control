@@ -224,6 +224,7 @@ class AHRS_RS:
 
         self.rs_frame = None
         self.yaw_offset = 0
+        self.relative_position = [0,0,0]
 
         print("Finished initializing the rs_t265. ")
 
@@ -293,6 +294,13 @@ class AHRS_RS:
 
     def reset_yaw(self):
         self.yaw_offset = self.current_heading
+
+    def reset_relative_position(self):
+        self.relative_position = [0,0,0]
+
+    def get_relative_position(self):
+        return [0,0,0]
+
 
 def print_sometimes(msg, prob=0.01):
     if np.random.rand() < prob:
