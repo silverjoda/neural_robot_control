@@ -224,7 +224,7 @@ class AHRS_RS:
 
         self.rs_frame = None
         self.yaw_offset = 0
-        self.relative_position = [0,0,0]
+        self.position_offset = [0,0,0]
 
         print("Finished initializing the rs_t265. ")
 
@@ -243,7 +243,7 @@ class AHRS_RS:
             # Position
             position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
             vel_rs = np.array([data.velocity.x, data.velocity.y, data.velocity.z])
-            position_rob = np.matmul(self.rs_to_world_mat, position_rs)
+            self.position_rob = np.matmul(self.rs_to_world_mat, position_rs)
             vel_rob = np.matmul(self.rs_to_world_mat, vel_rs)
 
             # Rotation: axes are adjusted according how the RS axes are oriented wrt world axes
@@ -262,7 +262,7 @@ class AHRS_RS:
             #    )
             #)
         else:
-            position_rob = [0, 0, 0]
+            self.position_rob = [0, 0, 0]
             vel_rob = [0, 0, 0]
             rotation_rob_quat = [0, 0, 0, 1]
             angular_vel_rob = [0, 0, 0]
@@ -296,11 +296,22 @@ class AHRS_RS:
         self.yaw_offset = self.current_heading
 
     def reset_relative_position(self):
-        self.relative_position = [0,0,0]
+        self.position_offset = self.position_rob
 
     def get_relative_position(self):
-        return [0,0,0]
+        # Relative position (in initial frame)
+        pos_delta = np.array(self.position_rob) - np.array(self.position_offset)
 
+        # Make yaw correction matrix
+        th = self.current_heading - self.yaw_offset
+
+        yaw_corr_mat = np.array([[np.cos(th), -np.sin(th), 0],
+                                 [np.sin(th), np.cos(th), 0],
+                                 [0, 0, 1]])
+
+        pos_delta_corr = np.matmul(yaw_corr_mat, pos_delta)
+
+        return pos_delta_corr
 
 def print_sometimes(msg, prob=0.01):
     if np.random.rand() < prob:
