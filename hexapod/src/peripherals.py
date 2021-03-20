@@ -244,7 +244,7 @@ class AHRS_RS:
             position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
             vel_rs = np.array([data.velocity.x, data.velocity.y, data.velocity.z])
             self.position_rob = np.matmul(self.rs_to_world_mat, position_rs)
-            vel_rob = np.matmul(self.rs_to_world_mat, vel_rs)
+            self.vel_rob = np.matmul(self.rs_to_world_mat, vel_rs)
 
             # Rotation: axes are adjusted according how the RS axes are oriented wrt world axes
             rotation_rs_quat = np.quaternion(data.rotation.w, data.rotation.y, data.rotation.x, -data.rotation.z)
@@ -263,7 +263,7 @@ class AHRS_RS:
             #)
         else:
             self.position_rob = [0, 0, 0]
-            vel_rob = [0, 0, 0]
+            self.vel_rob = [0, 0, 0]
             rotation_rob_quat = [0, 0, 0, 1]
             angular_vel_rob = [0, 0, 0]
             euler_rob = [0, 0, 0]
@@ -273,7 +273,7 @@ class AHRS_RS:
         self.current_heading = yaw
         #print(f"Yaw: {yaw}, yaw_corrected: {yaw_corrected}, heading_spoof: {heading_spoof_angle}")
 
-        return roll, pitch, yaw_corrected, quat_yaw_corrected, vel_rob, self.timestamp
+        return roll, pitch, yaw_corrected, quat_yaw_corrected, self.vel_rob, self.timestamp
 
     def q2e(self, x, y, z, w):
         pitch = -m.asin(2.0 * (x * z - w * y))
@@ -298,7 +298,7 @@ class AHRS_RS:
     def reset_relative_position(self):
         self.position_offset = self.position_rob
 
-    def get_relative_position(self):
+    def get_relative_position_and_velocity(self):
         # Relative position (in initial frame)
         pos_delta = np.array(self.position_rob) - np.array(self.position_offset)
 
@@ -310,8 +310,9 @@ class AHRS_RS:
                                  [0, 0, 1]])
 
         pos_delta_corr = np.matmul(yaw_corr_mat, pos_delta)
+        vel_corr = np.matmul(yaw_corr_mat, self.vel)
 
-        return pos_delta_corr
+        return pos_delta_corr, vel_corr,
 
 def print_sometimes(msg, prob=0.01):
     if np.random.rand() < prob:
