@@ -312,7 +312,7 @@ class AHRS_RS:
         pos_delta_corr = np.matmul(yaw_corr_mat, pos_delta)
         vel_corr = np.matmul(yaw_corr_mat, self.vel)
 
-        return pos_delta_corr, vel_corr,
+        return pos_delta_corr, vel_corr
 
 def print_sometimes(msg, prob=0.01):
     if np.random.rand() < prob:

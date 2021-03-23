@@ -20,7 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="M">
+      <change afterPath="$PROJECT_DIR$/hexapod/src/agents/TURN_TD3_OPTUNA_policy.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/agents/OBSTACLE_TD3_OPTUNA_policy.zip" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/agents/OBSTACLE_TD3_OPTUNA_policy.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control_hybrid.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control_hybrid.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/peripherals.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/peripherals.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -344,7 +348,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616240282094</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="M">
+      <created>1616423301297</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1616423301297</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

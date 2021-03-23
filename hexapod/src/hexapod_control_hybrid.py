@@ -85,6 +85,7 @@ class HexapodController:
         self.dyn_speed = 0
         self.idling = True
         self.xd_queue = []
+        self.prev_act = np.zeros(18)
 
     def init_hardware(self):
         '''
@@ -166,6 +167,8 @@ class HexapodController:
                 clipped_turn = -turn
 
                 if abs(clipped_turn) > 0.47:
+                    self.Ahrs.reset_yaw()
+
                     speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * np.maximum(vel, 0.3)))))
                     self.dxl_io.set_moving_speed(speed)
                     self.dyn_speed = vel
@@ -225,6 +228,7 @@ class HexapodController:
         '''
 
         nn_act_clipped = np.tanh(nn_act)
+        self.prev_act = nn_act_clipped
 
         # Map [-1,1] to correct 10 bit servo value, respecting the scaling limits imposed during training
         scaled_act = None
@@ -337,9 +341,10 @@ class HexapodController:
 
         # Read IMU (for now spoof perfect orientation)
         roll, pitch, yaw, quat, vel_rob, timestamp = self.Ahrs.update(heading_spoof_angle=heading_spoof_angle)
-        xd, yd, zd = vel_rob
 
-        pos_rob_relative = self.Ahrs.get_relative_position()
+
+        pos_rob_relative, vel_rob_relative = self.Ahrs.get_relative_position_and_velocity()
+        xd, yd, zd = vel_rob_relative
 
         # Avg vel
         self.xd_queue.append(xd)
@@ -361,9 +366,10 @@ class HexapodController:
         joint_velocities = [0] * 18
 
         if not self.config["velocities_and_torques"]:
-            obs = np.concatenate((quat, vel_rob, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed))
+            # torso_quat, torso_vel, torso_pos, [signed_deviation], time_feature, [avg_vel], scaled_joint_angles, self.prev_act
+            obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed, self.prev_act))
         else:
-            obs = np.concatenate((quat, vel_rob, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed, joint_torques, joint_velocities))
+            obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed, joint_torques, joint_velocities))
 
         return obs
 
