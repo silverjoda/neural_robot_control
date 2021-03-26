@@ -131,7 +131,7 @@ class HexapodController:
         while True:
             iteration_starttime = time.time()
             # Read joystick
-            turn, vel, height, button_x = self.joystick_controller.get_joystick_input()
+            turn, vel, height, button_x, button_x_event = self.joystick_controller.get_joystick_input()
 
             self.z_mult = self.z_mult_static + height * 0.03
 
@@ -151,7 +151,8 @@ class HexapodController:
                 self.idling = True
 
                 self.hex_write_ctrl([0, -0.5, 0.5] * 6)
-                self.Ahrs.reset_yaw()
+                #self.Ahrs.reset_yaw()
+                #self.Ahrs.reset_relative_position()
                 self.dynamic_step_ctr = 0
                 print_sometimes("Idling", 0.1)
                 time.sleep(0.1)
@@ -168,7 +169,7 @@ class HexapodController:
                 clipped_turn = -turn
 
                 if abs(clipped_turn) > 0.47:
-                    self.Ahrs.reset_yaw()
+                    #self.Ahrs.reset_yaw()
 
                     speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * np.maximum(vel, 0.3)))))
                     self.dxl_io.set_moving_speed(speed)
@@ -183,25 +184,27 @@ class HexapodController:
                 else:
                     if self.dyn_speed < 0.95:
                         self.dyn_speed = 1.0
-
                         speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed))))
                         self.dxl_io.set_moving_speed(speed)
 
-                    if self.control_modes[self.current_control_mode_idx] == "direct":
-                        speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * vel))))
-                        self.dxl_io.set_moving_speed(speed)
+                    if button_x:
+                        #speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * vel))))
+                        #self.dxl_io.set_moving_speed(speed)
 
                         policy_obs = self.hex_get_obs_direct(clipped_turn)
                         policy_act, _ = self.nn_policy_direct.predict(policy_obs, deterministic=True)
                         self.hex_write_ctrl_nn(policy_act, mode="direct")
                         self.dynamic_step_ctr += 1
-                    if self.control_modes[self.current_control_mode_idx] == "cyc":
+                    else:
                         target_angles = self.calc_target_angles(clipped_turn)
                         self.hex_write_ctrl(target_angles)
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
 
             # TMP DEBUG
+            if button_x_event:
+                self.Ahrs.reset_yaw()
+                self.Ahrs.reset_relative_position()
             self.Ahrs.update()
             pos_rob_relative, vel_rob_relative = self.Ahrs.get_relative_position_and_velocity()
             xd, yd, zd = vel_rob_relative

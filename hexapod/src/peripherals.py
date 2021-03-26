@@ -47,18 +47,18 @@ class JoyController():
         # button_x only when upon press
         if self.button_x_state == 0 and button_x == 1:
             self.button_x_state = 1
-            button_x = 1
+            button_x_event = 1
         elif self.button_x_state == 1 and button_x == 0:
             self.button_x_state = 0
-            button_x = 0
+            button_x_event = 0
         elif self.button_x_state == 1 and button_x == 1:
             self.button_x_state = 1
-            button_x = 0
+            button_x_event = 0
         else:
             self.button_x_state = 0
-            button_x = 0
+            button_x_event = 0
 
-        return turn, vel, height, button_x
+        return turn, vel, height, button_x, button_x_event
 
 
 class AHRS:
@@ -204,9 +204,6 @@ class AHRS_RS:
     def __init__(self):
         print("Initializing the rs_t265. ")
 
-        #self.rs_to_world_mat = np.array([[0, 1, 0],
-        #                                 [1, 0, 0],
-        #                                 [0, 0, -1]])
         self.rs_to_world_mat = np.array([[0, 0, 1],
                                          [1, 0, 0],
                                          [0, 1, 0]])
@@ -216,7 +213,6 @@ class AHRS_RS:
                                         [1, 0, 0]])
 
         self.pitch_corr_quat = quaternion.from_rotation_matrix(self.pitch_corr_mat)
-        self.current_heading = 0
 
         self.pipe = rs.pipeline()
         self.cfg = rs.config()
@@ -226,6 +222,7 @@ class AHRS_RS:
         self.rs_lock = threading.Lock()
 
         self.rs_frame = None
+        self.current_heading = 0
         self.yaw_offset = 0
         self.position_offset = [0,0,0]
         self.position_rob = [0,0,0]
@@ -238,7 +235,6 @@ class AHRS_RS:
             self.rs_frame = data_frame
 
     def update(self, heading_spoof_angle=0):
-        heading_spoof_angle -= self.yaw_offset
         self.timestamp = time.time()
 
         if self.rs_frame is not None:
@@ -257,7 +253,7 @@ class AHRS_RS:
             angular_vel_rob = (data.angular_velocity.y, data.angular_velocity.x, -data.angular_velocity.z)
             roll, pitch, yaw = self.q2e(rotation_rob_quat.x, rotation_rob_quat.y, rotation_rob_quat.z, rotation_rob_quat.w)
 
-            yaw_corrected = yaw + heading_spoof_angle
+            yaw_corrected = yaw + heading_spoof_angle + self.yaw_offset
             quat_yaw_corrected = self.e2q(roll, pitch, yaw_corrected)
 
             #print("Frame #{}".format(pose.frame_number))
@@ -298,17 +294,17 @@ class AHRS_RS:
         return (qx, qy, qz, qw)
 
     def reset_yaw(self):
-        self.yaw_offset = self.current_heading
+        self.yaw_offset = -self.current_heading
 
     def reset_relative_position(self):
-        self.position_offset = self.position_rob
+        self.position_offset = -self.position_rob
 
     def get_relative_position_and_velocity(self):
         # Relative position (in initial frame)
-        pos_delta = np.array(self.position_rob) - np.array(self.position_offset)
+        pos_delta = np.array(self.position_rob) + np.array(self.position_offset)
 
         # Make yaw correction matrix
-        th = self.current_heading - self.yaw_offset
+        th = -self.current_heading
 
         yaw_corr_mat = np.array([[np.cos(th), -np.sin(th), 0],
                                  [np.sin(th), np.cos(th), 0],
