@@ -9,7 +9,7 @@
 "update_period" : 0.05
 "angle_increment" : 0.08
 "max_servo_speed" : 400
-"max_servo_torque" : 1000
+"max_servo_torque" : 1023
 "use_contacts" : True
 "velocities_and_torques" : False
 "turn_joints_rads_low" : [-0.5, -1.0, 0.5]
