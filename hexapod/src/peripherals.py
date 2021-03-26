@@ -243,9 +243,9 @@ class AHRS_RS:
                 data = self.rs_frame.as_pose_frame().get_pose_data()
 
             # Position
-            position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
+            self.position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
             vel_rs = np.array([data.velocity.x, data.velocity.y, data.velocity.z])
-            self.position_rob = np.matmul(self.rs_to_world_mat, position_rs)
+            self.position_rob = np.matmul(self.rs_to_world_mat, self.position_rs)
             self.vel_rob = np.matmul(self.rs_to_world_mat, vel_rs)
 
             # Rotation: axes are adjusted according how the RS axes are oriented wrt world axes

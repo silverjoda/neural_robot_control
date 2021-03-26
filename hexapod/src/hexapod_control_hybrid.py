@@ -344,11 +344,10 @@ class HexapodController:
         # Read IMU (for now spoof perfect orientation)
         roll, pitch, yaw, quat, vel_rob, timestamp = self.Ahrs.update(heading_spoof_angle=heading_spoof_angle)
 
-
         pos_rob_relative, vel_rob_relative = self.Ahrs.get_relative_position_and_velocity()
         xd, yd, zd = vel_rob_relative
 
-        print(pos_rob_relative, vel_rob_relative)
+        print(self.Ahrs.position_rs, self.Ahrs.position_rob, pos_rob_relative)
 
         # Avg vel
         self.xd_queue.append(xd)
