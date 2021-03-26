@@ -19,8 +19,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
+    <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="M">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control_hybrid.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control_hybrid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hexapod/src/peripherals.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/peripherals.py" afterDir="false" />
     </list>
@@ -183,10 +184,10 @@
     </configuration>
     <list>
       <item itemvalue="Python.hexapod_control_combined" />
-      <item itemvalue="Python.test_joystick" />
-      <item itemvalue="Python.t256_rpy" />
-      <item itemvalue="Python.test_sensors" />
       <item itemvalue="Python.hexapod_control_hybrid" />
+      <item itemvalue="Python.t256_rpy" />
+      <item itemvalue="Python.test_joystick" />
+      <item itemvalue="Python.test_sensors" />
     </list>
     <recent_temporary>
       <list>
@@ -210,7 +211,7 @@
       <option name="presentableId" value="Default" />
       <updated>1606233263408</updated>
       <workItem from="1616765485334" duration="1280000" />
-      <workItem from="1616766783284" duration="9619000" />
+      <workItem from="1616766783284" duration="10028000" />
     </task>
     <task id="LOCAL-00001" summary="M">
       <created>1606234064876</created>
@@ -429,7 +430,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616771975792</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="M">
+      <created>1616776672724</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1616776672724</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -458,10 +466,10 @@
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="451" y="271" width="1302" height="684" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767171754" />
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1616771975732">
+    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1616776824851">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616771975732" />
+    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616776824851" />
     <state x="839" y="387" width="515" height="451" key="EnvironmentVariablesDialog" timestamp="1616767125722">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
@@ -502,10 +510,10 @@
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="482" y="248" key="SettingsEditor/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616765735173" />
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1616771976614">
+    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1616776673455">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616771976614" />
+    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616776673455" />
     <state x="649" y="441" key="com.intellij.ide.util.TipDialog" timestamp="1616766783366">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>

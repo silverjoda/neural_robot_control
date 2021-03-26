@@ -1,7 +1,7 @@
 "policy_direct" : "OBSTACLE_TD3_OPTUNA_policy.zip"
 "policy_cw" : "CW_TD3_OPTUNA_policy.zip"
 "policy_ccw" : "CCW_TD3_OPTUNA_policy.zip"
-"motors_on" : False
+"motors_on" : True
 "time_prints" : False
 "target_vel_source" : "joystick" # rnd/joystick/ros
 "ahrs_source" : "rs"

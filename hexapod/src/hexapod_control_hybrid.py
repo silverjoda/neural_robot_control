@@ -194,7 +194,7 @@ class HexapodController:
                         policy_obs = self.hex_get_obs_direct(clipped_turn)
                         policy_act, _ = self.nn_policy_direct.predict(policy_obs, deterministic=True)
                         self.hex_write_ctrl_nn(policy_act, mode="direct")
-                        self.dynamic_step_ctr += 1
+                        self.dynamic_step_ctr = np.minimum(self.dynamic_step_ctr + 1, self.config("dynamic_max_steps"))
                     else:
                         target_angles = self.calc_target_angles(clipped_turn)
                         self.hex_write_ctrl(target_angles)

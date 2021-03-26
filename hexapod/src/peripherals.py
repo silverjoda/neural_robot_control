@@ -314,7 +314,7 @@ class AHRS_RS:
         vel_corr = np.matmul(yaw_corr_mat, self.vel_rob)
 
         # Rough offset of physical location of sensor
-        # pos_delta_corr -= np.array([0.1, 0, 0.00])
+        pos_delta_corr += np.array([-0.1, 0, 0.00])
 
         return pos_delta_corr, vel_corr
 
