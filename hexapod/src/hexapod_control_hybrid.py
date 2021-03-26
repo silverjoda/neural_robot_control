@@ -201,6 +201,13 @@ class HexapodController:
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
 
+            # TMP DEBUG
+            self.Ahrs.update()
+            pos_rob_relative, vel_rob_relative = self.Ahrs.get_relative_position_and_velocity()
+            xd, yd, zd = vel_rob_relative
+
+            print(self.Ahrs.position_rob, pos_rob_relative)
+
     def hex_write_ctrl(self, joint_angles):
         '''
         Turn policy action tensor into servo commands and write them to servos
@@ -346,8 +353,6 @@ class HexapodController:
 
         pos_rob_relative, vel_rob_relative = self.Ahrs.get_relative_position_and_velocity()
         xd, yd, zd = vel_rob_relative
-
-        print(self.Ahrs.position_rs, self.Ahrs.position_rob, pos_rob_relative)
 
         # Avg vel
         self.xd_queue.append(xd)
