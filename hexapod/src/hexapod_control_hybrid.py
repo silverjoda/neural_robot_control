@@ -81,7 +81,7 @@ class HexapodController:
 
         self.observation_timestamp = time.time()
         self.angle = 0
-        self.dynamic_time_feature = -1
+        self.dynamic_step_ctr = 0
         self.dyn_speed = 0
         self.idling = True
         self.xd_queue = []
@@ -152,7 +152,7 @@ class HexapodController:
 
                 self.hex_write_ctrl([0, -0.5, 0.5] * 6)
                 self.Ahrs.reset_yaw()
-                self.dynamic_time_feature = -1
+                self.dynamic_step_ctr = 0
                 print_sometimes("Idling", 0.1)
                 time.sleep(0.1)
             else:
@@ -162,6 +162,7 @@ class HexapodController:
                     self.dxl_io.set_max_torque(torque)
                     self.dxl_io.set_torque_limit(torque)
                     self.idling = False
+                    print("Active")
 
                 # Read robot servos and hardware and turn into observation for nn
                 clipped_turn = -turn
@@ -193,6 +194,7 @@ class HexapodController:
                         policy_obs = self.hex_get_obs_direct(clipped_turn)
                         policy_act, _ = self.nn_policy_direct.predict(policy_obs, deterministic=True)
                         self.hex_write_ctrl_nn(policy_act, mode="direct")
+                        self.dynamic_step_ctr += 1
                     if self.control_modes[self.current_control_mode_idx] == "cyc":
                         target_angles = self.calc_target_angles(clipped_turn)
                         self.hex_write_ctrl(target_angles)
@@ -346,6 +348,8 @@ class HexapodController:
         pos_rob_relative, vel_rob_relative = self.Ahrs.get_relative_position_and_velocity()
         xd, yd, zd = vel_rob_relative
 
+        print(pos_rob_relative, vel_rob_relative)
+
         # Avg vel
         self.xd_queue.append(xd)
         if len(self.xd_queue) > 15:
@@ -364,6 +368,8 @@ class HexapodController:
             joint_torques = [0] * 18
 
         joint_velocities = [0] * 18
+
+        self.dynamic_time_feature = (float(self.dynamic_step_ctr) / self.config["dynamic_max_steps"]) * 2 - 1
 
         if not self.config["velocities_and_torques"]:
             # torso_quat, torso_vel, torso_pos, [signed_deviation], time_feature, [avg_vel], scaled_joint_angles, self.prev_act

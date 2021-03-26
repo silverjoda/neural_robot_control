@@ -225,6 +225,8 @@ class AHRS_RS:
         self.rs_frame = None
         self.yaw_offset = 0
         self.position_offset = [0,0,0]
+        self.position_rob = [0,0,0]
+        self.vel_rob = [0,0,0]
 
         print("Finished initializing the rs_t265. ")
 
@@ -310,7 +312,7 @@ class AHRS_RS:
                                  [0, 0, 1]])
 
         pos_delta_corr = np.matmul(yaw_corr_mat, pos_delta)
-        vel_corr = np.matmul(yaw_corr_mat, self.vel)
+        vel_corr = np.matmul(yaw_corr_mat, self.vel_rob)
 
         return pos_delta_corr, vel_corr
 
