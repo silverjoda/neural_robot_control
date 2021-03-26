@@ -224,9 +224,9 @@ class AHRS_RS:
         self.rs_frame = None
         self.current_heading = 0
         self.yaw_offset = 0
-        self.position_offset = [0,0,0]
-        self.position_rob = [0,0,0]
-        self.vel_rob = [0,0,0]
+        self.position_offset = np.array([0, 0, 0])
+        self.position_rob = np.array([0, 0, 0])
+        self.vel_rob = np.array([0, 0, 0])
 
         print("Finished initializing the rs_t265. ")
 
@@ -263,8 +263,8 @@ class AHRS_RS:
             #    )
             #)
         else:
-            self.position_rob = [0, 0, 0]
-            self.vel_rob = [0, 0, 0]
+            self.position_rob = np.array([0, 0, 0])
+            self.vel_rob = np.array([0, 0, 0])
             rotation_rob_quat = [0, 0, 0, 1]
             angular_vel_rob = [0, 0, 0]
             euler_rob = [0, 0, 0]
