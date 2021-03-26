@@ -19,11 +19,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="M">
+    <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control_hybrid.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control_hybrid.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hexapod/src/peripherals.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/peripherals.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control_combined.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control_hybrid.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +39,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="MERGE" />
   </component>
   <component name="ProjectId" id="1kk8WqDTI94zGfKVtsxVnukgU7k" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -64,29 +65,7 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.hexapod_control_hybrid">
-    <configuration name="hexapod_control_combined" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="neural_robot_control" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/hexapod/src" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/hexapod_control_combined.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="hexapod_control_hybrid" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="hexapod_control" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="neural_robot_control" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -101,7 +80,29 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/hexapod_control_hybrid.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/hexapod_control.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="hexapod_control_combined" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="neural_robot_control" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/hexapod/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/hexapod_control_combined.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -211,7 +212,9 @@
       <option name="presentableId" value="Default" />
       <updated>1606233263408</updated>
       <workItem from="1616765485334" duration="1280000" />
-      <workItem from="1616766783284" duration="10028000" />
+      <workItem from="1616766783284" duration="10097000" />
+      <workItem from="1616777742043" duration="238000" />
+      <workItem from="1616778216790" duration="472000" />
     </task>
     <task id="LOCAL-00001" summary="M">
       <created>1606234064876</created>
@@ -437,7 +440,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616776672724</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="M">
+      <created>1616777141634</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1616777141634</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -466,62 +476,66 @@
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="451" y="271" width="1302" height="684" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767171754" />
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1616776824851">
+    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1616777141557">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616776824851" />
+    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777141557" />
     <state x="839" y="387" width="515" height="451" key="EnvironmentVariablesDialog" timestamp="1616767125722">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="839" y="387" width="515" height="451" key="EnvironmentVariablesDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767125722" />
-    <state width="1807" height="236" key="GridCell.Tab.0.bottom" timestamp="1616776551949">
+    <state width="1807" height="391" key="GridCell.Tab.0.bottom" timestamp="1616777145728">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="236" key="GridCell.Tab.0.bottom/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616776551949" />
-    <state width="1807" height="236" key="GridCell.Tab.0.center" timestamp="1616776551949">
+    <state width="1807" height="391" key="GridCell.Tab.0.bottom/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
+    <state width="1807" height="391" key="GridCell.Tab.0.center" timestamp="1616777145728">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="236" key="GridCell.Tab.0.center/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616776551949" />
-    <state width="1807" height="236" key="GridCell.Tab.0.left" timestamp="1616776551948">
+    <state width="1807" height="391" key="GridCell.Tab.0.center/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
+    <state width="1807" height="391" key="GridCell.Tab.0.left" timestamp="1616777145728">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="236" key="GridCell.Tab.0.left/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616776551948" />
-    <state width="1807" height="236" key="GridCell.Tab.0.right" timestamp="1616776551949">
+    <state width="1807" height="391" key="GridCell.Tab.0.left/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
+    <state width="1807" height="391" key="GridCell.Tab.0.right" timestamp="1616777145728">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="236" key="GridCell.Tab.0.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616776551949" />
-    <state width="1807" height="391" key="GridCell.Tab.1.bottom" timestamp="1616767595480">
+    <state width="1807" height="391" key="GridCell.Tab.0.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
+    <state width="1807" height="391" key="GridCell.Tab.1.bottom" timestamp="1616777145728">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="391" key="GridCell.Tab.1.bottom/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767595480" />
-    <state width="1807" height="391" key="GridCell.Tab.1.center" timestamp="1616767595480">
+    <state width="1807" height="391" key="GridCell.Tab.1.bottom/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
+    <state width="1807" height="391" key="GridCell.Tab.1.center" timestamp="1616777145728">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="391" key="GridCell.Tab.1.center/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767595480" />
-    <state width="1807" height="391" key="GridCell.Tab.1.left" timestamp="1616767595479">
+    <state width="1807" height="391" key="GridCell.Tab.1.center/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
+    <state width="1807" height="391" key="GridCell.Tab.1.left" timestamp="1616777145728">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="391" key="GridCell.Tab.1.left/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767595479" />
-    <state width="1807" height="391" key="GridCell.Tab.1.right" timestamp="1616767595480">
+    <state width="1807" height="391" key="GridCell.Tab.1.left/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
+    <state width="1807" height="391" key="GridCell.Tab.1.right" timestamp="1616777145728">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="391" key="GridCell.Tab.1.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767595480" />
+    <state width="1807" height="391" key="GridCell.Tab.1.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
     <state x="482" y="248" key="SettingsEditor" timestamp="1616765735173">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="482" y="248" key="SettingsEditor/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616765735173" />
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1616776673455">
+    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1616777142487">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616776673455" />
-    <state x="649" y="441" key="com.intellij.ide.util.TipDialog" timestamp="1616766783366">
+    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777142487" />
+    <state x="649" y="441" key="com.intellij.ide.util.TipDialog" timestamp="1616777746818">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="649" y="441" key="com.intellij.ide.util.TipDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616766783366" />
+    <state x="649" y="441" key="com.intellij.ide.util.TipDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777746818" />
     <state x="744" y="306" width="488" height="615" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1616769643894">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="744" y="306" width="488" height="615" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616769643894" />
+    <state x="761" y="533" width="454" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1616777851307">
+      <screen x="67" y="27" width="1853" height="1173" />
+    </state>
+    <state x="761" y="533" width="454" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777851307" />
     <state x="889" y="327" width="451" height="573" key="ftp.server.browser" timestamp="1616765698124">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
