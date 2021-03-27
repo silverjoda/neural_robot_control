@@ -139,83 +139,78 @@ class HexapodController:
             # Calculate discrete velocity level
             self.angle_increment = vel * self.config["angle_increment"]
 
-            if button_x:
-                self.current_control_mode_idx = not self.current_control_mode_idx
-                if self.current_control_mode_idx == 1:
-                    self.Ahrs.reset_relative_position()
-
-            # Idle
-            if vel < 0.1 and abs(turn) < 0.1:
-                torque = dict(zip(self.ids, itertools.repeat(0)))
-                self.dxl_io.set_max_torque(torque)
-                self.dxl_io.set_torque_limit(torque)
-                self.idling = True
-
-                self.hex_write_ctrl([0, -0.5, 0.5] * 6)
+            # TMP DEBUG
+            if button_x_event:
                 self.Ahrs.reset_yaw()
                 self.Ahrs.reset_relative_position()
-                self.dynamic_step_ctr = 0
-                print_sometimes("Idling", 0.1)
-                time.sleep(0.1)
-            else:
-                if self.idling:
-                    # Make legs soft
-                    torque = dict(zip(self.ids, itertools.repeat(self.max_servo_torque)))
-                    self.dxl_io.set_max_torque(torque)
-                    self.dxl_io.set_torque_limit(torque)
-                    self.idling = False
-                    print("Active")
+            if button_x:
+                self.Ahrs.update()
+                pos_rob_relative, vel_rob_relative = self.Ahrs.get_relative_position_and_velocity()
+                print(self.Ahrs.position_rob, pos_rob_relative, vel_rob_relative)
 
-                # Read robot servos and hardware and turn into observation for nn
-                clipped_turn = -turn
-
-                if abs(clipped_turn) > 0.47:
-                    #self.Ahrs.reset_yaw()
-
-                    speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * np.maximum(vel, 0.3)))))
-                    self.dxl_io.set_moving_speed(speed)
-                    self.dyn_speed = vel
-
-                    policy_obs = self.hex_get_obs_turn(clipped_turn)
-                    if clipped_turn > 0:
-                        policy_act, _ = self.nn_policy_cw.predict(policy_obs, deterministic=True)
-                    else:
-                        policy_act, _ = self.nn_policy_ccw.predict(policy_obs, deterministic=True)
-                    self.hex_write_ctrl_nn(policy_act, mode="turn")
-                else:
-                    if self.dyn_speed < 0.95:
-                        self.dyn_speed = 1.0
-                        speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed))))
-                        self.dxl_io.set_moving_speed(speed)
-
-                    if button_x_event:
-                        speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * 1))))
-                        self.dxl_io.set_moving_speed(speed)
-
-                        torque = dict(zip(self.ids, itertools.repeat(self.max_servo_torque)))
-                        self.dxl_io.set_max_torque(torque)
-                        self.dxl_io.set_torque_limit(torque)
-
-                    if button_x:
-                        policy_obs = self.hex_get_obs_direct(clipped_turn)
-                        policy_act, _ = self.nn_policy_direct.predict(policy_obs, deterministic=True)
-                        self.hex_write_ctrl_nn(policy_act, mode="direct")
-                        self.dynamic_step_ctr = np.minimum(self.dynamic_step_ctr + 1, self.config["dynamic_max_steps"])
-                    else:
-                        target_angles = self.calc_target_angles(clipped_turn)
-                        self.hex_write_ctrl(target_angles)
+            # # Idle
+            # if vel < 0.1 and abs(turn) < 0.1:
+            #     torque = dict(zip(self.ids, itertools.repeat(0)))
+            #     self.dxl_io.set_max_torque(torque)
+            #     self.dxl_io.set_torque_limit(torque)
+            #     self.idling = True
+            #
+            #     self.hex_write_ctrl([0, -0.5, 0.5] * 6)
+            #     self.Ahrs.reset_yaw()
+            #     self.Ahrs.reset_relative_position()
+            #     self.dynamic_step_ctr = 0
+            #     print_sometimes("Idling", 0.1)
+            #     time.sleep(0.1)
+            # else:
+            #     if self.idling:
+            #         # Make legs soft
+            #         torque = dict(zip(self.ids, itertools.repeat(self.max_servo_torque)))
+            #         self.dxl_io.set_max_torque(torque)
+            #         self.dxl_io.set_torque_limit(torque)
+            #         self.idling = False
+            #         print("Active")
+            #
+            #     # Read robot servos and hardware and turn into observation for nn
+            #     clipped_turn = -turn
+            #
+            #     if abs(clipped_turn) > 0.47:
+            #         #self.Ahrs.reset_yaw()
+            #
+            #         speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * np.maximum(vel, 0.3)))))
+            #         self.dxl_io.set_moving_speed(speed)
+            #         self.dyn_speed = vel
+            #
+            #         policy_obs = self.hex_get_obs_turn(clipped_turn)
+            #         if clipped_turn > 0:
+            #             policy_act, _ = self.nn_policy_cw.predict(policy_obs, deterministic=True)
+            #         else:
+            #             policy_act, _ = self.nn_policy_ccw.predict(policy_obs, deterministic=True)
+            #         self.hex_write_ctrl_nn(policy_act, mode="turn")
+            #     else:
+            #         if self.dyn_speed < 0.95:
+            #             self.dyn_speed = 1.0
+            #             speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed))))
+            #             self.dxl_io.set_moving_speed(speed)
+            #
+            #         if button_x_event:
+            #             speed = dict(zip(self.ids, itertools.repeat(int(self.max_servo_speed * 1))))
+            #             self.dxl_io.set_moving_speed(speed)
+            #
+            #             torque = dict(zip(self.ids, itertools.repeat(self.max_servo_torque)))
+            #             self.dxl_io.set_max_torque(torque)
+            #             self.dxl_io.set_torque_limit(torque)
+            #
+            #         if button_x:
+            #             policy_obs = self.hex_get_obs_direct(clipped_turn)
+            #             policy_act, _ = self.nn_policy_direct.predict(policy_obs, deterministic=True)
+            #             self.hex_write_ctrl_nn(policy_act, mode="direct")
+            #             self.dynamic_step_ctr = np.minimum(self.dynamic_step_ctr + 1, self.config["dynamic_max_steps"])
+            #         else:
+            #             target_angles = self.calc_target_angles(clipped_turn)
+            #             self.hex_write_ctrl(target_angles)
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
 
-            # # TMP DEBUG
-            # if button_x_event:
-            #     self.Ahrs.reset_yaw()
-            #     self.Ahrs.reset_relative_position()
-            # self.Ahrs.update()
-            # pos_rob_relative, vel_rob_relative = self.Ahrs.get_relative_position_and_velocity()
-            # xd, yd, zd = vel_rob_relative
-            #
-            # print(self.Ahrs.position_rob, pos_rob_relative)
 
     def hex_write_ctrl(self, joint_angles):
         '''
@@ -384,11 +379,11 @@ class HexapodController:
 
         self.dynamic_time_feature = (float(self.dynamic_step_ctr) / self.config["dynamic_max_steps"]) * 2 - 1
 
-        if not self.config["velocities_and_torques"]:
+        if self.config["velocities_and_torques"]:
+            obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed, joint_torques, joint_velocities))
+        else:
             # torso_quat, torso_vel, torso_pos, [signed_deviation], time_feature, [avg_vel], scaled_joint_angles, self.prev_act
             obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed, self.prev_act))
-        else:
-            obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed, joint_torques, joint_velocities))
 
         return obs
 

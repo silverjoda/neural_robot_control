@@ -212,6 +212,10 @@ class AHRS_RS:
                                         [0, 1, 0],
                                         [1, 0, 0]])
 
+        # self.pitch_corr_mat = np.array([[1, 0, 0],
+        #                                 [0, 1, 0],
+        #                                 [0, 0, 1]])
+
         self.pitch_corr_quat = quaternion.from_rotation_matrix(self.pitch_corr_mat)
 
         self.pipe = rs.pipeline()
@@ -249,6 +253,7 @@ class AHRS_RS:
 
             # Rotation: axes are adjusted according how the RS axes are oriented wrt world axes
             rotation_rs_quat = np.quaternion(data.rotation.w, data.rotation.y, data.rotation.x, -data.rotation.z)
+            #rotation_rs_quat = np.quaternion(data.rotation.w, data.rotation.z, data.rotation.x, data.rotation.y)
             rotation_rob_quat = self.pitch_corr_quat * rotation_rs_quat
             angular_vel_rob = (data.angular_velocity.y, data.angular_velocity.x, -data.angular_velocity.z)
             roll, pitch, yaw = self.q2e(rotation_rob_quat.x, rotation_rob_quat.y, rotation_rob_quat.z, rotation_rob_quat.w)
@@ -312,9 +317,6 @@ class AHRS_RS:
 
         pos_delta_corr = np.matmul(yaw_corr_mat, pos_delta)
         vel_corr = np.matmul(yaw_corr_mat, self.vel_rob)
-
-        # Rough offset of physical location of sensor
-        pos_delta_corr += np.array([-0.1, 0, 0.00])
 
         return pos_delta_corr, vel_corr
 

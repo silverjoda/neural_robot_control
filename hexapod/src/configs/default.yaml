@@ -1,14 +1,14 @@
 "policy_direct" : "OBSTACLE_TD3_OPTUNA_policy.zip"
 "policy_cw" : "CW_TD3_OPTUNA_policy.zip"
 "policy_ccw" : "CCW_TD3_OPTUNA_policy.zip"
-"motors_on" : True
+"motors_on" : False
 "time_prints" : False
 "target_vel_source" : "joystick" # rnd/joystick/ros
 "ahrs_source" : "rs"
 "imu_ahrs_update_period" : 0.01
 "update_period" : 0.05
 "angle_increment" : 0.08
-"max_servo_speed" : 400
+"max_servo_speed" : 500
 "max_servo_torque" : 1023
 "use_contacts" : True
 "velocities_and_torques" : False
