@@ -386,6 +386,7 @@ class HexapodController:
             obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed, self.prev_act))
 
         # TODO: Print entire obs with labels for debugging purposes
+        # Fix leg rubbers temporarily and redesign for permanent use
 
         return obs
 
