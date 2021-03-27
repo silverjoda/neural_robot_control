@@ -208,16 +208,6 @@ class AHRS_RS:
                                          [1, 0, 0],
                                          [0, 1, 0]])
 
-        self.pitch_corr_mat = np.array([[0 ,0, -1],
-                                        [0, 1, 0],
-                                        [1, 0, 0]])
-
-        # self.pitch_corr_mat = np.array([[1, 0, 0],
-        #                                 [0, 1, 0],
-        #                                 [0, 0, 1]])
-
-        self.pitch_corr_quat = quaternion.from_rotation_matrix(self.pitch_corr_mat)
-
         self.pipe = rs.pipeline()
         self.cfg = rs.config()
         self.cfg.enable_stream(rs.stream.pose)
@@ -252,11 +242,10 @@ class AHRS_RS:
             self.vel_rob = np.matmul(self.rs_to_world_mat, vel_rs)
 
             # Rotation: axes are adjusted according how the RS axes are oriented wrt world axes
-            rotation_rs_quat = np.quaternion(data.rotation.w, data.rotation.y, data.rotation.x, -data.rotation.z)
-            #rotation_rs_quat = np.quaternion(data.rotation.w, data.rotation.z, data.rotation.x, data.rotation.y)
-            rotation_rob_quat = self.pitch_corr_quat * rotation_rs_quat
-            angular_vel_rob = (data.angular_velocity.y, data.angular_velocity.x, -data.angular_velocity.z)
-            roll, pitch, yaw = self.q2e(rotation_rob_quat.x, rotation_rob_quat.y, rotation_rob_quat.z, rotation_rob_quat.w)
+            rotation_rs_quat = np.quaternion(data.rotation.w, data.rotation.z, data.rotation.x, data.rotation.y)
+
+            angular_vel_rob = (data.angular_velocity.z, data.angular_velocity.x, data.angular_velocity.y)
+            roll, pitch, yaw = self.q2e(rotation_rs_quat.x, rotation_rs_quat.y, rotation_rs_quat.z, rotation_rs_quat.w)
 
             yaw_corrected = yaw + heading_spoof_angle + self.yaw_offset
             quat_yaw_corrected = self.e2q(roll, pitch, yaw_corrected)
