@@ -385,6 +385,8 @@ class HexapodController:
             # torso_quat, torso_vel, torso_pos, [signed_deviation], time_feature, [avg_vel], scaled_joint_angles, self.prev_act
             obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed, self.prev_act))
 
+        # TODO: Print entire obs with labels for debugging purposes
+
         return obs
 
     def read_contacts(self):

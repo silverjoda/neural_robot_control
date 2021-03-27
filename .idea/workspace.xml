@@ -21,6 +21,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/configs/default.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -213,7 +214,7 @@
       <workItem from="1616766783284" duration="10097000" />
       <workItem from="1616777742043" duration="238000" />
       <workItem from="1616778216790" duration="3162000" />
-      <workItem from="1616862542462" duration="4686000" />
+      <workItem from="1616862542462" duration="4906000" />
     </task>
     <task id="LOCAL-00001" summary="M">
       <created>1606234064876</created>
@@ -488,7 +489,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616867701932</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="M">
+      <created>1616868644829</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1616868644829</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -517,30 +525,30 @@
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="451" y="271" width="1302" height="684" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767171754" />
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1616867701866">
+    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1616868644754">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616867701866" />
+    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616868644754" />
     <state x="839" y="387" width="515" height="451" key="EnvironmentVariablesDialog" timestamp="1616767125722">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="839" y="387" width="515" height="451" key="EnvironmentVariablesDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767125722" />
-    <state width="1807" height="419" key="GridCell.Tab.0.bottom" timestamp="1616868573526">
+    <state width="1807" height="390" key="GridCell.Tab.0.bottom" timestamp="1616868804968">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="419" key="GridCell.Tab.0.bottom/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616868573526" />
-    <state width="1807" height="419" key="GridCell.Tab.0.center" timestamp="1616868573526">
+    <state width="1807" height="390" key="GridCell.Tab.0.bottom/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616868804968" />
+    <state width="1807" height="390" key="GridCell.Tab.0.center" timestamp="1616868804968">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="419" key="GridCell.Tab.0.center/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616868573526" />
-    <state width="1807" height="419" key="GridCell.Tab.0.left" timestamp="1616868573526">
+    <state width="1807" height="390" key="GridCell.Tab.0.center/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616868804968" />
+    <state width="1807" height="390" key="GridCell.Tab.0.left" timestamp="1616868804968">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="419" key="GridCell.Tab.0.left/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616868573526" />
-    <state width="1807" height="419" key="GridCell.Tab.0.right" timestamp="1616868573526">
+    <state width="1807" height="390" key="GridCell.Tab.0.left/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616868804968" />
+    <state width="1807" height="390" key="GridCell.Tab.0.right" timestamp="1616868804968">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="419" key="GridCell.Tab.0.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616868573526" />
+    <state width="1807" height="390" key="GridCell.Tab.0.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616868804968" />
     <state width="1807" height="391" key="GridCell.Tab.1.bottom" timestamp="1616777145728">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
@@ -561,10 +569,10 @@
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="482" y="248" key="SettingsEditor/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616765735173" />
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1616867702923">
+    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1616868645629">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616867702923" />
+    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616868645629" />
     <state x="649" y="441" key="com.intellij.ide.util.TipDialog" timestamp="1616777746818">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
@@ -584,7 +592,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/neural_robot_control$test_joystick.coverage" NAME="test_joystick Coverage Results" MODIFIED="1616766515530" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hexapod/src" />
-    <SUITE FILE_PATH="coverage/neural_robot_control$hexapod_control.coverage" NAME="hexapod_control Coverage Results" MODIFIED="1616868573516" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hexapod/src" />
+    <SUITE FILE_PATH="coverage/neural_robot_control$hexapod_control.coverage" NAME="hexapod_control Coverage Results" MODIFIED="1616868804945" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hexapod/src" />
     <SUITE FILE_PATH="coverage/neural_robot_control$hexapod_control_hybrid.coverage" NAME="hexapod_control_hybrid Coverage Results" MODIFIED="1616776551935" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hexapod/src" />
     <SUITE FILE_PATH="coverage/neural_robot_control$test_sensors.coverage" NAME="test_sensors Coverage Results" MODIFIED="1616864356656" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hexapod/src" />
     <SUITE FILE_PATH="coverage/neural_robot_control$t256_rpy.coverage" NAME="t256_rpy Coverage Results" MODIFIED="1616767138435" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hexapod/src" />
