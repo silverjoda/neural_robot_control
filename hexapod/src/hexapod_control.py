@@ -113,8 +113,8 @@ class HexapodController:
 
         self.dxl_io.enable_torque(self.ids)
 
-        speed = dict(zip(self.ids, itertools.repeat(self.max_servo_speed)))
-        torque = dict(zip(self.ids, itertools.repeat(self.max_servo_torque)))
+        speed = dict(zip(self.ids, itertools.repeat(200)))
+        torque = dict(zip(self.ids, itertools.repeat(900)))
         self.dxl_io.set_moving_speed(speed)
         self.dxl_io.set_max_torque(torque)
         self.dxl_io.set_torque_limit(torque)
@@ -122,10 +122,27 @@ class HexapodController:
         # Imu integrated yaw value
         self.yaw = 0
 
+
         if self.config["motors_on"]:
-            self.dxl_io.set_goal_position(dict(zip(self.ids, itertools.repeat(512))))
-            time.sleep(2)
+            tar_pos = [512, 100, 1023 - 200, 512, 1023 - 100, 200] * 3
+            self.dxl_io.set_goal_position(dict(zip(self.ids, tar_pos)))
+            time.sleep(1)
+
             print("MOTORS ON")
+
+    def rads_to_norm(self, joints, low, diff):
+        sjoints = np.array(joints)
+        sjoints = ((sjoints - low) / diff) * 2 - 1
+        return sjoints
+
+    def norm_to_rads(self, action, low, diff):
+        return (np.array(action) * 0.5 + 0.5) * diff + low
+
+    def rads_to_servo(self):
+        pass
+
+    def servo_to_rads(self):
+        pass
 
     def start_ctrl_loop(self):
         logging.info("Starting control loop")
@@ -210,7 +227,6 @@ class HexapodController:
                         self.hex_write_ctrl(target_angles)
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
-
 
     def hex_write_ctrl(self, joint_angles):
         '''
@@ -386,7 +402,9 @@ class HexapodController:
             obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_normed, self.prev_act))
 
         # TODO: Print entire obs with labels for debugging purposes
-        # Fix leg rubbers temporarily and redesign for permanent use
+        # TODO: Make action smoothing
+        #obs_dict = {"Quat" : quat, "vel_rob_relative" : vel_rob_relative, "pos_rob_relative" : pos_rob_relative, "yaw" : yaw, "dynamic_time_feature" : self.dynamic_time_feature,
+        #            "avg_vel" : avg_vel, "joints_normed" : joints_normed, "prev_act" : self.prev_act}
 
         return obs
 
@@ -525,6 +543,15 @@ class HexapodController:
             roll, pitch, yaw, quat, timestamp = controller.Ahrs.update(turn)
             print("Turn angle: {}, roll: {}, pitch: {}, yaw: {}, quat: {}".format(turn, roll, pitch, yaw, quat))
             time.sleep(0.3)
+
+    def test_joint_angles(self):
+        test_angles_1 = [-1] * 18
+        test_angles_2 = [0] * 18
+        test_angles_3 = [1] * 18
+
+        # TODO: Continue here. Make proper norm->rads->servo and the other way around and test thoroughly to see if reads match writes, etc
+        # TODO: Check if for give observation, neural network in simulation gives same result as in robot
+        # TODO: Make action smoothing
 
 
 if __name__ == "__main__":

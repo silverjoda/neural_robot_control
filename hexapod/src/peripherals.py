@@ -298,7 +298,7 @@ class AHRS_RS:
         pos_delta = np.array(self.position_rob) + np.array(self.position_offset)
 
         # Make yaw correction matrix
-        th = -self.current_heading
+        th = self.yaw_offset
 
         yaw_corr_mat = np.array([[np.cos(th), -np.sin(th), 0],
                                  [np.sin(th), np.cos(th), 0],
