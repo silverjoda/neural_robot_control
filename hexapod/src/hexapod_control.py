@@ -549,7 +549,7 @@ class HexapodController:
         test_angles_2 = [0] * 18
         test_angles_3 = [1] * 18
 
-        # TODO: Continue here. Make proper norm->rads->servo and the other way around and test thoroughly to see if reads match writes, etc
+        # TODO: Continue here.. Make proper norm->rads->servo and the other way around and test thoroughly to see if reads match writes, etc
         # TODO: Check if for give observation, neural network in simulation gives same result as in robot
         # TODO: Make action smoothing .
 
