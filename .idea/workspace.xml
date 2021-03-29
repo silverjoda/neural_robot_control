@@ -22,7 +22,6 @@
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hexapod/src/hexapod_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/hexapod_control.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hexapod/src/peripherals.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/peripherals.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -216,7 +215,7 @@
       <workItem from="1616778216790" duration="3162000" />
       <workItem from="1616862542462" duration="5082000" />
       <workItem from="1617020854105" duration="794000" />
-      <workItem from="1617022597553" duration="6309000" />
+      <workItem from="1617022597553" duration="6328000" />
     </task>
     <task id="LOCAL-00001" summary="M">
       <created>1606234064876</created>
@@ -519,7 +518,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616869025557</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="M">
+      <created>1617030719995</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1617030719995</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -548,10 +554,10 @@
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="451" y="271" width="1302" height="684" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767171754" />
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1616869025506">
+    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1617030719875">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616869025506" />
+    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1617030719875" />
     <state x="839" y="387" width="515" height="451" key="EnvironmentVariablesDialog" timestamp="1616767125722">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
@@ -592,10 +598,10 @@
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="482" y="248" key="SettingsEditor/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616765735173" />
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1616869026480">
+    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1617030727152">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616869026480" />
+    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1617030727152" />
     <state x="649" y="441" key="com.intellij.ide.util.TipDialog" timestamp="1616777746818">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
