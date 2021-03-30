@@ -309,7 +309,7 @@ class AHRS_RS:
 
         return pos_delta_corr, vel_corr
 
-def print_sometimes(msg, prob=0.01):
-    if np.random.rand() < prob:
-        print(msg)
+
+def read_contacts(self):
+    return [GPIO.input(ipt) * 2 - 1 for ipt in self.leg_sensor_gpio_inputs]
 

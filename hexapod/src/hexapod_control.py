@@ -23,51 +23,37 @@ from stable_baselines3 import TD3
 import RPi.GPIO as GPIO
     
 from peripherals import *
+from utils import *
 
 class HexapodController:
     def __init__(self, config):
         self.config = config
-        self.max_servo_speed = self.config["max_servo_speed"] # [0:1024]
-        self.max_servo_torque = self.config["max_servo_torque"]  # [0:1024]
 
-        self.turn_transition_thresh = self.config["turn_transition_thresh"]
-        self.angle_increment = self.config["angle_increment"]
-
-        self.leg_sensor_gpio_inputs = [11,17,27,10,22,9]
-
-        GPIO.setmode(GPIO.BCM)
-        for ipt in self.leg_sensor_gpio_inputs:
-            GPIO.setup(ipt, GPIO.IN)
-
-        self.phases = np.array([-4.280901908874512, 5.452933311462402, -0.7993605136871338, 2.3967010974884033, 2.4376134872436523, -0.6086690425872803])
-        self.x_mult, self.y_offset, self.z_mult_static, self.z_offset, self.z_lb = [self.config["x_mult"], self.config["y_offset"], self.config["z_mult"], self.config["z_offset"], self.config["z_lb"]]
-        self.z_mult = self.z_mult_static
-        self.dyn_z_lb_array = np.array([float(self.z_lb)] * 6)
-        self.poc_array = np.array([float(self.z_lb)] * 6)
+        self.phases = np.array(self.config["leg_phases"])
+        self.z_mult = self.config["z_mult"]
+        self.dyn_z_lb_array = np.array([float(self.config["z_lb"])] * 6)
+        self.poc_array = np.array([float(self.config["z_lb"])] * 6)
 
         self.turn_joints_rads_low = np.array(self.config["turn_joints_rads_low"] * 6)
         self.turn_joints_rads_high = np.array(self.config["turn_joints_rads_high"] * 6)
         self.turn_joints_rads_diff = self.turn_joints_rads_high - self.turn_joints_rads_low
 
-        self.turn_joints_10bit_low = ((self.turn_joints_rads_low) / (5.23599) + 0.5) * 1024
-        self.turn_joints_10bit_high = ((self.turn_joints_rads_high) / (5.23599) + 0.5) * 1024
-        self.turn_joints_10bit_diff = self.turn_joints_10bit_high - self.turn_joints_10bit_low
+        # self.turn_joints_10bit_low = ((self.turn_joints_rads_low) / (5.23599) + 0.5) * 1024
+        # self.turn_joints_10bit_high = ((self.turn_joints_rads_high) / (5.23599) + 0.5) * 1024
+        # self.turn_joints_10bit_diff = self.turn_joints_10bit_high - self.turn_joints_10bit_low
 
         self.direct_joints_rads_low = np.array(self.config["direct_joints_rads_low"] * 6)
         self.direct_joints_rads_high = np.array(self.config["direct_joints_rads_high"] * 6)
         self.direct_joints_rads_diff = self.direct_joints_rads_high - self.direct_joints_rads_low
-
-        self.direct_joints_10bit_low = ((self.direct_joints_rads_low) / (5.23599) + 0.5) * 1024
-        self.direct_joints_10bit_high = ((self.direct_joints_rads_high) / (5.23599) + 0.5) * 1024
-        self.direct_joints_10bit_diff = self.direct_joints_10bit_high - self.direct_joints_10bit_low
+        #
+        # self.direct_joints_10bit_low = ((self.direct_joints_rads_low) / (5.23599) + 0.5) * 1024
+        # self.direct_joints_10bit_high = ((self.direct_joints_rads_high) / (5.23599) + 0.5) * 1024
+        # self.direct_joints_10bit_diff = self.direct_joints_10bit_high - self.direct_joints_10bit_low
 
         # Load policies
         self.nn_policy_cw = TD3.load("agents/{}".format(self.config["policy_cw"]))
         self.nn_policy_ccw = TD3.load("agents/{}".format(self.config["policy_ccw"]))
         self.nn_policy_direct = TD3.load("agents/{}".format(self.config["policy_direct"]))
-
-        self.control_modes = ["cyc", "direct"]
-        self.current_control_mode_idx = 0
 
         # Make joystick controller
         self.joystick_controller = JoyController()
@@ -87,11 +73,12 @@ class HexapodController:
         self.xd_queue = []
         self.prev_act = np.zeros(18)
 
+
     def init_hardware(self):
-        '''
-        Initialize robot hardware and variables
-        :return: Boolean
-        '''
+        # Set GPIO for sensor inputs
+        GPIO.setmode(GPIO.BCM)
+        for ipt in self.config["leg_sensor_gpio_inputs"]:
+            GPIO.setup(ipt, GPIO.IN)
 
         ports = pypot.dynamixel.get_available_ports()
         print('available ports:', ports)
@@ -122,27 +109,12 @@ class HexapodController:
         # Imu integrated yaw value
         self.yaw = 0
 
-
         if self.config["motors_on"]:
             tar_pos = [512, 100, 1023 - 200, 512, 1023 - 100, 200] * 3
             self.dxl_io.set_goal_position(dict(zip(self.ids, tar_pos)))
             time.sleep(1)
 
             print("MOTORS ON")
-
-    def rads_to_norm(self, joints, low, diff):
-        sjoints = np.array(joints)
-        sjoints = ((sjoints - low) / diff) * 2 - 1
-        return sjoints
-
-    def norm_to_rads(self, action, low, diff):
-        return (np.array(action) * 0.5 + 0.5) * diff + low
-
-    def rads_to_servo(self):
-        pass
-
-    def servo_to_rads(self):
-        pass
 
     def start_ctrl_loop(self):
         logging.info("Starting control loop")
@@ -408,9 +380,6 @@ class HexapodController:
 
         return obs
 
-    def read_contacts(self):
-        return [GPIO.input(ipt) * 2 - 1 for ipt in self.leg_sensor_gpio_inputs]
-
     def get_normalized_torques(self):
         scrambled_ids = list(range(1, 19))
         np.random.shuffle(scrambled_ids)
@@ -423,113 +392,6 @@ class HexapodController:
         normalized_torques = (raw_torques / 1023.)
         normalized_torques_corrected = normalized_torques * torque_dirs_corrected
         return normalized_torques_corrected
-
-    def my_ikt(self, target_positions, rotation_overlay=None):
-        # raise NotImplementedError
-        rotation_angles = np.array([np.pi / 4, np.pi / 4, 0, 0, -np.pi / 4, -np.pi / 4])
-        if rotation_overlay is not None:
-            rotation_angles += rotation_overlay
-        joint_angles = []
-        for i, tp in enumerate(target_positions):
-            tp_rotated = self.rotate_eef_pos(tp, rotation_angles[i], tp[1])
-            joint_angles.extend(self.single_leg_ikt(tp_rotated))
-        return joint_angles
-
-    def my_ikt_robust(self, target_positions, rotation_overlay=None):
-        # raise NotImplementedError
-        def find_nearest_valid_point(xyz_query, rot_angle=0):
-            sol = self.single_leg_ikt(xyz_query)
-            if not np.isnan(sol).any(): return sol
-
-            cur_valid_sol = None
-            cur_xyz_query = xyz_query
-            cur_delta = 0.03
-            n_iters = 10
-
-            if xyz_query[2] > -0.1:
-                search_dir = 1
-            else:
-                search_dir = -1
-
-            cur_xyz_query[0] = cur_xyz_query[0] - cur_delta * search_dir * np.sin(rot_angle)
-            cur_xyz_query[1] = cur_xyz_query[1] + cur_delta * search_dir * np.cos(rot_angle)
-            for _ in range(n_iters):
-                sol = self.single_leg_ikt(cur_xyz_query)
-                if not np.isnan(sol).any():  # If solution is good
-                    cur_valid_sol = sol
-                    cur_delta /= 2
-                    cur_xyz_query[0] = cur_xyz_query[0] + cur_delta * search_dir * np.sin(rot_angle)
-                    cur_xyz_query[1] = cur_xyz_query[1] - cur_delta * search_dir * np.cos(rot_angle)
-                else:
-                    if cur_valid_sol is not None:
-                        cur_delta /= 2
-                    cur_xyz_query[0] = cur_xyz_query[0] - cur_delta * search_dir * np.sin(rot_angle)
-                    cur_xyz_query[1] = cur_xyz_query[1] + cur_delta * search_dir * np.cos(rot_angle)
-
-            assert cur_valid_sol is not None and not np.isnan(cur_valid_sol).any()
-            return cur_valid_sol
-
-        rotation_angles = np.array([np.pi / 4, np.pi / 4, 0, 0, -np.pi / 4, -np.pi / 4])
-        if rotation_overlay is not None:
-            rotation_angles += rotation_overlay
-        joint_angles = []
-        for i, tp in enumerate(target_positions):
-            tp_rotated = self.rotate_eef_pos(tp, rotation_angles[i], tp[1])
-            joint_angles.extend(find_nearest_valid_point(tp_rotated, rotation_angles[i]))
-        return joint_angles
-
-    def rotate_eef_pos(self, eef_xyz, angle, y_offset):
-        return [eef_xyz[0] * np.cos(angle), eef_xyz[0] * np.sin(angle) + y_offset, eef_xyz[2]]
-
-    def single_leg_ikt(self, eef_xyz):
-        x, y, z = eef_xyz
-
-        q1 = 0.2137
-        q2 = 0.785
-
-        C = 0.052
-        F = 0.0675
-        T = 0.132
-
-        psi = np.arctan(x / y)
-        Cx = C * np.sin(psi)
-        Cy = C * np.cos(psi)
-        R = np.sqrt((x - Cx) ** 2 + (y - Cy) ** 2 + (z) ** 2)
-        alpha = np.arcsin(-z / R)
-
-        a = np.arccos((F ** 2 + R ** 2 - T ** 2) / (2 * F * R))
-        b = np.arccos((F ** 2 + T ** 2 - R ** 2) / (2 * F * T))
-
-        # if np.isnan(a) or np.isnan(b):
-        #    print(a,b)
-
-        assert 0 < a < np.pi or np.isnan(a)
-        assert 0 < b < np.pi or np.isnan(b)
-
-        th1 = alpha - q1 - a
-        th2 = np.pi - q2 - b
-
-        assert th2 + q2 > 0 or np.isnan(th2)
-
-        return -psi, th1, th2
-
-    def single_leg_dkt(self, angles):
-        psi, th1, th2 = angles
-
-        q1 = 0.2137
-        q2 = 0.785
-
-        C = 0.052
-        F = 0.0675
-        T = 0.132
-
-        Ey_flat = (C + F * np.cos(q1 + th1) + T * np.cos(q1 + th1 + q2 + th2))
-
-        Ez = - F * np.sin(q1 + th1) - T * np.sin(q1 + th1 + q2 + th2)
-        Ey = Ey_flat * np.cos(psi)
-        Ex = Ey_flat * np.sin(-psi)
-
-        return (Ex, Ey, Ez)
 
     def test_AHRS_RS(self):
         while True:
