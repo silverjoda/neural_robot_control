@@ -309,6 +309,12 @@ class AHRS_RS:
 
         return pos_delta_corr, vel_corr
 
+    def test(self):
+        while True:
+            roll, pitch, yaw_corrected, quat_yaw_corrected, xd, _ = self.update()
+            print("Roll: {}, Pitch: {}, Yaw: {}, Quat: {}".format(roll, pitch, yaw_corrected, quat_yaw_corrected))
+            time.sleep(0.3)
+
 
 def read_contacts(self):
     return [GPIO.input(ipt) * 2 - 1 for ipt in self.leg_sensor_gpio_inputs]
