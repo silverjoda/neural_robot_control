@@ -316,6 +316,6 @@ class AHRS_RS:
             time.sleep(0.3)
 
 
-def read_contacts(self):
-    return [GPIO.input(ipt) * 2 - 1 for ipt in self.leg_sensor_gpio_inputs]
+def read_contacts(leg_sensor_gpio_inputs):
+    return [GPIO.input(ipt) * 2 - 1 for ipt in leg_sensor_gpio_inputs]
 

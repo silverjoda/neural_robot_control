@@ -115,13 +115,14 @@ class HexapodController:
             self.angle_increment = vel * self.config["angle_increment"]
 
             # TMP DEBUG
-            # if button_x_event:
-            #     self.Ahrs.reset_yaw()
-            #     self.Ahrs.reset_relative_position()
-            # if button_x:
-            #     self.Ahrs.update()
-            #     pos_rob_relative, vel_rob_relative = self.Ahrs.get_relative_position_and_velocity()
-            #     print(self.Ahrs.position_rob, pos_rob_relative, vel_rob_relative)
+            if button_x_event:
+                self.Ahrs.reset_yaw()
+                self.Ahrs.reset_relative_position()
+            if button_x:
+                self.Ahrs.update()
+                pos_rob_relative, vel_rob_relative = self.Ahrs.get_relative_position_and_velocity()
+                print(self.Ahrs.position_rob, pos_rob_relative, vel_rob_relative)
+            continue
 
             # Idle
             if vel < 0.1 and abs(turn) < 0.1:
@@ -135,7 +136,7 @@ class HexapodController:
                 time.sleep(0.1)
             else:
                 if self.idling:
-                    self.hex_write_max_torques(self.max_servo_torque)
+                    self.hex_write_max_torques(self.config["max_servo_torque"])
                     self.idling = False
                     print("Active")
 
@@ -143,7 +144,7 @@ class HexapodController:
                 clipped_turn = -turn
 
                 if abs(clipped_turn) > 0.47:
-                    self.hex_write_servo_speed(self.max_servo_speed * np.maximum(vel, 0.3))
+                    self.hex_write_servo_speed(self.config["max_servo_speed"] * np.maximum(vel, 0.3))
                     self.current_servo_speed = vel
 
                     policy_obs = self.hex_get_obs_turn(clipped_turn)
@@ -155,7 +156,7 @@ class HexapodController:
                 else:
                     if self.current_servo_speed < 0.95:
                         self.current_servo_speed = 1.0
-                        self.hex_write_servo_speed(self.max_servo_speed)
+                        self.hex_write_servo_speed(self.config["max_servo_speed"])
 
                     if button_x_event:
                         self.Ahrs.reset_yaw()
@@ -163,9 +164,10 @@ class HexapodController:
                         self.dynamic_step_ctr = 0
                         self.xd_queue = []
 
-                        tar_pos = [512] * 18
-                        self.dxl_io.set_goal_position(dict(zip(self.ids, tar_pos)))
-                        time.sleep(1)
+                        if self.config["motors_on"]:
+                            tar_pos = [512] * 18
+                            self.dxl_io.set_goal_position(dict(zip(self.ids, tar_pos)))
+                            time.sleep(1)
 
                     if button_x:
                         policy_obs = self.hex_get_obs_direct(clipped_turn)
@@ -249,7 +251,7 @@ class HexapodController:
         self.dxl_io.set_moving_speed(speed_dict)
 
     def calc_target_joint_angles_cyc(self, turn):
-        contacts = read_contacts()
+        contacts = read_contacts(self.config["leg_sensor_gpio_inputs"])
 
         x_mult_arr = [np.minimum(self.config["x_mult"] + turn * self.config["turn_coeff"], 0.08), np.minimum(self.config["x_mult"] - turn * self.config["turn_coeff"], 0.08)] * 3
 
