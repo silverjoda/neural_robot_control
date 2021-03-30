@@ -114,15 +114,15 @@ class HexapodController:
             # Calculate discrete velocity level
             self.angle_increment = vel * self.config["angle_increment"]
 
-            # TMP DEBUG
-            if button_x_event:
-                self.Ahrs.reset_yaw()
-                self.Ahrs.reset_relative_position()
-            if button_x:
-                self.Ahrs.update()
-                pos_rob_relative, vel_rob_relative = self.Ahrs.get_relative_position_and_velocity()
-                print(self.Ahrs.position_rob, pos_rob_relative, vel_rob_relative)
-            continue
+            # # TMP DEBUG
+            # if button_x_event:
+            #     self.Ahrs.reset_yaw()
+            #     self.Ahrs.reset_relative_position()
+            # if button_x:
+            #     self.Ahrs.update()
+            #     pos_rob_relative, vel_rob_relative = self.Ahrs.get_relative_position_and_velocity()
+            #     print(self.Ahrs.position_rob, pos_rob_relative, vel_rob_relative)
+            # continue
 
             # Idle
             if vel < 0.1 and abs(turn) < 0.1:
