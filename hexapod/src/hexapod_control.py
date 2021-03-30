@@ -91,11 +91,8 @@ class HexapodController:
 
         self.dxl_io.enable_torque(self.ids)
 
-        speed = dict(zip(self.ids, itertools.repeat(200)))
-        torque = dict(zip(self.ids, itertools.repeat(900)))
-        self.dxl_io.set_moving_speed(speed)
-        self.dxl_io.set_max_torque(torque)
-        self.dxl_io.set_torque_limit(torque)
+        self.hex_write_servo_speed(200)
+        self.hex_write_max_torques(900)
 
         # Imu integrated yaw value
         self.yaw = 0
@@ -113,8 +110,6 @@ class HexapodController:
             iteration_starttime = time.time()
             # Read joystick
             turn, vel, height, button_x, button_x_event = self.joystick_controller.get_joystick_input()
-
-            self.z_mult = self.z_mult_static # + height * 0.03
 
             # Calculate discrete velocity level
             self.angle_increment = vel * self.config["angle_increment"]
@@ -167,6 +162,10 @@ class HexapodController:
                         self.Ahrs.reset_relative_position()
                         self.dynamic_step_ctr = 0
                         self.xd_queue = []
+
+                        tar_pos = [512] * 18
+                        self.dxl_io.set_goal_position(dict(zip(self.ids, tar_pos)))
+                        time.sleep(1)
 
                     if button_x:
                         policy_obs = self.hex_get_obs_direct(clipped_turn)
@@ -356,14 +355,28 @@ class HexapodController:
         return servo_positions, joints_rads, joints_normed
 
     def test_joint_angles(self):
-        test_angles_1 = [-1] * 18
-        test_angles_2 = [0] * 18
-        test_angles_3 = [1] * 18
+        test_angles_list = [[-1] * 18, [0] * 18, [1] * 18]
+
+        for test_angles in test_angles_list:
+            test_angles_rads = norm_to_rads(test_angles, self.direct_joints_rads_low, self.direct_joints_rads_diff)
+            test_angles_servo = rads_to_servo(test_angles_rads)
+            test_angles_servo_rads = servo_to_rads(test_angles_servo)
+            test_angles_rads_normed = rads_to_norm(test_angles_servo_rads, self.direct_joints_rads_low, self.direct_joints_rads_diff)
+
+            print(
+                f"Test angles: {test_angles}, rads: {test_angles_rads}, servo: {test_angles_servo}, servo: {test_angles_servo_rads}, normed: {test_angles_rads_normed}, match={np.allclose(test_angles, test_angles_rads_normed)}")
 
         # TODO: Continue here.. Make proper norm->rads->servo and the other way around and test thoroughly to see if reads match writes, etc
         # TODO: Check if for give observation, neural network in simulation gives same result as in robot
         # TODO: Make action smoothing .
 
+    def test_nn_act(self):
+        ref_obs = [0.00042633183, 0.00093570194, -0.00893027, 0.9999596, -0.24590424, 0.066709936, -0.27846, 0.026221909, 0.0004127728, 0.007374887, -0.017559534, -0.98888886, -2.6393616, 0.18279997, 0.16875656, 0.24482203, 0.1254808, 0.16834405, 0.19444, 0.111322425, 0.17827263, 0.08961531, 0.11070581, 0.1746512, 0.09083061, 0.113977194, 0.18196149, 0.094134234, 0.1278813, 0.17632556, 0.27165848, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        ref_act = [0.37735415, -1.0, -1.0, 1.0, 0.98795414, 0.7211293, -0.9999838, 0.9999945, 1.0, -0.99999607, -0.3639546, -0.7103379, -0.8665961, 1.0, -1.0, -1.0, -0.99731225, 0.9699502]
+
+        act = self.nn_policy_direct.predict(ref_obs, deterministic=True)
+        #print(np.allclose(ref_act, act))
+        print(act)
 
 if __name__ == "__main__":
     with open('configs/default.yaml') as f:
@@ -371,4 +384,6 @@ if __name__ == "__main__":
     controller = HexapodController(config)
     #controller.test_AHRS_RS()
     controller.start_ctrl_loop()
+    #controller.test_joint_angles()
+    #controller.test_nn_act()
 
