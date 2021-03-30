@@ -170,6 +170,7 @@ class HexapodController:
                             time.sleep(1)
 
                     if button_x:
+                        self.hex_write_servo_speed(self.config["max_servo_speed"] * np.maximum(vel, 0.3))
                         policy_obs = self.hex_get_obs_direct(clipped_turn)
                         policy_act, _ = self.nn_policy_direct.predict(policy_obs, deterministic=True)
                         self.hex_write_ctrl_nn(policy_act, mode="direct")

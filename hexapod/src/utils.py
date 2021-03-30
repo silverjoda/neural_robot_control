@@ -8,7 +8,7 @@ def norm_to_rads(joints, low, diff):
     return (np.array(joints) * 0.5 + 0.5) * diff + low
 
 def rads_to_servo(joints):
-    return ((np.array(joints) / 5.23599) + 0.5) * 1023
+    return (((np.array(joints) / 5.23599) + 0.5) * 1023).astype(np.uint16)
 
 def servo_to_rads(joints):
     return ((joints / 1023) - 0.5) * 5.23599
