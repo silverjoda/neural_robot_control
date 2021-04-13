@@ -297,7 +297,7 @@ class Controller:
 
             while time.time() - iteration_starttime < self.config["update_period"]: pass
             
-    def gather_data(self, n_iterations=20000):
+    def gather_data(self):
 
         # Initialize data lists
         data_position = []
@@ -309,7 +309,7 @@ class Controller:
 
         print("Starting the control loop")
         try:
-            for i in range(n_iterations):
+            for i in range(self.config["n_data_gathering_steps"]):
                 iteration_starttime = time.time()
 
                 # Read target control inputs
@@ -382,4 +382,6 @@ class Controller:
 
 if __name__ == "__main__":
     controller = Controller()
-    controller.loop_control()
+    controller.gather_data()
+    #controller.loop_control()
+
