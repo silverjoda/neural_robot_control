@@ -7,7 +7,7 @@
 ##           librealsense T265 rpy example         ##
 #####################################################
 
-# First import the library
+# First import the library #########
 import pyrealsense2 as rs
 import math as m
 
@@ -23,7 +23,7 @@ pipe.start(cfg)
 
 try:
     while (True):
-        # Wait for the next set of frames from the camera
+        # Wait for the next set of frames from the camera#
         frames = pipe.wait_for_frames()
 
         # Fetch pose frame

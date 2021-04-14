@@ -322,7 +322,7 @@ class Controller:
                     (position_rob[0] - self.target_A[0]) ** 2 + (position_rob[1] - self.target_A[1]) ** 2)
 
                 if target_dist < self.config["target_proximity_threshold"]:
-                    self.update_targets()
+                    self.update_targets()#
 
                 # Calculate relative positions of targets
                 relative_target_A = self.target_A[0] - position_rob[0], self.target_A[1] - position_rob[1]
@@ -358,10 +358,10 @@ class Controller:
             print("Interrupted by user")
 
         # Save data
-        prefix = os.path.join("data", time.strftime("%Y_%m_%d"))
-        if not os.path.exists(prefix):
-            os.makedirs(prefix)
-        prefix = prefix + 'buggy_'.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ', k=3))
+        dir_prefix = os.path.join("data", time.strftime("%Y_%m_%d"))
+        if not os.path.exists(dir_prefix):
+            os.makedirs(dir_prefix)
+        prefix = 'buggy_' + ''.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ', k=3))
 
         data_position = np.array(data_position, dtype=np.float32)
         data_vel = np.array(data_vel, dtype=np.float32)
@@ -369,13 +369,12 @@ class Controller:
         data_angular_vel = np.array(data_angular_vel, dtype=np.float32)
         data_timestamp = np.array(data_timestamp, dtype=np.float32)
         data_action = np.array(data_action, dtype=np.float32)
-
-        np.save(prefix + "_position", data_position)
-        np.save(prefix + "_vel", data_vel)
-        np.save(prefix + "_rotation", data_rotation)
-        np.save(prefix + "_angular_vel", data_angular_vel)
-        np.save(prefix + "_timestamp", data_timestamp)
-        np.save(prefix + "_action", data_action)
+        np.save(os.join(dir_prefix, prefix + "_position"), data_position)
+        np.save(os.join(dir_prefix, prefix + "_vel"), data_vel)
+        np.save(os.join(dir_prefix, prefix + "_rotation"), data_rotation)
+        np.save(os.join(dir_prefix, prefix + "_angular_vel"), data_angular_vel)
+        np.save(os.join(dir_prefix, prefix + "_timestamp"), data_timestamp)
+        np.save(os.join(dir_prefix, prefix + "_action"), data_action)
 
         print("Saved data")
 

@@ -1,5 +1,5 @@
 "policy_path" : "BUGGY_WP_TEST.zip"
-"motors_on" : True 
+"motors_on" : False
 "controller_source" : "nn" # nn/joystick
 "update_rate" : 100
 "update_period" : 0.01

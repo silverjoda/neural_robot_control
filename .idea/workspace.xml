@@ -23,8 +23,15 @@
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/neural_robot_control.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/neural_robot_control.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buggy/src/agents/BUGGY_FW_BW_FOLLOWER.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/buggy/src/agents/BUGGY_FW_BW_MOREPOWER_ENT.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/buggy/src/agents/BUGGY_WP_TEST.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/buggy/src/buggy_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/buggy_control.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/buggy/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/configs/default.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buggy/src/pyrealsense2.cpython-37m-arm-linux-gnueabihf.so" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/buggy/src/pyrealsense2.cpython-37m-arm-linux-gnueabihf.so.2.39" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/buggy/src/pyrealsense2.cpython-37m-arm-linux-gnueabihf.so.2.39.0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/buggy/src/t265_rpy.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/t265_rpy.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +72,29 @@
       <recent name="$PROJECT_DIR$/quadcopter" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.hexapod_control">
+  <component name="RunManager" selected="Python.buggy_control">
+    <configuration name="buggy_control" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="neural_robot_control" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/buggy/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/buggy/src/buggy_control.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="hexapod_control" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="neural_robot_control" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -82,28 +111,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/hexapod_control.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="hexapod_control_combined" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="neural_robot_control" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/hexapod/src" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/hexapod_control_combined.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -136,22 +143,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="test_joystick" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="t265_rpy" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="neural_robot_control" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
-        <env name="LD_LIBRARY_PATH" value="/usr/local/lib" />
-        <env name="PYTHONPATH" value="/usr/local/lib" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/hexapod/src" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/buggy/src" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/test_joystick.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/buggy/src/t265_rpy.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -186,22 +191,22 @@
     </configuration>
     <list>
       <item itemvalue="Python.hexapod_control" />
-      <item itemvalue="Python.hexapod_control_combined" />
       <item itemvalue="Python.t256_rpy" />
-      <item itemvalue="Python.test_joystick" />
       <item itemvalue="Python.test_sensors" />
+      <item itemvalue="Python.buggy_control" />
+      <item itemvalue="Python.t265_rpy" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.buggy_control" />
+        <item itemvalue="Python.t265_rpy" />
         <item itemvalue="Python.hexapod_control" />
         <item itemvalue="Python.t256_rpy" />
         <item itemvalue="Python.test_sensors" />
-        <item itemvalue="Python.test_joystick" />
-        <item itemvalue="Python.hexapod_control_combined" />
       </list>
     </recent_temporary>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SpellCheckerSettings" BundledDictionaries="0" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -223,21 +228,11 @@
       <workItem from="1617036820781" duration="305000" />
       <workItem from="1617108495951" duration="115000" />
       <workItem from="1617111217993" duration="10287000" />
-      <workItem from="1617122750105" duration="818000" />
-    </task>
-    <task id="LOCAL-00003" summary="M">
-      <created>1606236204949</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1606236204949</updated>
-    </task>
-    <task id="LOCAL-00004" summary="M">
-      <created>1606240244705</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1606240244705</updated>
+      <workItem from="1617122750105" duration="997000" />
+      <workItem from="1618401106253" duration="601000" />
+      <workItem from="1618410948606" duration="136000" />
+      <workItem from="1618412755555" duration="2392000" />
+      <workItem from="1618415354427" duration="1520000" />
     </task>
     <task id="LOCAL-00005" summary="M">
       <created>1606240730728</created>
@@ -568,7 +563,21 @@
       <option name="project" value="LOCAL" />
       <updated>1617122959195</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="M">
+      <created>1617123699483</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1617123699483</updated>
+    </task>
+    <task id="LOCAL-00053" summary="M">
+      <created>1617123732718</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1617123732718</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -579,12 +588,13 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
@@ -592,34 +602,34 @@
     <option name="LAST_COMMIT_MESSAGE" value="M" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="451" y="271" width="1302" height="684" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1616767171754">
+    <state x="451" y="271" width="1302" height="684" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1618416105681">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="451" y="271" width="1302" height="684" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767171754" />
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1617123699406">
+    <state x="451" y="271" width="1302" height="684" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416105681" />
+    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1617123732638">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1617123699406" />
+    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1617123732638" />
     <state x="839" y="387" width="515" height="451" key="EnvironmentVariablesDialog" timestamp="1616767125722">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="839" y="387" width="515" height="451" key="EnvironmentVariablesDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767125722" />
-    <state width="1807" height="413" key="GridCell.Tab.0.bottom" timestamp="1617123568903">
+    <state width="1807" height="220" key="GridCell.Tab.0.bottom" timestamp="1618416288057">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="413" key="GridCell.Tab.0.bottom/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1617123568903" />
-    <state width="1807" height="413" key="GridCell.Tab.0.center" timestamp="1617123568903">
+    <state width="1807" height="220" key="GridCell.Tab.0.bottom/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416288057" />
+    <state width="1807" height="220" key="GridCell.Tab.0.center" timestamp="1618416288057">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="413" key="GridCell.Tab.0.center/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1617123568903" />
-    <state width="1807" height="413" key="GridCell.Tab.0.left" timestamp="1617123568903">
+    <state width="1807" height="220" key="GridCell.Tab.0.center/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416288057" />
+    <state width="1807" height="220" key="GridCell.Tab.0.left" timestamp="1618416288056">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="413" key="GridCell.Tab.0.left/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1617123568903" />
-    <state width="1807" height="413" key="GridCell.Tab.0.right" timestamp="1617123568903">
+    <state width="1807" height="220" key="GridCell.Tab.0.left/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416288056" />
+    <state width="1807" height="220" key="GridCell.Tab.0.right" timestamp="1618416288057">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="413" key="GridCell.Tab.0.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1617123568903" />
+    <state width="1807" height="220" key="GridCell.Tab.0.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416288057" />
     <state width="1807" height="391" key="GridCell.Tab.1.bottom" timestamp="1616777145728">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
@@ -636,14 +646,18 @@
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state width="1807" height="391" key="GridCell.Tab.1.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
-    <state x="482" y="248" key="SettingsEditor" timestamp="1616765735173">
+    <state x="698" y="329" width="911" height="568" key="MultipleFileMergeDialog" timestamp="1618411028178">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="482" y="248" key="SettingsEditor/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616765735173" />
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1617123700585">
+    <state x="698" y="329" width="911" height="568" key="MultipleFileMergeDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618411028178" />
+    <state x="482" y="248" key="SettingsEditor" timestamp="1618416190854">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1617123700585" />
+    <state x="482" y="248" key="SettingsEditor/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416190854" />
+    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1617123734562">
+      <screen x="67" y="27" width="1853" height="1173" />
+    </state>
+    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1617123734562" />
     <state x="649" y="441" key="com.intellij.ide.util.TipDialog" timestamp="1616777746818">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
@@ -652,29 +666,26 @@
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="744" y="306" width="488" height="615" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616769643894" />
-    <state x="761" y="533" width="454" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1616777851307">
+    <state x="761" y="533" width="464" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1618411005112">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="761" y="533" width="454" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777851307" />
-    <state x="889" y="327" width="451" height="573" key="ftp.server.browser" timestamp="1616765698124">
+    <state x="761" y="533" width="464" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618411005112" />
+    <state x="737" y="344" width="770" height="538" key="com.jetbrains.plugins.remotesdk.ui.RemoteMappingsConfiguration" timestamp="1618416189637">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="889" y="327" width="451" height="573" key="ftp.server.browser/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616765698124" />
+    <state x="737" y="344" width="770" height="538" key="com.jetbrains.plugins.remotesdk.ui.RemoteMappingsConfiguration/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416189637" />
+    <state x="889" y="327" width="451" height="573" key="ftp.server.browser" timestamp="1618412925543">
+      <screen x="67" y="27" width="1853" height="1173" />
+    </state>
+    <state x="889" y="327" width="451" height="573" key="ftp.server.browser/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618412925543" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/hexapod/src/hexapod_control.py</url>
-          <line>67</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/hexapod/src/peripherals.py</url>
-          <line>24</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/neural_robot_control$test_joystick.coverage" NAME="test_joystick Coverage Results" MODIFIED="1616766515530" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hexapod/src" />
+    <SUITE FILE_PATH="coverage/neural_robot_control$hexapod_control.coverage" NAME="hexapod_control Coverage Results" MODIFIED="1617123568896" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hexapod/src" />
+    <SUITE FILE_PATH="coverage/neural_robot_control$buggy_control.coverage" NAME="buggy_control Coverage Results" MODIFIED="1618416167973" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/buggy/src" />
+    <SUITE FILE_PATH="coverage/neural_robot_control$t265_rpy.coverage" NAME="t265_rpy Coverage Results" MODIFIED="1618416162841" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/buggy/src" />
+    <SUITE FILE_PATH="coverage/neural_robot_control$hexapod_control_hybrid.coverage" NAME="hexapod_control_hybrid Coverage Results" MODIFIED="1616776551935" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hexapod/src" />
+    <SUITE FILE_PATH="coverage/neural_robot_control$test_sensors.coverage" NAME="test_sensors Coverage Results" MODIFIED="1616864356656" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hexapod/src" />
+    <SUITE FILE_PATH="coverage/neural_robot_control$t256_rpy.coverage" NAME="t256_rpy Coverage Results" MODIFIED="1617036893271" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hexapod/src" />
   </component>
 </project>
