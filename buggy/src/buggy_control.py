@@ -358,7 +358,7 @@ class Controller:
             print("Interrupted by user")
 
         for _ in range(10):
-            self.PWMDriver.write_servos([0, 0])
+            self.PWMDriver.write_servos([0, 0.5])
 
         # Save data
         dir_prefix = os.path.join("data", time.strftime("%Y_%m_%d"))
