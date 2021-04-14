@@ -20,18 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/neural_robot_control.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/neural_robot_control.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buggy/src/agents/BUGGY_FW_BW_FOLLOWER.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/buggy/src/agents/BUGGY_FW_BW_MOREPOWER_ENT.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/buggy/src/agents/BUGGY_WP_TEST.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/buggy/src/buggy_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/buggy_control.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/buggy/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/configs/default.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buggy/src/pyrealsense2.cpython-37m-arm-linux-gnueabihf.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/buggy/src/pyrealsense2.cpython-37m-arm-linux-gnueabihf.so.2.39" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/buggy/src/pyrealsense2.cpython-37m-arm-linux-gnueabihf.so.2.39.0" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/buggy/src/t265_rpy.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/t265_rpy.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -232,14 +223,8 @@
       <workItem from="1618401106253" duration="601000" />
       <workItem from="1618410948606" duration="136000" />
       <workItem from="1618412755555" duration="2392000" />
-      <workItem from="1618415354427" duration="1520000" />
-    </task>
-    <task id="LOCAL-00005" summary="M">
-      <created>1606240730728</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1606240730728</updated>
+      <workItem from="1618415354427" duration="2309000" />
+      <workItem from="1618417680101" duration="66000" />
     </task>
     <task id="LOCAL-00006" summary="M">
       <created>1606324046556</created>
@@ -577,7 +562,14 @@
       <option name="project" value="LOCAL" />
       <updated>1617123732718</updated>
     </task>
-    <option name="localTasksCounter" value="54" />
+    <task id="LOCAL-00054" summary="M">
+      <created>1618416882775</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1618416882775</updated>
+    </task>
+    <option name="localTasksCounter" value="55" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -606,30 +598,30 @@
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="451" y="271" width="1302" height="684" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416105681" />
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1617123732638">
+    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1618416882599">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1617123732638" />
+    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416882599" />
     <state x="839" y="387" width="515" height="451" key="EnvironmentVariablesDialog" timestamp="1616767125722">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="839" y="387" width="515" height="451" key="EnvironmentVariablesDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767125722" />
-    <state width="1807" height="220" key="GridCell.Tab.0.bottom" timestamp="1618416288057">
+    <state width="1807" height="220" key="GridCell.Tab.0.bottom" timestamp="1618417664342">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="220" key="GridCell.Tab.0.bottom/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416288057" />
-    <state width="1807" height="220" key="GridCell.Tab.0.center" timestamp="1618416288057">
+    <state width="1807" height="220" key="GridCell.Tab.0.bottom/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618417664342" />
+    <state width="1807" height="220" key="GridCell.Tab.0.center" timestamp="1618417664341">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="220" key="GridCell.Tab.0.center/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416288057" />
-    <state width="1807" height="220" key="GridCell.Tab.0.left" timestamp="1618416288056">
+    <state width="1807" height="220" key="GridCell.Tab.0.center/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618417664341" />
+    <state width="1807" height="220" key="GridCell.Tab.0.left" timestamp="1618417664341">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="220" key="GridCell.Tab.0.left/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416288056" />
-    <state width="1807" height="220" key="GridCell.Tab.0.right" timestamp="1618416288057">
+    <state width="1807" height="220" key="GridCell.Tab.0.left/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618417664341" />
+    <state width="1807" height="220" key="GridCell.Tab.0.right" timestamp="1618417664342">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state width="1807" height="220" key="GridCell.Tab.0.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416288057" />
+    <state width="1807" height="220" key="GridCell.Tab.0.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618417664342" />
     <state width="1807" height="391" key="GridCell.Tab.1.bottom" timestamp="1616777145728">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
@@ -654,10 +646,10 @@
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
     <state x="482" y="248" key="SettingsEditor/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416190854" />
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1617123734562">
+    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1618416883808">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1617123734562" />
+    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416883808" />
     <state x="649" y="441" key="com.intellij.ide.util.TipDialog" timestamp="1616777746818">
       <screen x="67" y="27" width="1853" height="1173" />
     </state>
