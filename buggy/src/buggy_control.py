@@ -215,7 +215,7 @@ class Controller:
         self.AHRS = AHRS_RS()
         self.PWMDriver = PWMDriver(self.motors_on)
         self.JOYStick = JoyController()
-        self.policy = self.load_policy(self.config)
+        #self.policy = self.load_policy(self.config)
         self.waypoint_generator = WPGenerator(self.config)
         self.update_targets()
 
@@ -310,6 +310,9 @@ class Controller:
         print("Starting the control loop")
         try:
             for i in range(self.config["n_data_gathering_steps"]):
+                if i % 1000 == 0:
+                    print(i)
+
                 iteration_starttime = time.time()
 
                 # Read target control inputs

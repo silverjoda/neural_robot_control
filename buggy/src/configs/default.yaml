@@ -6,7 +6,7 @@
 "motor_scalar" : 0.5
 "throttle_offset" : 0.5
 "target_proximity_threshold" : 0.6
-"n_data_gathering_steps" : 6000
+"n_data_gathering_steps" : 12000
 "wp_sequence" : "three_pole" # "rnd", "two_pole", "three_pole", "four_pole"
 
 
