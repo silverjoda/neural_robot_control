@@ -19,9 +19,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/neural_robot_control.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/neural_robot_control.iml" afterDir="false" />
+    <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="M">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/buggy/src/buggy_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/buggy_control.py" afterDir="false" />
     </list>
@@ -227,13 +225,6 @@
       <workItem from="1618415354427" duration="2309000" />
       <workItem from="1618417680101" duration="670000" />
       <workItem from="1618419039422" duration="288000" />
-    </task>
-    <task id="LOCAL-00007" summary="M">
-      <created>1606325049125</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1606325049125</updated>
     </task>
     <task id="LOCAL-00008" summary="M">
       <created>1606406951424</created>
@@ -571,7 +562,14 @@
       <option name="project" value="LOCAL" />
       <updated>1618417748997</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="M">
+      <created>1618903971904</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1618903971904</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -593,83 +591,5 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="M" />
     <option name="LAST_COMMIT_MESSAGE" value="M" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="451" y="271" width="1302" height="684" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1618416105681">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state x="451" y="271" width="1302" height="684" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416105681" />
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2" timestamp="1618417748824">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state x="558" y="190" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618417748824" />
-    <state x="839" y="387" width="515" height="451" key="EnvironmentVariablesDialog" timestamp="1616767125722">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state x="839" y="387" width="515" height="451" key="EnvironmentVariablesDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616767125722" />
-    <state width="1807" height="220" key="GridCell.Tab.0.bottom" timestamp="1618417664342">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state width="1807" height="220" key="GridCell.Tab.0.bottom/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618417664342" />
-    <state width="1807" height="220" key="GridCell.Tab.0.center" timestamp="1618417664341">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state width="1807" height="220" key="GridCell.Tab.0.center/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618417664341" />
-    <state width="1807" height="220" key="GridCell.Tab.0.left" timestamp="1618417664341">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state width="1807" height="220" key="GridCell.Tab.0.left/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618417664341" />
-    <state width="1807" height="220" key="GridCell.Tab.0.right" timestamp="1618417664342">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state width="1807" height="220" key="GridCell.Tab.0.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618417664342" />
-    <state width="1807" height="391" key="GridCell.Tab.1.bottom" timestamp="1616777145728">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state width="1807" height="391" key="GridCell.Tab.1.bottom/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
-    <state width="1807" height="391" key="GridCell.Tab.1.center" timestamp="1616777145728">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state width="1807" height="391" key="GridCell.Tab.1.center/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
-    <state width="1807" height="391" key="GridCell.Tab.1.left" timestamp="1616777145728">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state width="1807" height="391" key="GridCell.Tab.1.left/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
-    <state width="1807" height="391" key="GridCell.Tab.1.right" timestamp="1616777145728">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state width="1807" height="391" key="GridCell.Tab.1.right/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777145728" />
-    <state x="698" y="329" width="911" height="568" key="MultipleFileMergeDialog" timestamp="1618411028178">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state x="698" y="329" width="911" height="568" key="MultipleFileMergeDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618411028178" />
-    <state x="482" y="248" key="SettingsEditor" timestamp="1618416190854">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state x="482" y="248" key="SettingsEditor/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416190854" />
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1618417750257">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state x="588" y="349" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618417750257" />
-    <state x="649" y="441" key="com.intellij.ide.util.TipDialog" timestamp="1616777746818">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state x="649" y="441" key="com.intellij.ide.util.TipDialog/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616777746818" />
-    <state x="744" y="306" width="488" height="615" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1616769643894">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state x="744" y="306" width="488" height="615" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1616769643894" />
-    <state x="761" y="533" width="464" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1618411005112">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state x="761" y="533" width="464" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618411005112" />
-    <state x="737" y="344" width="770" height="538" key="com.jetbrains.plugins.remotesdk.ui.RemoteMappingsConfiguration" timestamp="1618416189637">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state x="737" y="344" width="770" height="538" key="com.jetbrains.plugins.remotesdk.ui.RemoteMappingsConfiguration/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618416189637" />
-    <state x="889" y="327" width="451" height="573" key="ftp.server.browser" timestamp="1618412925543">
-      <screen x="67" y="27" width="1853" height="1173" />
-    </state>
-    <state x="889" y="327" width="451" height="573" key="ftp.server.browser/67.27.1853.1173/0.1200.1920.1080@67.27.1853.1173" timestamp="1618412925543" />
   </component>
 </project>

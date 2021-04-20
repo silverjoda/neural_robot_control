@@ -385,7 +385,7 @@ class Controller:
         np.save(os.path.join(dir_prefix, prefix + "_position"), data_position)
         np.save(os.path.join(dir_prefix, prefix + "_vel"), data_vel)
         np.save(os.path.join(dir_prefix, prefix + "_rotation"), data_rotation)
-        np.save(os.path.join(dir_prefix, prefix + "_angular_vel"), data_angular_vel)
+        np.save(os.path.join(dir_prefix, prefix + "_angular"), data_angular_vel)
         np.save(os.path.join(dir_prefix, prefix + "_timestamp"), data_timestamp)
         np.save(os.path.join(dir_prefix, prefix + "_action"), data_action)
 
