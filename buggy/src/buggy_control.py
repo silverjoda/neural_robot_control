@@ -21,6 +21,7 @@ import os
 import yaml
 import math as m
 import random
+import quaternion
 from stable_baselines import A2C
 
 # root = logging.getLogger()
@@ -47,7 +48,7 @@ class RandomSeq:
 
 class WPGenerator:
     def __init__(self, config):
-        self.config = config
+        self.config = configas_rotation_matrix
         self.wp_sequence = None
         if self.config["wp_sequence"] == "two_pole":
             self.wp_sequence = [[2, 0], [-2, 0]]
@@ -147,15 +148,21 @@ class AHRS_RS:
             rotation_rob = (data.rotation.w, data.rotation.z, data.rotation.x, data.rotation.y)
             angular_vel_rob = (data.angular_velocity.z, data.angular_velocity.x, data.angular_velocity.y)
             euler_rob = self._quat_to_euler(*rotation_rob)
+
+            # Correct vel_rob to local frame using orientation quat:
+            rotation_rob_matrix = quaternion.as_rotation_matrix(np.quaternion(*rotation_rob))
+            vel_rs_corrected = np.matmul(rotation_rob_matrix.T, vel_rob)
+
         else:
             print("RS frame was None, so returning zero values")
             position_rob = [0., 0., 0.]
             vel_rob =  [0., 0., 0.]
+            vel_rs_corrected = vel_rob
             rotation_rob =  [0., 0., 0., 0.]
             angular_vel_rob =  [0., 0., 0.]
             euler_rob =  [0., 0., 0.]
 
-        return position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, self.timestamp
+        return position_rob, vel_rs_corrected, rotation_rob, angular_vel_rob, euler_rob, self.timestamp
 
 
 class PWMDriver:
