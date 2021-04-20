@@ -180,11 +180,11 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.buggy_control" />
       <item itemvalue="Python.hexapod_control" />
       <item itemvalue="Python.t256_rpy" />
-      <item itemvalue="Python.t265_rpy" />
       <item itemvalue="Python.test_sensors" />
+      <item itemvalue="Python.buggy_control" />
+      <item itemvalue="Python.t265_rpy" />
     </list>
     <recent_temporary>
       <list>
