@@ -9,21 +9,13 @@ import numpy as np
 # Import the PCA9685 module.
 import Adafruit_PCA9685
 
-# Uncomment to enable debug output.
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
-
 # Initialise the PCA9685 using the default address (0x40).
 pwm = Adafruit_PCA9685.PCA9685()
 
-# Alternatively specify a different address and/or bus:
-#pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)
-
-motor_id = 0 # 0: motor, 1: servo
-pwm_freq = 50
+motor_id = 1 # 0: motor, 1: servo
+pwm_freq = 100
 scaler = 1
 
-# Set frequency to 60hz, good for servos.
 pwm.set_pwm_freq(pwm_freq)
 
 def set_servo_cmd(channel, val):
