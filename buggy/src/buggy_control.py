@@ -115,9 +115,8 @@ class AHRS_RS:
         self.pipe = rs.pipeline()
         self.cfg = rs.config()
         self.cfg.enable_stream(rs.stream.pose)
-        self.pipe.start(self.cfg, callback=self.rs_cb)
+        self.pipe.start(self.cfg)
         self.timestamp = time.time()
-        self.rs_lock = threading.Lock()
 
         self.rs_frame = None
         print("Finished initializing the rs_t265. ")
@@ -135,9 +134,10 @@ class AHRS_RS:
     def update(self):
         self.timestamp = time.time()
 
-        if self.rs_frame is not None:
-            with self.rs_lock:
-                data = self.rs_frame.as_pose_frame().get_pose_data()
+        frames = self.pipe.wait_for_frames()
+        pose = frames.get_pose_frame()
+        if pose 
+            data = pose.get_pose_data()
 
             position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
             vel_rs = np.array([data.velocity.x, data.velocity.y, data.velocity.z])
