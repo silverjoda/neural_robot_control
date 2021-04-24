@@ -245,9 +245,10 @@ class AHRS_RS:
     def _update(self):
         self.timestamp = time.time()
 
-        if self.rs_frame is not None:
-            with self.rs_lock:
-                data = self.rs_frame.as_pose_frame().get_pose_data()
+        frames = self.pipe.wait_for_frames()
+        pose = frames.get_pose_frame()
+        if pose 
+            data = pose.get_pose_data()
 
             position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
             vel_rs = np.array([data.velocity.x, data.velocity.y, data.velocity.z])
