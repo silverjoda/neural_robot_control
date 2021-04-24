@@ -121,7 +121,7 @@ class AHRS:
         acc_z = self._read_raw_data(
             AHRS.ACCEL_ZOUT_H) / AHRS.ACC_SENSITIVITY
 
-        return return acc_x, acc_y, acc_z 
+        return acc_x, acc_y, acc_z 
 
 
 class AHRS_RS:
@@ -152,6 +152,9 @@ class AHRS_RS:
         roll  =  m.atan2(2.0 * (w*x + y*z), w*w - x*x - y*y + z*z)
         yaw   =  m.atan2(2.0 * (w*z + x*y), w*w + x*x - y*y - z*z)
         return (roll, pitch, yaw)
+    
+    def wait_until_first_rs_frame(self):
+        while self.rs_frame is None: pass
 
     def update(self):
         self.timestamp = time.time()
@@ -190,22 +193,27 @@ if __name__=="__main__":
     ahrs_rs = AHRS_RS()
     print("Initialized sensors, sleeping 1s")
 
-    n_sec_capture = 3
-    print(f"Starting {n_sec_capture} seconds of capture") 
+    print("Waiting for first rs frame...")
+    ahrs_rs.wait_until_first_rs_frame()
+
+    n_samples = 200
+    sample_period = 0.01
+    print(f"Starting {n_samples} samples of capture") 
     ahrs_imu_data_list = []
     ahrs_rs_data_list = []
 
-    t1 = time.time()
-    while True:
-        ahrs_imu_data = ahrs_imu.update()
-        ahrs_rs_data = ahrs_rs.update()
-        ahrs_imu_data_list.append(ahrs_imu_data)
-        ahrs_rs_data_list.append(ahrs_rs_data)
+    for _ in range(n_samples):
+        t1 = time.time()
+        imu_x, imu_y, imu_z = ahrs_imu.update()
+        rs_x, rs_y, rs_z = ahrs_rs.update()
+        ahrs_imu_data_list.append(imu_x)
+        ahrs_rs_data_list.append(rs_x)
 
-        if time.time() - t1 > n_sec_capture: break
+        while time.time() - t1 < sample_period: pass 
 
     import matplotlib.pyplot as plt
     t = range(len(ahrs_imu_data_list))
+    print(f"Showing {len(t)} data points")
     plt.plot(t, ahrs_imu_data_list, 'b') 
     plt.plot(t, ahrs_rs_data_list, 'r') 
     plt.show()
