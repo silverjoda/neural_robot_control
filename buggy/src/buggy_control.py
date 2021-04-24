@@ -48,7 +48,7 @@ class RandomSeq:
 
 class WPGenerator:
     def __init__(self, config):
-        self.config = configas_rotation_matrix
+        self.config = config
         self.wp_sequence = None
         if self.config["wp_sequence"] == "two_pole":
             self.wp_sequence = [[2, 0], [-2, 0]]
@@ -136,7 +136,7 @@ class AHRS_RS:
 
         frames = self.pipe.wait_for_frames()
         pose = frames.get_pose_frame()
-        if pose 
+        if pose: 
             data = pose.get_pose_data()
 
             position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
