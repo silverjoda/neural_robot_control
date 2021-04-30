@@ -119,9 +119,9 @@ class AHRS_RS:
         # added new
         device = self.cfg.resolve(self.pipe).get_device()
         pose_sensor = device.first_pose_sensor()
-        pose_sensor.set_option(rs.option.enable_map_relocalization, 0)
+        #pose_sensor.set_option(rs.option.enable_map_relocalization, 0)
         pose_sensor.set_option(rs.option.enable_pose_jumping, 0)
-        pose_sensor.set_option(rs.option.enable_motion_correction, 0)
+        #pose_sensor.set_option(rs.option.enable_motion_correction, 0)
         pose_sensor.set_option(rs.option.enable_relocalization, 0)
         # RS2_OPTION_ENABLE_POSE_JUMPING
         # RS2_OPTION_ENABLE_MAPPING
