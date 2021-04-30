@@ -14,8 +14,8 @@
 "velocities_and_torques" : False
 "turn_joints_rads_low" : [-0.5, -1.0, 0.5]
 "turn_joints_rads_high" : [0.5, 0.0, 1.5]
-"direct_joints_rads_low" : [-0.6, -1.17, 0.16]
-"direct_joints_rads_high" : [0.6, 0.36, 1.32]
+"direct_joints_rads_low" : [-0.5, -0.7, 0.3]
+"direct_joints_rads_high" : [0.5, 0.7, 1.3]
 "turn_transition_thresh" : 0.4
 "turn_clip_value" : 0.6
 "dynamic_time_feature_ub" : 0.6

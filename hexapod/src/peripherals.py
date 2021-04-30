@@ -211,6 +211,12 @@ class AHRS_RS:
         self.pipe = rs.pipeline()
         self.cfg = rs.config()
         self.cfg.enable_stream(rs.stream.pose)
+
+        device = self.cfg.resolve(self.pipe).get_device()
+        pose_sensor = device.first_pose_sensor()
+        pose_sensor.set_option(rs.option.enable_pose_jumping, 0)
+        pose_sensor.set_option(rs.option.enable_relocalization, 0)
+
         self.pipe.start(self.cfg)
         self.timestamp = time.time()
 

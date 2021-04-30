@@ -369,10 +369,6 @@ class HexapodController:
             print(
                 f"Test angles: {test_angles}, rads: {test_angles_rads}, servo: {test_angles_servo}, servo: {test_angles_servo_rads}, normed: {test_angles_rads_normed}, match={np.allclose(test_angles, test_angles_rads_normed)}")
 
-        # TODO: Continue here.. Make proper norm->rads->servo and the other way around and test thoroughly to see if reads match writes, etc
-        # TODO: Check if for give observation, neural network in simulation gives same result as in robot
-        # TODO: Make action smoothing .
-
     def test_nn_act(self):
         ref_obs = [0.00042633183, 0.00093570194, -0.00893027, 0.9999596, -0.24590424, 0.066709936, -0.27846, 0.026221909, 0.0004127728, 0.007374887, -0.017559534, -0.98888886, -2.6393616, 0.18279997, 0.16875656, 0.24482203, 0.1254808, 0.16834405, 0.19444, 0.111322425, 0.17827263, 0.08961531, 0.11070581, 0.1746512, 0.09083061, 0.113977194, 0.18196149, 0.094134234, 0.1278813, 0.17632556, 0.27165848, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         ref_act = [0.37735415, -1.0, -1.0, 1.0, 0.98795414, 0.7211293, -0.9999838, 0.9999945, 1.0, -0.99999607, -0.3639546, -0.7103379, -0.8665961, 1.0, -1.0, -1.0, -0.99731225, 0.9699502]
