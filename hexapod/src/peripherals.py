@@ -229,10 +229,6 @@ class AHRS_RS:
 
         print("Finished initializing the rs_t265. ")
 
-    def rs_cb(self, data_frame):
-        with self.rs_lock:
-            self.rs_frame = data_frame
-
     def update(self, heading_spoof_angle=0):
         self.timestamp = time.time()
 
