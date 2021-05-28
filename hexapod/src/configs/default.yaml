@@ -1,4 +1,4 @@
-"policy_direct" : "RUGGED_TD3_OPTUNA_policy.zip"
+"policy_direct" : "OBSTACLE_TD3_OPTUNA_policy.zip"
 "policy_cw" : "CW_TD3_OPTUNA_policy.zip"
 "policy_ccw" : "CCW_TD3_OPTUNA_policy.zip"
 "motors_on" : True
@@ -9,7 +9,7 @@
 "update_period" : 0.05
 "angle_increment" : 0.08
 "max_servo_speed" : 500
-"max_servo_torque" : 1023
+"max_servo_torque" : 800
 "use_contacts" : True
 "velocities_and_torques" : False
 "turn_joints_rads_low" : [-0.5, -1.0, 0.5]

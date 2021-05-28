@@ -63,7 +63,7 @@ class HexapodController:
         self.current_servo_speed = 0
         self.idling = True
         self.xd_queue = []
-        self.prev_act = np.zeros(18)
+        self.prev_joints_norm = np.zeros(18)
 
     def init_hardware(self):
         # Set GPIO for sensor inputs
@@ -313,18 +313,12 @@ class HexapodController:
         joint_velocities = [0] * 18
 
         self.dynamic_time_feature = (float(self.dynamic_step_ctr) / self.config["dynamic_max_steps"]) * 2 - 1
+        obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_norm, self.prev_joints_norm, joint_torques))
 
-        if self.config["velocities_and_torques"]:
-            obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_norm, joint_torques, joint_velocities))
-        else:
-            # torso_quat, torso_vel, torso_pos, [signed_deviation], time_feature, [avg_vel], scaled_joint_angles, self.prev_act
-            obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_norm, self.prev_act))
-
-        # TODO: Print entire obs with labels for debugging purposes
-        # TODO: Make action smoothing
         #obs_dict = {"Quat" : quat, "vel_rob_relative" : vel_rob_relative, "pos_rob_relative" : pos_rob_relative, "yaw" : yaw, "dynamic_time_feature" : self.dynamic_time_feature,
         #            "avg_vel" : avg_vel, "joints_normed" : joints_normed, "prev_act" : self.prev_act}
 
+        self.prev_joints_norm = joints_norm
         return obs
 
     def get_normalized_torques(self):
