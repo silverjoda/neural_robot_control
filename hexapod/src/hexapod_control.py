@@ -313,10 +313,7 @@ class HexapodController:
         joint_velocities = [0] * 18
 
         self.dynamic_time_feature = (float(self.dynamic_step_ctr) / self.config["dynamic_max_steps"]) * 2 - 1
-        obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], [avg_vel], joints_norm, self.prev_joints_norm, joint_torques))
-
-        #obs_dict = {"Quat" : quat, "vel_rob_relative" : vel_rob_relative, "pos_rob_relative" : pos_rob_relative, "yaw" : yaw, "dynamic_time_feature" : self.dynamic_time_feature,
-        #            "avg_vel" : avg_vel, "joints_normed" : joints_normed, "prev_act" : self.prev_act}
+        obs = np.concatenate((quat, vel_rob_relative, pos_rob_relative, [yaw], [self.dynamic_time_feature], joints_norm, self.prev_joints_norm, joint_torques))
 
         self.prev_joints_norm = joints_norm
         return obs
