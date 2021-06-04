@@ -9,13 +9,16 @@
 import pyrealsense2 as rs
 import numpy as np
 
+width = 424
+height = 240
+
 try:
     # Create a context object. This object owns the handles to all connected realsense devices
     pipeline = rs.pipeline()
-
-    # Configure streams
+    
+    #Configure streams
     config = rs.config()
-    config.enable_stream(rs.stream.depth, 424, 240, rs.format.z16, 6)
+    config.enable_stream(rs.stream.depth, width, height, rs.format.z16, 6)
 
     # Start streaming
     pipeline.start(config)
@@ -34,8 +37,8 @@ try:
         # Print a simple text-based representation of the image, by breaking it into 10x20 pixel regions and approximating the coverage of pixels within one meter
         if True:
             coverage = [0]*64
-            for y in range(240):
-                for x in range(424):
+            for y in range(height):
+                for x in range(width):
                     dist = depth.get_distance(x, y)
                     if 0 < dist and dist < 1:
                         coverage[x//10] += 1
@@ -47,11 +50,6 @@ try:
                     coverage = [0]*64
                     print(line)
     exit(0)
-#except rs.error as e:
-#    # Method calls agaisnt librealsense objects may throw exceptions of type pylibrs.error
-#    print("pylibrs.error was thrown when calling %s(%s):\n", % (e.get_failed_function(), e.get_failed_args()))
-#    print("    %s\n", e.what())
-#    exit(1)
 except Exception as e:
-    print(e)
+    print("ERROR", e)
     pass

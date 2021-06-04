@@ -318,6 +318,40 @@ class AHRS_RS:
             time.sleep(0.3)
 
 
+class D435Camera:
+    def __init__(self):
+        print("Initializing the d435.")
+
+        self.width = 424
+        self.height = 240
+        self.format = rs.format.z16
+        self.freq = 6
+        
+        pipeline = rs.pipeline()
+    
+        config = rs.config()
+        config.enable_stream(rs.stream.depth, self.width, self.height, rs.format.z16, self.freq)
+
+        pipeline.start(config)
+
+    def get_depth_image(self):
+        frames = pipeline.wait_for_frames()
+        depth = frames.get_depth_frame()
+        depth_img_arr = np.asanyarray(depth.get_data())
+
+        return depth_img_arr
+
+    def get_depth_features(self, quat):
+        x,y,z,w = quat
+        rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w,x,y,z))
+        depth_img = self.get_depth_image()
+        depth_img_rot = np.matmul(rot_mat, depth_img)
+        
+        # Crop image to appropriate dims
+
+        
+        return 0,0,0
+
 def read_contacts(leg_sensor_gpio_inputs):
     return [GPIO.input(ipt) * 2 - 1 for ipt in leg_sensor_gpio_inputs]
 
