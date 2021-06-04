@@ -24,7 +24,7 @@ try:
     config.enable_stream(rs.stream.depth, 424, 240, rs.format.z16, 6)
 
     # Start streaming
-    pipeline.start(config)
+    pipe_profile = pipeline.start(config)
 
     while True:
         frames = pipeline_t265.wait_for_frames()
@@ -71,7 +71,12 @@ try:
         # Calls to get_frame_data(...) and get_frame_timestamp(...) on a device will return stable values until wait_for_frames(...) is called
         frames = pipeline.wait_for_frames()
         depth = frames.get_depth_frame()
-        if not depth: continue
+        
+        pc = rs.pointcloud()
+        points = pc.calculate(depth)
+        # TODO: maybe this is correct, try decimation as well
+        print(np.asanyarray(points.get_vertices())[10000:10010])
+        continue
 
         # TODO: THIS IS WRONG
         depth_img_arr = np.asanyarray(depth.get_data())
