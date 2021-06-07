@@ -21,6 +21,8 @@ import quaternion
 # Torques are positive upwards and when leg is being pushed backward
 from stable_baselines3 import A2C
 import RPi.GPIO as GPIO
+from multiprocessing import Process
+
 
 class JoyController():
     def __init__(self):
@@ -337,7 +339,22 @@ class D435Camera:
         self.pipeline.start(config)
         self.decimate = rs.decimation_filter(8)
 
-    def get_depth_image(self):
+        self.depth_pc = np.zeros((3,self.config["n_depth_points"]))
+        
+        p = Process(target=self.launch_depth_pc_update)
+        p.start()
+
+        # TODO: make multiprocessing correctly
+
+    def launch_depth_pc_update(self):
+        while True:
+            self.depth_pc = self.get_depth_pc()
+
+    def get_depth_features_non_blocking(self, quat)
+        depth_feats = self.get_depth_features(self.depth_pc, quat)
+        return depth_feats
+
+    def get_depth_pc(self):
         frames = self.pipeline.wait_for_frames()
         dec_frames = self.decimate.process(frames).as_frameset()
         depth = dec_frames.get_depth_frame()
