@@ -8,8 +8,8 @@
 "imu_ahrs_update_period" : 0.01
 "update_period" : 0.05
 "angle_increment" : 0.08
-"max_servo_speed" : 300
-"max_servo_torque" : 800
+"max_servo_speed" : 200
+"max_servo_torque" : 950
 "use_contacts" : True
 "velocities_and_torques" : False
 "turn_joints_rads_low" : [-0.5, -1.0, 0.5]
