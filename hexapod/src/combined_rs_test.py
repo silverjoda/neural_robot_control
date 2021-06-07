@@ -10,6 +10,7 @@ import pyrealsense2 as rs
 import math as m
 import quaternion
 import numpy as np
+import time
 try:
     pipeline_t265 = rs.pipeline()
     config_t265 = rs.config()
@@ -25,6 +26,8 @@ try:
 
     # Start streaming
     pipe_profile = pipeline.start(config)
+
+    decimate = rs.decimation_filter(8)
 
     while True:
         frames = pipeline_t265.wait_for_frames()
@@ -69,34 +72,23 @@ try:
         
         # This call waits until a new coherent set of frames is available on a device
         # Calls to get_frame_data(...) and get_frame_timestamp(...) on a device will return stable values until wait_for_frames(...) is called
+        t1 = time.time()
         frames = pipeline.wait_for_frames()
-        depth = frames.get_depth_frame()
+        dec_frames = decimate.process(frames).as_frameset()
+        depth = dec_frames.get_depth_frame()
         
+        n_depth = 1000
         pc = rs.pointcloud()
         points = pc.calculate(depth)
-        # TODO: maybe this is correct, try decimation as well
-        print(np.asanyarray(points.get_vertices())[10000:10010])
-        continue
+        pts_array = np.asarray(points.get_vertices(), dtype=np.ndarray)
+        pts_array_decimated = pts_array[np.random.randint(0, len(pts_array), n_depth)]
 
-        # TODO: THIS IS WRONG
-        depth_img_arr = np.asanyarray(depth.get_data())
-        img_rot = np.matmul(rot_mat,
-                depth_img_arr.reshape(-1)).reshape(*depth_img_arr.shape)
-        exit()
-        # Print a simple text-based representation of the image, by breaking it into 10x20 pixel regions and approximating the coverage of pixels within one meter
-        coverage = [0]*64
-        for y in range(240):
-            for x in range(424):
-                dist = depth.get_distance(x, y)
-                if 0 < dist and dist < 1:
-                    coverage[x//10] += 1
-            
-            if y%20 is 19:
-                line = ""
-                for c in coverage:
-                    line += " .:nhBXWW"[c//25]
-                coverage = [0]*64
-                print(line)
+        pts_numpy = np.zeros((3, len(pts_array_decimated)))
+
+        for i in range(len(pts_array_decimated)):
+            pts_numpy[:, i] = pts_array_decimated[i]
+ 
+        img_rot = np.matmul(rot_mat, pts_numpy)
 
 
     exit(0)

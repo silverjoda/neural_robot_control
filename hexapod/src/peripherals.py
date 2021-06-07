@@ -319,38 +319,60 @@ class AHRS_RS:
 
 
 class D435Camera:
-    def __init__(self):
+    def __init__(self, config):
         print("Initializing the d435.")
+
+        self.config = config
 
         self.width = 424
         self.height = 240
         self.format = rs.format.z16
         self.freq = 6
         
-        pipeline = rs.pipeline()
+        self.pipeline = rs.pipeline()
     
-        config = rs.config()
-        config.enable_stream(rs.stream.depth, self.width, self.height, rs.format.z16, self.freq)
+        self.rs_config = rs.config()
+        self.rs_config.enable_stream(rs.stream.depth, self.width, self.height, rs.format.z16, self.freq)
 
-        pipeline.start(config)
+        self.pipeline.start(config)
+        self.decimate = rs.decimation_filter(8)
 
     def get_depth_image(self):
-        frames = pipeline.wait_for_frames()
-        depth = frames.get_depth_frame()
-        depth_img_arr = np.asanyarray(depth.get_data())
+        frames = self.pipeline.wait_for_frames()
+        dec_frames = self.decimate.process(frames).as_frameset()
+        depth = dec_frames.get_depth_frame()
+        pc_rs.pointcloud()
+        points = pc.calculate(depth)
+        pts_array = np.asarray(points.get_vertices(), dtype=np.ndarray)
+        pts_array_sparse = pts_array[np.random.randint(0, len(pts_array),
+            self.config["n_depth_points"])
+        pts_numpy = np.zeros((3, len(pts_array_sparse)))
+        
+        for i in range(len(pts_array_sparse)):
+            pts_numpy[:, i] = pts_array_decimated[i]
+        
+        return pts_numpy 
 
-        return depth_img_arr
-
-    def get_depth_features(self, quat):
+    def get_depth_features(self, pc, quat):
         x,y,z,w = quat
         rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w,x,y,z))
-        depth_img = self.get_depth_image()
-        depth_img_rot = np.matmul(rot_mat, depth_img)
         
-        # Crop image to appropriate dims
+        pc_rot = np.matmul(rot_mat, pc)
+        
+        # Crop pc to appropriate region
+        pc_rot = pc_rot[pc_rot[0] < self.config["depth_x_bnd"]]
+        pc_rot = pc_rot[np.logical_and(pc_rot[1] < self.config["depth_y_bnd"],
+            pc_rot[0] > -self.config["depth_y_bnd"]]
+        pc_rot = pc_rot[np.logical_and(pc_rot[2]
+            < self.config["depth_z_bnd_high"], pc_rot[0]
+            > self.config["depth_z_bnd_low"]]
 
-        
-        return 0,0,0
+        # Calculate features
+        pc_mean_height = np.mean(pc_rot[2])
+        pc_mean_dist = np.mean(pc_rot[0])
+        presence = len(pc_rot[0])
+
+        return pc_mean_height, pc_mean_dist, presence
 
 def read_contacts(leg_sensor_gpio_inputs):
     return [GPIO.input(ipt) * 2 - 1 for ipt in leg_sensor_gpio_inputs]
