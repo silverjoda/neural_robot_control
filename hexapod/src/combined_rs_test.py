@@ -68,18 +68,18 @@ try:
                 
         quat = quaternion.quaternion(w,x,y,z) 
         rot_mat = quaternion.as_rotation_matrix(quat)
-
         
         # This call waits until a new coherent set of frames is available on a device
         # Calls to get_frame_data(...) and get_frame_timestamp(...) on a device will return stable values until wait_for_frames(...) is called
-        t1 = time.time()
         frames = pipeline.wait_for_frames()
-        dec_frames = decimate.process(frames).as_frameset()
-        depth = dec_frames.get_depth_frame()
-        
+        #dec_frames = decimate.process(frames).as_frameset()
+        depth = frames.get_depth_frame()
+        print(type(depth))
         n_depth = 1000
         pc = rs.pointcloud()
+        t1 = time.time()
         points = pc.calculate(depth)
+        print(time.time() - t1)
         pts_array = np.asarray(points.get_vertices(), dtype=np.ndarray)
         pts_array_decimated = pts_array[np.random.randint(0, len(pts_array), n_depth)]
 

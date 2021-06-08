@@ -21,7 +21,7 @@ import quaternion
 # Torques are positive upwards and when leg is being pushed backward
 from stable_baselines3 import A2C
 import RPi.GPIO as GPIO
-from multiprocessing import Process
+import multiprocessing
 
 
 class JoyController():
@@ -324,6 +324,8 @@ class D435Camera:
     def __init__(self, config):
         print("Initializing the d435.")
 
+        # TODO: Run and debug. Currently some initialization error
+
         self.config = config
 
         self.width = 424
@@ -339,20 +341,28 @@ class D435Camera:
         self.pipeline.start(config)
         self.decimate = rs.decimation_filter(8)
 
-        self.depth_pc = np.zeros((3,self.config["n_depth_points"]))
+        self.current_depth_features = [0, 0, 0]
+
+        self.input_queue = multiprocessing.Queue()
+        self.output_queue = multiprocessing.Queue()
         
-        p = Process(target=self.launch_depth_pc_update)
-        p.start()
+        self.p = multiprocessing.Process(target=self.worker)
+        self.p.start()
 
-        # TODO: make multiprocessing correctly
+        self.input_queue.put([0, 0, 0, 1])
 
-    def launch_depth_pc_update(self):
+    def worker(self):
         while True:
-            self.depth_pc = self.get_depth_pc()
+            quat = self.input_queue.get()
+            pc = self.get_depth_pc()
+            depth_features = self.get_depth_features(pc, quat)
+            self.output_queue.put(depth_features)
 
-    def get_depth_features_non_blocking(self, quat)
-        depth_feats = self.get_depth_features(self.depth_pc, quat)
-        return depth_feats
+    def get_latest_depth_features(self):
+        if not self.output_queue.empty():
+            self.current_depth_features = self.output_queue.get()
+            self.input_queue.put(self.current_quat)
+        return self.current_depth_features
 
     def get_depth_pc(self):
         frames = self.pipeline.wait_for_frames()
@@ -362,7 +372,7 @@ class D435Camera:
         points = pc.calculate(depth)
         pts_array = np.asarray(points.get_vertices(), dtype=np.ndarray)
         pts_array_sparse = pts_array[np.random.randint(0, len(pts_array),
-            self.config["n_depth_points"])
+            self.config["n_depth_points"])]
         pts_numpy = np.zeros((3, len(pts_array_sparse)))
         
         for i in range(len(pts_array_sparse)):
@@ -379,10 +389,10 @@ class D435Camera:
         # Crop pc to appropriate region
         pc_rot = pc_rot[pc_rot[0] < self.config["depth_x_bnd"]]
         pc_rot = pc_rot[np.logical_and(pc_rot[1] < self.config["depth_y_bnd"],
-            pc_rot[0] > -self.config["depth_y_bnd"]]
+            pc_rot[1] > -self.config["depth_y_bnd"])]
         pc_rot = pc_rot[np.logical_and(pc_rot[2]
-            < self.config["depth_z_bnd_high"], pc_rot[0]
-            > self.config["depth_z_bnd_low"]]
+            < self.config["depth_z_bnd_high"], pc_rot[2]
+            > self.config["depth_z_bnd_low"])]
 
         # Calculate features
         pc_mean_height = np.mean(pc_rot[2])
@@ -393,4 +403,23 @@ class D435Camera:
 
 def read_contacts(leg_sensor_gpio_inputs):
     return [GPIO.input(ipt) * 2 - 1 for ipt in leg_sensor_gpio_inputs]
+
+def test_async_depth_features():
+    with open('configs/default.yaml') as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+    depth_cam = D435Camera(config)
+
+    while True:
+        quat = [0,0,0,1]
+        d_feat = depth_cam.get_latest_depth_features()
+        print(d_feat)
+        time.sleep(1)
+
+def main():
+    test_async_depth_features()
+
+if __name__=="__main__":
+    main()
+
+    
 
