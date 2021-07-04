@@ -401,6 +401,7 @@ class D435Camera:
 
         return pc_mean_height, pc_mean_dist, presence
 
+
 def read_contacts(leg_sensor_gpio_inputs):
     return [GPIO.input(ipt) * 2 - 1 for ipt in leg_sensor_gpio_inputs]
 

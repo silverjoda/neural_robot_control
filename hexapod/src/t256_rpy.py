@@ -14,12 +14,14 @@ import math as m
 
 # Declare RealSense pipeline, encapsulating the actual device and sensors
 pipe = rs.pipeline()
-
-# Build config object and request pose data
 cfg = rs.config()
 cfg.enable_stream(rs.stream.pose)
 
-# Start streaming with requested config
+device = cfg.resolve(pipe).get_device()
+pose_sensor = device.first_pose_sensor()
+pose_sensor.set_option(rs.option.enable_pose_jumping, 0)
+pose_sensor.set_option(rs.option.enable_relocalization, 0)
+
 pipe.start(cfg)
 
 try:
