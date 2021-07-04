@@ -452,7 +452,8 @@ def test_ahrs_rs():
         time.sleep(0.01)
 
 def main():
-    test_async_depth_features()
+    #test_async_depth_features()
+    test_ahrs_rs()
 
 if __name__=="__main__":
     main()
