@@ -7,7 +7,6 @@
 ##           librealsense T265 rpy example         ##
 #####################################################
 
-
 # First import the library
 import pyrealsense2 as rs
 import math as m

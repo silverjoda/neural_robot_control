@@ -20,10 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="M">
-      <change afterPath="$PROJECT_DIR$/hexapod/src/ros/configs/default.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hexapod/src/ros/ext_depth_perception.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hexapod/src/peripherals.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/peripherals.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/ros/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/ros/configs/default.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod/src/ros/ext_depth_perception.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/ros/ext_depth_perception.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hexapod/src/t256_rpy.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/t256_rpy.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -66,7 +66,7 @@
       <recent name="$PROJECT_DIR$/quadcopter" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.buggy_control">
+  <component name="RunManager" selected="Python.peripherals">
     <configuration name="buggy_control" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="neural_robot_control" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -105,6 +105,27 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/hexapod_control.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="peripherals" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="neural_robot_control" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/hexapod/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/peripherals.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -159,44 +180,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="test_sensors" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="neural_robot_control" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-        <env name="LD_LIBRARY_PATH" value="/usr/local/lib" />
-        <env name="PYTHONPATH" value="/usr/local/lib" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/hexapod/src" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/test_sensors.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.buggy_control" />
       <item itemvalue="Python.hexapod_control" />
       <item itemvalue="Python.t256_rpy" />
       <item itemvalue="Python.t265_rpy" />
-      <item itemvalue="Python.test_sensors" />
+      <item itemvalue="Python.peripherals" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.peripherals" />
         <item itemvalue="Python.buggy_control" />
         <item itemvalue="Python.t265_rpy" />
         <item itemvalue="Python.hexapod_control" />
         <item itemvalue="Python.t256_rpy" />
-        <item itemvalue="Python.test_sensors" />
       </list>
     </recent_temporary>
   </component>
@@ -229,13 +226,6 @@
       <workItem from="1618415354427" duration="2309000" />
       <workItem from="1618417680101" duration="670000" />
       <workItem from="1618419039422" duration="288000" />
-    </task>
-    <task id="LOCAL-00010" summary="M">
-      <created>1606407851555</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1606407851555</updated>
     </task>
     <task id="LOCAL-00011" summary="M">
       <created>1606411594147</created>
@@ -573,7 +563,14 @@
       <option name="project" value="LOCAL" />
       <updated>1622206510217</updated>
     </task>
-    <option name="localTasksCounter" value="59" />
+    <task id="LOCAL-00059" summary="M">
+      <created>1625411615162</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1625411615162</updated>
+    </task>
+    <option name="localTasksCounter" value="60" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

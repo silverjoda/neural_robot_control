@@ -18,10 +18,12 @@ import math as m
 import yaml
 import threading
 import quaternion
+import rospy
 # Torques are positive upwards and when leg is being pushed backward
 from stable_baselines3 import A2C
 import RPi.GPIO as GPIO
 import multiprocessing
+from geometry_msgs.msg import Point, Quaternion
 
 
 class JoyController():
@@ -206,6 +208,8 @@ class AHRS_RS:
     def __init__(self):
         print("Initializing the rs_t265. ")
 
+        self.setup_ros()
+
         self.rs_to_world_mat = np.array([[0, 0, 1],
                                          [1, 0, 0],
                                          [0, 1, 0]])
@@ -231,6 +235,24 @@ class AHRS_RS:
 
         print("Finished initializing the rs_t265. ")
 
+    def setup_ros(self):
+        # Ros stuff
+        rospy.init_node("ahrs_rs")
+        rospy.Subscriber("depth_feat",
+                         Point,
+                         self._ros_depth_feat_callback, queue_size=1)
+        self.depth_feat_lock = threading.Lock()
+        self.depth_feat_data = None
+
+        self.orientation_publisher = rospy.Publisher("quat_orientation",
+                                                    Quaternion,
+                                                    queue_size=1)
+        time.sleep(1.5)
+
+    def _ros_depth_feat_callback(self, data):
+        with self.depth_feat_lock:
+            self.depth_feat_data = data
+
     def update(self, heading_spoof_angle=0):
         self.timestamp = time.time()
 
@@ -254,12 +276,6 @@ class AHRS_RS:
             yaw_corrected = yaw + heading_spoof_angle + self.yaw_offset
             quat_yaw_corrected = self.e2q(roll, pitch, yaw_corrected)
 
-            #print("Frame #{}".format(pose.frame_number))
-            #print(
-            #    "RPY [deg]: Roll: {0:.7f}, Pitch: {1:.7f}, Yaw: {2:.7f}".format(
-            #        roll, pitch, yaw
-            #    )
-            #)
         else:
             self.position_rob = np.array([0, 0, 0])
             self.vel_rob = np.array([0, 0, 0])
@@ -272,7 +288,20 @@ class AHRS_RS:
         self.current_heading = yaw
         #print(f"Yaw: {yaw}, yaw_corrected: {yaw_corrected}, heading_spoof: {heading_spoof_angle}")
 
+        # Publish quaternion
+        msg = Quaternion()
+        msg.x = quat_yaw_corrected[0]
+        msg.y = quat_yaw_corrected[1]
+        msg.z = quat_yaw_corrected[2]
+        msg.w = quat_yaw_corrected[3]
+        self.orientation_publisher.publish(msg)
+
         return roll, pitch, yaw_corrected, quat_yaw_corrected, self.vel_rob, self.timestamp
+
+    def get_depth_feat(self):
+        with self.depth_feat_lock:
+            depth_feat = self.depth_feat_data
+        return depth_feat
 
     def q2e(self, x, y, z, w):
         pitch = -m.asin(2.0 * (x * z - w * y))
@@ -401,7 +430,6 @@ class D435Camera:
 
         return pc_mean_height, pc_mean_dist, presence
 
-
 def read_contacts(leg_sensor_gpio_inputs):
     return [GPIO.input(ipt) * 2 - 1 for ipt in leg_sensor_gpio_inputs]
 
@@ -415,6 +443,13 @@ def test_async_depth_features():
         d_feat = depth_cam.get_latest_depth_features()
         print(d_feat)
         time.sleep(1)
+
+def test_ahrs_rs():
+    ahrs = AHRS_RS()
+
+    while True:
+        ahrs.update(0)
+        time.sleep(0.01)
 
 def main():
     test_async_depth_features()
