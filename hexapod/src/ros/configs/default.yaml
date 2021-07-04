@@ -1,7 +1,13 @@
 "node_name" : "ext_depth_perception"
-"raw_pc_topic" : "camera/color/points"
+"raw_pc_topic" : "camera/depth/color/points"
 "transformed_pc_publisher_topic" : "transformed_pc"
 "depth_feat_publisher_topic" : "depth_feat"
 "orientation_topic" : "quat_orientation"
 "ros_rate" : 10
 "tf_buffer_size" : 10
+"n_depth_points" : 1000
+"depth_x_bnd" : 0.5
+"depth_y_bnd" : 0.3
+"depth_z_bnd_low" : 0.0
+"depth_z_bnd_high" : 0.3
+

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import time
 import itertools
 import torch.nn as nn
@@ -299,6 +300,8 @@ class AHRS_RS:
         return roll, pitch, yaw_corrected, quat_yaw_corrected, self.vel_rob, self.timestamp
 
     def get_depth_feat(self):
+        if self.depth_feat_data is None:
+            return (0,0,0)
         with self.depth_feat_lock:
             depth_feat = self.depth_feat_data
         return depth_feat
@@ -447,6 +450,7 @@ def test_async_depth_features():
 def test_ahrs_rs():
     ahrs = AHRS_RS()
 
+    print("Starting ahrs test")
     while True:
         ahrs.update(0)
         time.sleep(0.01)

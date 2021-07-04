@@ -22,7 +22,7 @@ try:
 
     # Configure streams
     config = rs.config()
-    config.enable_stream(rs.stream.depth, 424, 240, rs.format.z16, 6)
+    config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 
     # Start streaming
     pipe_profile = pipeline.start(config)
@@ -71,15 +71,13 @@ try:
         
         # This call waits until a new coherent set of frames is available on a device
         # Calls to get_frame_data(...) and get_frame_timestamp(...) on a device will return stable values until wait_for_frames(...) is called
+        t1 = time.time()
         frames = pipeline.wait_for_frames()
-        #dec_frames = decimate.process(frames).as_frameset()
-        depth = frames.get_depth_frame()
-        print(type(depth))
+        dec_frames = decimate.process(frames).as_frameset()
+        depth = dec_frames.get_depth_frame()
         n_depth = 1000
         pc = rs.pointcloud()
-        t1 = time.time()
         points = pc.calculate(depth)
-        print(time.time() - t1)
         pts_array = np.asarray(points.get_vertices(), dtype=np.ndarray)
         pts_array_decimated = pts_array[np.random.randint(0, len(pts_array), n_depth)]
 
@@ -91,6 +89,7 @@ try:
         img_rot = np.matmul(rot_mat, pts_numpy)
 
 
+        print(time.time() - t1)
     exit(0)
 except Exception as e:
     print(e)

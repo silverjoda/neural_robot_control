@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import yaml
 import rospy
 import tf2_ros
@@ -56,6 +56,8 @@ class RosCameraInterface:
             self.orientation_data = data
 
     def publish_transformed_pc(self, pc):
+        if pc is None:
+            return 
         pc_data = np.zeros(len(pc[0]), dtype=[
             ('x', np.float32),
             ('y', np.float32),
@@ -69,7 +71,7 @@ class RosCameraInterface:
         pc_data['vectors'] = np.arange(len(pc[0]))[:, np.newaxis]
 
         msg = ros_numpy.msgify(PointCloud2, pc_data)
-        msg.header.frame_id = self.config["camera_link"]
+        msg.header.frame_id = "camera_link"
         msg.header.stamp = rospy.Time.now()
 
         self.transformed_pc_publisher.publish(msg)
@@ -100,18 +102,21 @@ class RosCameraInterface:
         x, y, z, w = quat.x, quat.y, quat.z, quat.w
         rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w, x, y, z))
 
+        if self.raw_pc_data is None:
+            return 0,0,0, None
+
         # Prepare point cloud
         with self.raw_pc_lock:
             pc = ros_numpy.numpify(self.raw_pc_data).ravel()
-        pc_array = np.stack([pc[f] for f in ['x', 'y', 'z']] + [np.ones(pc.size)])
-        pc_rot = np.matmul(rot_mat, pc_array)[:3, :]
+        pc_array = np.stack([pc[f] for f in ['x', 'y', 'z']])
+        pc_rot = np.matmul(rot_mat, pc_array)
 
         ## Calculate depth features
         # Crop pc to appropriate region
-        pc_rot = pc_rot[pc_rot[0] < self.config["depth_x_bnd"]]
-        pc_rot = pc_rot[np.logical_and(pc_rot[1] < self.config["depth_y_bnd"],
+        pc_rot = pc_rot[:, pc_rot[0] < self.config["depth_x_bnd"]]
+        pc_rot = pc_rot[:, np.logical_and(pc_rot[1] < self.config["depth_y_bnd"],
                                        pc_rot[1] > -self.config["depth_y_bnd"])]
-        pc_rot = pc_rot[np.logical_and(pc_rot[2]
+        pc_rot = pc_rot[:, np.logical_and(pc_rot[2]
                                        < self.config["depth_z_bnd_high"], pc_rot[2]
                                        > self.config["depth_z_bnd_low"])]
 
@@ -128,6 +133,7 @@ def main():
     with open('configs/default.yaml') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     cam = RosCameraInterface(config)
+    cam.loop_processing()
 
 if __name__=="__main__":
     main()
