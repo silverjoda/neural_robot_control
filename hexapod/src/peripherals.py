@@ -324,8 +324,6 @@ class D435Camera:
     def __init__(self, config):
         print("Initializing the d435.")
 
-        # TODO: Run and debug. Currently some initialization error
-
         self.config = config
 
         self.width = 424
@@ -334,11 +332,13 @@ class D435Camera:
         self.freq = 6
         
         self.pipeline = rs.pipeline()
-    
+        
         self.rs_config = rs.config()
-        self.rs_config.enable_stream(rs.stream.depth, self.width, self.height, rs.format.z16, self.freq)
+        self.rs_config.enable_stream(rs.stream.depth, self.width, self.height,
+                self.format, self.freq)
 
-        self.pipeline.start(config)
+        self.pipeline.start(self.rs_config)
+        
         self.decimate = rs.decimation_filter(8)
 
         self.current_depth_features = [0, 0, 0]
@@ -408,7 +408,7 @@ def test_async_depth_features():
     with open('configs/default.yaml') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     depth_cam = D435Camera(config)
-
+    exit()
     while True:
         quat = [0,0,0,1]
         d_feat = depth_cam.get_latest_depth_features()
