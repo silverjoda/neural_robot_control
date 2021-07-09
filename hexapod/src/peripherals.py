@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch as T
 import numpy as np
+from copy import deepcopy
 import os
 import logging
 import smbus
@@ -352,7 +353,7 @@ class AHRS_RS:
             time.sleep(0.3)
 
 
-class D435Camera:
+class D435CameraMP:
     def __init__(self, config):
         print("Initializing the d435.")
 
@@ -364,7 +365,6 @@ class D435Camera:
         self.freq = 6
         
         self.pipeline = rs.pipeline()
-        
         self.rs_config = rs.config()
         self.rs_config.enable_stream(rs.stream.depth, self.width, self.height,
                 self.format, self.freq)
@@ -433,26 +433,111 @@ class D435Camera:
 
         return pc_mean_height, pc_mean_dist, presence
 
+
+class D435CameraT:
+    def __init__(self, config):
+        print("Initializing the d435, threaded version.")
+
+        self.config = config
+
+        self.width = 424
+        self.height = 240
+        self.format = rs.format.z16
+        self.freq = 6
+
+        self.pipeline = rs.pipeline()
+        self.rs_config = rs.config()
+        self.rs_config.enable_stream(rs.stream.depth, self.width, self.height,
+                                     self.format, self.freq)
+        self.pipeline.start(self.rs_config)
+        self.decimate = rs.decimation_filter(8)
+
+        self.current_depth_features = [0, 0, 0]
+        self.current_orientation = [0, 0, 0, 1]
+
+        self.depth_features_lock = threading.Lock()
+        self.orientation_lock = threading.Lock()
+
+        self.loop_thread = threading.Thread(target=self.loop_depth_calculation())
+        self.loop_thread.start()
+
+    def loop_depth_calculation(self):
+        while True:
+            with self.orientation_lock:
+                quat = deepcopy(self.current_orientation)
+            pc = self.get_depth_pc()
+            depth_features = self._get_depth_features(pc, quat)
+
+            with self.depth_features_lock:
+                self.current_depth_features = deepcopy(depth_features)
+
+    def get_current_depth_features(self):
+        with self.depth_features_lock:
+            return self.current_depth_features
+
+    def set_current_orientation(self, quat):
+        with self.orientation_lock:
+            self.current_orientation = quat
+
+    def get_depth_pc(self):
+        frames = self.pipeline.wait_for_frames()
+        dec_frames = self.decimate.process(frames).as_frameset()
+        depth = dec_frames.get_depth_frame()
+
+        pc = rs.pointcloud()
+        points = pc.calculate(depth)
+        pts_array = np.asarray(points.get_vertices(), dtype=np.ndarray)
+        pts_array_decimated = pts_array[np.random.randint(0, len(pts_array), self.config["n_depth_points"])]
+        pts_numpy = np.zeros((3, len(pts_array_decimated)))
+
+        for i in range(len(pts_numpy)):
+            pts_numpy[:, i] = pts_array_decimated[i]
+
+        return pts_numpy
+
+    def _get_depth_features(self, pc, quat):
+        x, y, z, w = quat
+        rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w, x, y, z))
+
+        pc_rot = np.matmul(rot_mat, pc)
+
+        # Crop pc to appropriate region
+        pc_rot = pc_rot[pc_rot[0] < self.config["depth_x_bnd"]]
+        pc_rot = pc_rot[np.logical_and(pc_rot[1] < self.config["depth_y_bnd"],
+                                       pc_rot[1] > -self.config["depth_y_bnd"])]
+        pc_rot = pc_rot[np.logical_and(pc_rot[2]
+                                       < self.config["depth_z_bnd_high"], pc_rot[2]
+                                       > self.config["depth_z_bnd_low"])]
+
+        # Calculate features
+        pc_mean_height = np.mean(pc_rot[2])
+        pc_mean_dist = np.mean(pc_rot[0])
+        presence = len(pc_rot[0])
+
+        return pc_mean_height, pc_mean_dist, presence
+
+
 def read_contacts(leg_sensor_gpio_inputs):
     return [GPIO.input(ipt) * 2 - 1 for ipt in leg_sensor_gpio_inputs]
 
 def test_async_depth_features():
     with open('configs/default.yaml') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
-    depth_cam = D435Camera(config)
+    depth_cam = D435CameraT(config)
     exit()
     while True:
         quat = [0,0,0,1]
-        d_feat = depth_cam.get_latest_depth_features()
+        depth_cam.set_current_orientation(quat)
+        d_feat = depth_cam.get_current_depth_features()
         print(d_feat)
-        time.sleep(1)
+        time.sleep(0.3)
 
 def test_ahrs_rs():
     ahrs = AHRS_RS()
 
     print("Starting ahrs test")
     while True:
-        ahrs.update(0)
+        print(ahrs.update(0))
         time.sleep(0.01)
 
 def main():

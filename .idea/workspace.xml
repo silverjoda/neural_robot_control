@@ -180,9 +180,9 @@
     <list>
       <item itemvalue="Python.buggy_control" />
       <item itemvalue="Python.hexapod_control" />
+      <item itemvalue="Python.peripherals" />
       <item itemvalue="Python.t256_rpy" />
       <item itemvalue="Python.t265_rpy" />
-      <item itemvalue="Python.peripherals" />
     </list>
     <recent_temporary>
       <list>
@@ -223,13 +223,6 @@
       <workItem from="1618415354427" duration="2309000" />
       <workItem from="1618417680101" duration="670000" />
       <workItem from="1618419039422" duration="288000" />
-    </task>
-    <task id="LOCAL-00012" summary="M">
-      <created>1606411751380</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1606411751380</updated>
     </task>
     <task id="LOCAL-00013" summary="M">
       <created>1606415709580</created>
@@ -567,7 +560,14 @@
       <option name="project" value="LOCAL" />
       <updated>1625418361382</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="M">
+      <created>1625418401930</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1625418401930</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
