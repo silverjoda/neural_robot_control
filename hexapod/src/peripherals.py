@@ -352,79 +352,75 @@ class AHRS_RS:
             print("Roll: {}, Pitch: {}, Yaw: {}, Quat: {}".format(roll, pitch, yaw_corrected, quat_yaw_corrected))
             time.sleep(0.3)
 
-
-class D435CameraMP:
-    def __init__(self, config):
-        print("Initializing the d435.")
+class D435MPIF:
+    def __init__(self, config, output_queue, input_queue):
+        print("Initializing the d435 MP.")
 
         self.config = config
+        self.input_queue = input_queue
+        self.output_queue = output_queue
 
         self.width = 424
         self.height = 240
         self.format = rs.format.z16
         self.freq = 6
-        
+
         self.pipeline = rs.pipeline()
         self.rs_config = rs.config()
         self.rs_config.enable_stream(rs.stream.depth, self.width, self.height,
-                self.format, self.freq)
+                                     self.format, self.freq)
 
         self.pipeline.start(self.rs_config)
-        
         self.decimate = rs.decimation_filter(8)
-
         self.current_depth_features = [0, 0, 0]
 
-        self.input_queue = multiprocessing.Queue()
-        self.output_queue = multiprocessing.Queue()
-        
-        self.p = multiprocessing.Process(target=self.worker)
-        self.p.start()
+        self.loop()
 
-        self.input_queue.put([0, 0, 0, 1])
-
-    def worker(self):
+    def loop(self):
         while True:
             quat = self.input_queue.get()
             pc = self.get_depth_pc()
             depth_features = self.get_depth_features(pc, quat)
             self.output_queue.put(depth_features)
 
-    def get_latest_depth_features(self):
-        if not self.output_queue.empty():
-            self.current_depth_features = self.output_queue.get()
-            self.input_queue.put(self.current_quat)
-        return self.current_depth_features
+    def get_depth_features(self):
+        with self.depth_features_lock:
+            return self.current_depth_features
+
+    def set_current_orientation(self, quat):
+        with self.orientation_lock:
+            self.current_orientation = quat
 
     def get_depth_pc(self):
         frames = self.pipeline.wait_for_frames()
+        #frames = frames.apply_filter(self.decimate)
         dec_frames = self.decimate.process(frames).as_frameset()
         depth = dec_frames.get_depth_frame()
-        pc_rs.pointcloud()
+
+        pc = rs.pointcloud()
         points = pc.calculate(depth)
         pts_array = np.asarray(points.get_vertices(), dtype=np.ndarray)
-        pts_array_sparse = pts_array[np.random.randint(0, len(pts_array),
-            self.config["n_depth_points"])]
-        pts_numpy = np.zeros((3, len(pts_array_sparse)))
-        
-        for i in range(len(pts_array_sparse)):
-            pts_numpy[:, i] = pts_array_decimated[i]
-        
-        return pts_numpy 
+        pts_array_capped = pts_array[np.random.randint(0, len(pts_array), self.config["n_depth_points"])]
+        pts_numpy = np.zeros((3, len(pts_array_capped)))
 
-    def get_depth_features(self, pc, quat):
-        x,y,z,w = quat
-        rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w,x,y,z))
-        
+        for i in range(len(pts_numpy)):
+            pts_numpy[:, i] = pts_array_capped[i]
+
+        return pts_numpy
+
+    def _get_depth_features(self, pc, quat):
+        x, y, z, w = quat
+        rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w, x, y, z))
+
         pc_rot = np.matmul(rot_mat, pc)
-        
+
         # Crop pc to appropriate region
         pc_rot = pc_rot[pc_rot[0] < self.config["depth_x_bnd"]]
         pc_rot = pc_rot[np.logical_and(pc_rot[1] < self.config["depth_y_bnd"],
-            pc_rot[1] > -self.config["depth_y_bnd"])]
+                                       pc_rot[1] > -self.config["depth_y_bnd"])]
         pc_rot = pc_rot[np.logical_and(pc_rot[2]
-            < self.config["depth_z_bnd_high"], pc_rot[2]
-            > self.config["depth_z_bnd_low"])]
+                                       < self.config["depth_z_bnd_high"], pc_rot[2]
+                                       > self.config["depth_z_bnd_low"])]
 
         # Calculate features
         pc_mean_height = np.mean(pc_rot[2])
@@ -433,6 +429,26 @@ class D435CameraMP:
 
         return pc_mean_height, pc_mean_dist, presence
 
+class D435CameraMP:
+    def __init__(self, config):
+        print("Initializing the d435.")
+
+        self.config = config
+
+        self.input_queue = multiprocessing.Queue()
+        self.output_queue = multiprocessing.Queue()
+        
+        self.p = multiprocessing.Process(target=D435MPIF, args=(config, self.input_queue, self.output_queue))
+        self.p.start()
+
+        self.input_queue.put([0, 0, 0, 1])
+
+    def update_orientation(self):
+        while True:
+            quat = self.input_queue.get()
+            pc = self.get_depth_pc()
+            depth_features = self.get_depth_features(pc, quat)
+            self.output_queue.put(depth_features)
 
 class D435CameraT:
     def __init__(self, config):
@@ -516,7 +532,6 @@ class D435CameraT:
         presence = len(pc_rot[0])
 
         return pc_mean_height, pc_mean_dist, presence
-
 
 def read_contacts(leg_sensor_gpio_inputs):
     return [GPIO.input(ipt) * 2 - 1 for ipt in leg_sensor_gpio_inputs]
