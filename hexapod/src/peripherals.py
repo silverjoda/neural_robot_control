@@ -353,12 +353,12 @@ class AHRS_RS:
             time.sleep(0.3)
 
 class D435MPIF:
-    def __init__(self, config, output_queue, input_queue):
+    def __init__(self, config, quat_queue, depth_queue):
         print("Initializing the d435 MP.")
 
         self.config = config
-        self.input_queue = input_queue
-        self.output_queue = output_queue
+        self.quat_queue = quat_queue
+        self.depth_queue = depth_queue
 
         self.width = 424
         self.height = 240
@@ -378,10 +378,10 @@ class D435MPIF:
 
     def loop(self):
         while True:
-            quat = self.input_queue.get()
+            quat = self.quat_queue.get()
             pc = self.get_depth_pc()
             depth_features = self._get_depth_features(pc, quat)
-            self.output_queue.put(depth_features)
+            self.depth_queue.put(depth_features)
 
     def get_depth_pc(self):
         frames = self.pipeline.wait_for_frames()
@@ -404,7 +404,7 @@ class D435MPIF:
         x, y, z, w = quat
         rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w, x, y, z))
 
-        pc_rot = np.matmul(rot_mat, pc)
+        pc_rot = np.matmul(rot_mat.T, pc)
 
         # Crop pc to appropriate region
         pc_rot = pc_rot[pc_rot[0] < self.config["depth_x_bnd"]]
@@ -433,7 +433,7 @@ class D435CameraMP:
         self.p = multiprocessing.Process(target=D435MPIF, args=(config, self.quat_queue, self.depth_queue))
         self.p.start()
 
-        self.current_depth_feats = (0, 0, 0)
+        self.current_depth_feats = [0, 0, 0]
         self.quat_queue.put([0, 0, 0, 1])
 
     def update_orientation(self, quat):
@@ -509,7 +509,7 @@ class D435CameraT:
         x, y, z, w = quat
         rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w, x, y, z))
 
-        pc_rot = np.matmul(rot_mat, pc)
+        pc_rot = np.matmul(rot_mat.T, pc)
 
         # Crop pc to appropriate region
         pc_rot = pc_rot[pc_rot[0] < self.config["depth_x_bnd"]]
