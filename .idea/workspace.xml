@@ -21,7 +21,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="M">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hexapod/src/peripherals.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod/src/peripherals.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -220,13 +219,6 @@
       <workItem from="1618415354427" duration="2309000" />
       <workItem from="1618417680101" duration="670000" />
       <workItem from="1618419039422" duration="288000" />
-    </task>
-    <task id="LOCAL-00018" summary="M">
-      <created>1607000917714</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1607000917714</updated>
     </task>
     <task id="LOCAL-00019" summary="M">
       <created>1607006033839</created>
@@ -564,7 +556,14 @@
       <option name="project" value="LOCAL" />
       <updated>1625855389953</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="M">
+      <created>1625855569370</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1625855569370</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
