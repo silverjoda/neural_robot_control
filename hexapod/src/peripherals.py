@@ -380,16 +380,8 @@ class D435MPIF:
         while True:
             quat = self.input_queue.get()
             pc = self.get_depth_pc()
-            depth_features = self.get_depth_features(pc, quat)
+            depth_features = self._get_depth_features(pc, quat)
             self.output_queue.put(depth_features)
-
-    def get_depth_features(self):
-        with self.depth_features_lock:
-            return self.current_depth_features
-
-    def set_current_orientation(self, quat):
-        with self.orientation_lock:
-            self.current_orientation = quat
 
     def get_depth_pc(self):
         frames = self.pipeline.wait_for_frames()
@@ -435,20 +427,21 @@ class D435CameraMP:
 
         self.config = config
 
-        self.input_queue = multiprocessing.Queue()
-        self.output_queue = multiprocessing.Queue()
+        self.quat_queue = multiprocessing.Queue()
+        self.depth_queue = multiprocessing.Queue()
         
-        self.p = multiprocessing.Process(target=D435MPIF, args=(config, self.input_queue, self.output_queue))
+        self.p = multiprocessing.Process(target=D435MPIF, args=(config, self.quat_queue, self.depth_queue))
         self.p.start()
 
-        self.input_queue.put([0, 0, 0, 1])
+        self.current_depth_feats = (0, 0, 0)
+        self.quat_queue.put([0, 0, 0, 1])
 
-    def update_orientation(self):
-        while True:
-            quat = self.input_queue.get()
-            pc = self.get_depth_pc()
-            depth_features = self.get_depth_features(pc, quat)
-            self.output_queue.put(depth_features)
+    def update_orientation(self, quat):
+        if self.quat_queue.empty():
+            self.quat_queue.put(quat)
+        if not self.depth_queue.empty():
+            self.current_depth_feats = self.depth_queue.get()
+        return self.current_depth_feats
 
 class D435CameraT:
     def __init__(self, config):
