@@ -481,17 +481,18 @@ class D435CameraT:
 
     def get_depth_pc(self):
         frames = self.pipeline.wait_for_frames()
+        #frames = frames.apply_filter(self.decimate)
         dec_frames = self.decimate.process(frames).as_frameset()
         depth = dec_frames.get_depth_frame()
 
         pc = rs.pointcloud()
         points = pc.calculate(depth)
         pts_array = np.asarray(points.get_vertices(), dtype=np.ndarray)
-        pts_array_decimated = pts_array[np.random.randint(0, len(pts_array), self.config["n_depth_points"])]
-        pts_numpy = np.zeros((3, len(pts_array_decimated)))
+        pts_array_capped = pts_array[np.random.randint(0, len(pts_array), self.config["n_depth_points"])]
+        pts_numpy = np.zeros((3, len(pts_array_capped)))
 
         for i in range(len(pts_numpy)):
-            pts_numpy[:, i] = pts_array_decimated[i]
+            pts_numpy[:, i] = pts_array_capped[i]
 
         return pts_numpy
 
