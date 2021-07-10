@@ -412,9 +412,7 @@ class D435MPIF:
         rot_quat_zero_yaw = tf.transformations.quaternion_from_euler(euler_x, euler_y, 0)
         rot_mat_zero_yaw = tf.transformations.quaternion_matrix(rot_quat_zero_yaw)
 
-        signs = [1, -1, -1]
-        pc_array = np.stack([pc[f] * s for f, s in zip(['z', 'x', 'y'], signs)])
-        pc_rot = np.matmul(rot_mat_zero_yaw[:3, :3], pc_array)
+        pc_rot = np.matmul(rot_mat_zero_yaw[:3, :3], pc)
 
         ## Calculate depth features
         # Crop pc to appropriate region
@@ -529,9 +527,7 @@ class D435CameraT:
         rot_quat_zero_yaw = tf.transformations.quaternion_from_euler(euler_x, euler_y, 0)
         rot_mat_zero_yaw = tf.transformations.quaternion_matrix(rot_quat_zero_yaw)
 
-        signs = [1, -1, -1]
-        pc_array = np.stack([pc[f] * s for f, s in zip(['z', 'x', 'y'], signs)])
-        pc_rot = np.matmul(rot_mat_zero_yaw[:3, :3], pc_array)
+        pc_rot = np.matmul(rot_mat_zero_yaw[:3, :3], pc)
 
         ## Calculate depth features
         # Crop pc to appropriate region
