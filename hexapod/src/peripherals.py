@@ -546,12 +546,12 @@ def test_ahrs_rs():
 
     print("Starting ahrs test")
     while True:
-        print(ahrs.update(0))
+        ahrs.update(0)
         time.sleep(0.01)
 
 def main():
-    #test_async_depth_features()
-    test_ahrs_rs()
+    test_async_depth_features()
+    #test_ahrs_rs()
 
 if __name__=="__main__":
     main()
