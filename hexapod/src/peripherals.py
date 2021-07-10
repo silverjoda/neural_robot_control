@@ -399,14 +399,19 @@ class D435MPIF:
         for i in range(len(pts_numpy)):
             pts_numpy[:, i] = pts_array_capped[i]
 
-        return pts_numpy
+        pts_cpy = np.empty_like(pts_numpy)
+        pts_cpy[0, :] = pts_numpy[2, :]
+        pts_cpy[1, :] = -pts_numpy[0, :]
+        pts_cpy[2, :] = -pts_numpy[1, :]
+
+        return pts_cpy
 
     def _get_depth_features(self, pc, quat):
         if quat is None:
-            return (0,0,0), None
+            return (0, 0, 0), None
 
         if pc is None:
-            return (0,0,0), None
+            return (0, 0, 0), None
 
         euler_x, euler_y, euler_z = tf.transformations.euler_from_quaternion(quat)
         rot_quat_zero_yaw = tf.transformations.quaternion_from_euler(euler_x, euler_y, 0)
