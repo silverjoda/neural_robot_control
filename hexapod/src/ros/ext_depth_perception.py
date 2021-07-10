@@ -73,14 +73,13 @@ class RosCameraInterface:
         pc_data['vectors'] = np.arange(len(pc[0]))[:, np.newaxis]
 
         msg = ros_numpy.msgify(PointCloud2, pc_data)
-        msg.header.frame_id = "camera_depth_optical_frame"
+        msg.header.frame_id = "odom_zero_yaw"
         msg.header.stamp = rospy.Time.now()
 
         self.transformed_pc_publisher.publish(msg)
 
     def publish_depth_feat(self, feats):
         msg = Point()
-        msg.header.frame_id = "odom_zero_yaw"
         msg.x = feats[0]
         msg.y = feats[1]
         msg.z = feats[2]
@@ -109,22 +108,22 @@ class RosCameraInterface:
             return (0,0,0), None
         
         x, y, z, w = quat.x, quat.y, quat.z, quat.w
-        #rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w, x, y, z))
-        euler_x, euler_y, euler_z = quaternion.as_euler_angles(quaternion.quaternion(w, x, y, z))
-        rot_quat_zero_yaw = quaternion.from_euler_angles((euler_x, euler_y, euler_z))
-        rot_mat_zero_yaw = quaternion.as_rotation_matrix(rot_quat_zero_yaw)
+        euler_x, euler_y, euler_z = tf.transformations.euler_from_quaternion([x,y,z,w])
+        rot_quat_zero_yaw = tf.transformations.quaternion_from_euler(euler_x, euler_y, 0)
+        rot_mat_zero_yaw = tf.transformations.quaternion_matrix(rot_quat_zero_yaw)
 
-        self.br.sendTransform((0, 0, 0),
-                         tf.transformations.quaternion_from_euler(euler_x, euler_y, euler_z),
+        self.br.sendTransform((0.3, 0, .1),
+                         rot_quat_zero_yaw,
                          rospy.Time.now(),
-                         "camera_depth_frame",
+                         "camera_link",
                          "odom_zero_yaw")
 
         # Prepare point cloud
         with self.raw_pc_lock:
             pc = ros_numpy.numpify(self.raw_pc_data).ravel()
-        pc_array = np.stack([pc[f] for f in ['x', 'y', 'z']])
-        pc_rot = np.matmul(rot_mat_zero_yaw, pc_array)
+        signs = [1,-1,-1]
+        pc_array = np.stack([pc[f] * s for f, s in zip(['z', 'x', 'y'], signs)])
+        pc_rot = np.matmul(rot_mat_zero_yaw[:3,:3], pc_array)
         
         ## Calculate depth features
         # Crop pc to appropriate region

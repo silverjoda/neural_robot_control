@@ -6,8 +6,8 @@
 "ros_rate" : 10
 "tf_buffer_size" : 10
 "n_depth_points" : 1000
-"depth_x_bnd" : 0.5
-"depth_y_bnd" : 0.3
+"depth_x_bnd" : 0.7
+"depth_y_bnd" : 0.5
 "depth_z_bnd_low" : 0.0
-"depth_z_bnd_high" : 0.3
+"depth_z_bnd_high" : 0.5
 
