@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import yaml
 import rospy
+import tf
 import tf2_ros
 import ros_numpy
 import time
@@ -78,6 +79,7 @@ class RosCameraInterface:
 
     def publish_depth_feat(self, feats):
         msg = Point()
+        msg.header.frame_id = "odom_zero_yaw"
         msg.x = feats[0]
         msg.y = feats[1]
         msg.z = feats[2]
@@ -106,13 +108,23 @@ class RosCameraInterface:
             return (0,0,0), None
         
         x, y, z, w = quat.x, quat.y, quat.z, quat.w
-        rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w, x, y, z))
+        #rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w, x, y, z))
+        euler_x, euler_y, euler_z = quaternion.as_euler_angles(quaternion.quaternion(w, x, y, z))
+        rot_quat_zero_yaw = quaternion.from_euler_angles((euler_x, euler_y, euler_z))
+        rot_mat_zero_yaw = quaternion.as_rotation_matrix(rot_quat_zero_yaw)
+
+        br = tf.TransformBroadcaster()
+        br.sendTransform((0, 0, 0),
+                         tf.transformations.quaternion_from_euler(euler_x, euler_y, euler_z),
+                         rospy.Time.now(),
+                         "camera_depth_frame",
+                         "odom_zero_yaw")
 
         # Prepare point cloud
         with self.raw_pc_lock:
             pc = ros_numpy.numpify(self.raw_pc_data).ravel()
         pc_array = np.stack([pc[f] for f in ['x', 'y', 'z']])
-        pc_rot = np.matmul(rot_mat, pc_array)
+        pc_rot = np.matmul(rot_mat_zero_yaw, pc_array)
         
         ## Calculate depth features
         # Crop pc to appropriate region
