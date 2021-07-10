@@ -402,6 +402,12 @@ class D435MPIF:
         return pts_numpy
 
     def _get_depth_features(self, pc, quat):
+        if quat is None:
+            return (0,0,0), None
+
+        if pc is None:
+            return (0,0,0), None
+
         euler_x, euler_y, euler_z = tf.transformations.euler_from_quaternion(quat)
         rot_quat_zero_yaw = tf.transformations.quaternion_from_euler(euler_x, euler_y, 0)
         rot_mat_zero_yaw = tf.transformations.quaternion_matrix(rot_quat_zero_yaw)
@@ -513,6 +519,12 @@ class D435CameraT:
         return pts_numpy
 
     def _get_depth_features(self, pc, quat):
+        if quat is None:
+            return (0,0,0), None
+
+        if pc is None:
+            return (0,0,0), None
+
         euler_x, euler_y, euler_z = tf.transformations.euler_from_quaternion(quat)
         rot_quat_zero_yaw = tf.transformations.quaternion_from_euler(euler_x, euler_y, 0)
         rot_mat_zero_yaw = tf.transformations.quaternion_matrix(rot_quat_zero_yaw)
