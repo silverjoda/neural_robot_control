@@ -71,7 +71,7 @@ class RosCameraInterface:
         pc_data['vectors'] = np.arange(len(pc[0]))[:, np.newaxis]
 
         msg = ros_numpy.msgify(PointCloud2, pc_data)
-        msg.header.frame_id = "camera_link"
+        msg.header.frame_id = "camera_depth_optical_frame"
         msg.header.stamp = rospy.Time.now()
 
         self.transformed_pc_publisher.publish(msg)
@@ -99,18 +99,21 @@ class RosCameraInterface:
             self.ros_rate.sleep()
 
     def make_depth_features(self, quat):
-        x, y, z, w = quat.x, quat.y, quat.z, quat.w
-        rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w, x, y, z))
+        if quat is None:
+            return (0,0,0), None
 
         if self.raw_pc_data is None:
-            return 0,0,0, None
+            return (0,0,0), None
+        
+        x, y, z, w = quat.x, quat.y, quat.z, quat.w
+        rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w, x, y, z))
 
         # Prepare point cloud
         with self.raw_pc_lock:
             pc = ros_numpy.numpify(self.raw_pc_data).ravel()
         pc_array = np.stack([pc[f] for f in ['x', 'y', 'z']])
         pc_rot = np.matmul(rot_mat, pc_array)
-
+        
         ## Calculate depth features
         # Crop pc to appropriate region
         pc_rot = pc_rot[:, pc_rot[0] < self.config["depth_x_bnd"]]
