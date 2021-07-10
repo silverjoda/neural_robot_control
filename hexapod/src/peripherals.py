@@ -460,10 +460,10 @@ class D435CameraT:
 
         self.config = config
 
-        self.width = 424
-        self.height = 240
+        self.width = 640
+        self.height = 480
         self.format = rs.format.z16
-        self.freq = 6
+        self.freq = 30
 
         self.pipeline = rs.pipeline()
         self.rs_config = rs.config()
@@ -478,8 +478,10 @@ class D435CameraT:
         self.depth_features_lock = threading.Lock()
         self.orientation_lock = threading.Lock()
 
-        self.loop_thread = threading.Thread(target=self.loop_depth_calculation())
+        print("===============A===============")
+        self.loop_thread = threading.Thread(target=self.loop_depth_calculation)
         self.loop_thread.start()
+        print("===============B===============")
 
     def loop_depth_calculation(self):
         while True:
@@ -514,7 +516,12 @@ class D435CameraT:
         for i in range(len(pts_numpy)):
             pts_numpy[:, i] = pts_array_capped[i]
 
-        return pts_numpy
+        pts_cpy = np.empty_like(pts_numpy)
+        pts_cpy[0,:] = pts_numpy[2,:]
+        pts_cpy[1,:] = -pts_numpy[0,:]
+        pts_cpy[2,:] = -pts_numpy[1,:]
+
+        return pts_cpy
 
     def _get_depth_features(self, pc, quat):
         if quat is None:
@@ -554,7 +561,7 @@ def test_async_depth_features():
     with open('configs/default.yaml') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     depth_cam = D435CameraT(config)
-    exit()
+    
     while True:
         quat = [0,0,0,1]
         depth_cam.set_current_orientation(quat)
