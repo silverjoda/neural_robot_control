@@ -19,6 +19,7 @@ class RosCameraInterface:
 
         rospy.init_node(config["node_name"])
         self.ros_rate = rospy.Rate(config["ros_rate"])
+        self.br = tf.TransformBroadcaster()
 
         self.create_publishers()
         self.create_subscribers()
@@ -113,8 +114,7 @@ class RosCameraInterface:
         rot_quat_zero_yaw = quaternion.from_euler_angles((euler_x, euler_y, euler_z))
         rot_mat_zero_yaw = quaternion.as_rotation_matrix(rot_quat_zero_yaw)
 
-        br = tf.TransformBroadcaster()
-        br.sendTransform((0, 0, 0),
+        self.br.sendTransform((0, 0, 0),
                          tf.transformations.quaternion_from_euler(euler_x, euler_y, euler_z),
                          rospy.Time.now(),
                          "camera_depth_frame",
