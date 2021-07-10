@@ -362,10 +362,10 @@ class D435MPIF:
         self.quat_queue = quat_queue
         self.depth_queue = depth_queue
 
-        self.width = 424
-        self.height = 240
+        self.width = 640
+        self.height = 480
         self.format = rs.format.z16
-        self.freq = 6
+        self.freq = 30
 
         self.pipeline = rs.pipeline()
         self.rs_config = rs.config()
@@ -562,7 +562,7 @@ class D435CameraT:
 def read_contacts(leg_sensor_gpio_inputs):
     return [GPIO.input(ipt) * 2 - 1 for ipt in leg_sensor_gpio_inputs]
 
-def test_async_depth_features():
+def test_d435_thread():
     with open('configs/default.yaml') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     depth_cam = D435CameraT(config)
@@ -571,6 +571,17 @@ def test_async_depth_features():
         quat = [0,0,0,1]
         depth_cam.set_current_orientation(quat)
         d_feat = depth_cam.get_current_depth_features()
+        print(d_feat)
+        time.sleep(0.3)
+
+def test_d435_mp():
+    with open('configs/default.yaml') as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+    depth_cam = D435CameraMP(config)
+    
+    while True:
+        quat = [0,0,0,1]
+        d_feat = depth_cam.update_orientation(quat)
         print(d_feat)
         time.sleep(0.3)
 
@@ -583,7 +594,8 @@ def test_ahrs_rs():
         time.sleep(0.01)
 
 def main():
-    test_async_depth_features()
+    #test_d435_thread()
+    test_d435_mp()
     #test_ahrs_rs()
 
 if __name__=="__main__":
