@@ -6,6 +6,8 @@ import torch.nn.functional as F
 import torch as T
 import numpy as np
 from copy import deepcopy
+import tf
+import ros_numpy
 import os
 import logging
 import smbus
@@ -385,7 +387,6 @@ class D435MPIF:
 
     def get_depth_pc(self):
         frames = self.pipeline.wait_for_frames()
-        #frames = frames.apply_filter(self.decimate)
         dec_frames = self.decimate.process(frames).as_frameset()
         depth = dec_frames.get_depth_frame()
 
@@ -401,21 +402,27 @@ class D435MPIF:
         return pts_numpy
 
     def _get_depth_features(self, pc, quat):
-        x, y, z, w = quat
-        rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w, x, y, z))
+        euler_x, euler_y, euler_z = tf.transformations.euler_from_quaternion(quat)
+        rot_quat_zero_yaw = tf.transformations.quaternion_from_euler(euler_x, euler_y, 0)
+        rot_mat_zero_yaw = tf.transformations.quaternion_matrix(rot_quat_zero_yaw)
 
-        pc_rot = np.matmul(rot_mat.T, pc)
+        signs = [1, -1, -1]
+        pc_array = np.stack([pc[f] * s for f, s in zip(['z', 'x', 'y'], signs)])
+        pc_rot = np.matmul(rot_mat_zero_yaw[:3, :3], pc_array)
 
+        ## Calculate depth features
         # Crop pc to appropriate region
-        pc_rot = pc_rot[pc_rot[0] < self.config["depth_x_bnd"]]
-        pc_rot = pc_rot[np.logical_and(pc_rot[1] < self.config["depth_y_bnd"],
-                                       pc_rot[1] > -self.config["depth_y_bnd"])]
-        pc_rot = pc_rot[np.logical_and(pc_rot[2]
-                                       < self.config["depth_z_bnd_high"], pc_rot[2]
-                                       > self.config["depth_z_bnd_low"])]
+        pc_rot = pc_rot[:, pc_rot[0] < self.config["depth_x_bnd"]]
+        pc_rot = pc_rot[:, np.logical_and(pc_rot[1] < self.config["depth_y_bnd"],
+                                          pc_rot[1] > -self.config["depth_y_bnd"])]
+        pc_rot = pc_rot[:, np.logical_and(pc_rot[2]
+                                          < self.config["depth_z_bnd_high"], pc_rot[2]
+                                          > self.config["depth_z_bnd_low"])]
+
+        height_correction = np.sin(euler_y) * 0.3
 
         # Calculate features
-        pc_mean_height = np.mean(pc_rot[2])
+        pc_mean_height = np.mean(pc_rot[2] + height_correction)
         pc_mean_dist = np.mean(pc_rot[0])
         presence = len(pc_rot[0])
 
@@ -506,21 +513,27 @@ class D435CameraT:
         return pts_numpy
 
     def _get_depth_features(self, pc, quat):
-        x, y, z, w = quat
-        rot_mat = quaternion.as_rotation_matrix(quaternion.quaternion(w, x, y, z))
+        euler_x, euler_y, euler_z = tf.transformations.euler_from_quaternion(quat)
+        rot_quat_zero_yaw = tf.transformations.quaternion_from_euler(euler_x, euler_y, 0)
+        rot_mat_zero_yaw = tf.transformations.quaternion_matrix(rot_quat_zero_yaw)
 
-        pc_rot = np.matmul(rot_mat.T, pc)
+        signs = [1, -1, -1]
+        pc_array = np.stack([pc[f] * s for f, s in zip(['z', 'x', 'y'], signs)])
+        pc_rot = np.matmul(rot_mat_zero_yaw[:3, :3], pc_array)
 
+        ## Calculate depth features
         # Crop pc to appropriate region
-        pc_rot = pc_rot[pc_rot[0] < self.config["depth_x_bnd"]]
-        pc_rot = pc_rot[np.logical_and(pc_rot[1] < self.config["depth_y_bnd"],
-                                       pc_rot[1] > -self.config["depth_y_bnd"])]
-        pc_rot = pc_rot[np.logical_and(pc_rot[2]
-                                       < self.config["depth_z_bnd_high"], pc_rot[2]
-                                       > self.config["depth_z_bnd_low"])]
+        pc_rot = pc_rot[:, pc_rot[0] < self.config["depth_x_bnd"]]
+        pc_rot = pc_rot[:, np.logical_and(pc_rot[1] < self.config["depth_y_bnd"],
+                                          pc_rot[1] > -self.config["depth_y_bnd"])]
+        pc_rot = pc_rot[:, np.logical_and(pc_rot[2]
+                                          < self.config["depth_z_bnd_high"], pc_rot[2]
+                                          > self.config["depth_z_bnd_low"])]
+
+        height_correction = np.sin(euler_y) * 0.3
 
         # Calculate features
-        pc_mean_height = np.mean(pc_rot[2])
+        pc_mean_height = np.mean(pc_rot[2] + height_correction)
         pc_mean_dist = np.mean(pc_rot[0])
         presence = len(pc_rot[0])
 
