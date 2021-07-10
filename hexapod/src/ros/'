@@ -134,7 +134,7 @@ class RosCameraInterface:
                                        < self.config["depth_z_bnd_high"], pc_rot[2]
                                        > self.config["depth_z_bnd_low"])]
 
-        height_correction = np.sin(euler_y) * 0.3        
+        height_correction = np.sin(-euler_y) * 0.3        
         
         # Calculate features
         pc_mean_height = np.mean(pc_rot[2] + height_correction)
