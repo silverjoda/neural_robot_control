@@ -54,6 +54,9 @@ class HexapodController:
         # Make IMU
         self.Ahrs = AHRS_RS()
 
+        # Make Depth cam
+        self.d435 = D435CameraMP(self.config)
+
         logging.info("Initializing robot hardware")
         self.init_hardware()
 
@@ -108,6 +111,10 @@ class HexapodController:
         logging.info("Starting control loop")
         while True:
             iteration_starttime = time.time()
+
+            # Read depth features
+            depth_feats = self.d435.update_orientation(self.Ahrs.current_quat)
+
             # Read joystick
             turn, vel, height, button_x, button_x_event = self.joystick_controller.get_joystick_input()
 

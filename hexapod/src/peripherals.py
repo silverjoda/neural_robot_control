@@ -212,7 +212,7 @@ class AHRS_RS:
     def __init__(self):
         print("Initializing the rs_t265. ")
 
-        self.setup_ros()
+        #self.setup_ros()
 
         self.rs_to_world_mat = np.array([[0, 0, 1],
                                          [1, 0, 0],
@@ -230,12 +230,12 @@ class AHRS_RS:
         self.pipe.start(self.cfg)
         self.timestamp = time.time()
 
-        self.rs_frame = None
         self.current_heading = 0
         self.yaw_offset = 0
         self.position_offset = np.array([0, 0, 0])
         self.position_rob = np.array([0, 0, 0])
         self.vel_rob = np.array([0, 0, 0])
+        self.current_quat = (0, 0, 0, 1) 
 
         print("Finished initializing the rs_t265. ")
 
@@ -279,6 +279,7 @@ class AHRS_RS:
 
             yaw_corrected = yaw + heading_spoof_angle + self.yaw_offset
             quat_yaw_corrected = self.e2q(roll, pitch, yaw_corrected)
+            self.current_quat = quat_yaw_corrected 
 
         else:
             self.position_rob = np.array([0, 0, 0])
@@ -293,12 +294,12 @@ class AHRS_RS:
         #print(f"Yaw: {yaw}, yaw_corrected: {yaw_corrected}, heading_spoof: {heading_spoof_angle}")
 
         # Publish quaternion
-        msg = Quaternion()
-        msg.x = quat_yaw_corrected[0]
-        msg.y = quat_yaw_corrected[1]
-        msg.z = quat_yaw_corrected[2]
-        msg.w = quat_yaw_corrected[3]
-        self.orientation_publisher.publish(msg)
+        #msg = Quaternion()
+        #msg.x = quat_yaw_corrected[0]
+        #msg.y = quat_yaw_corrected[1]
+        #msg.z = quat_yaw_corrected[2]
+        #msg.w = quat_yaw_corrected[3]
+        #self.orientation_publisher.publish(msg)
 
         return roll, pitch, yaw_corrected, quat_yaw_corrected, self.vel_rob, self.timestamp
 
@@ -599,13 +600,14 @@ def test_ahrs_rs():
 
     print("Starting ahrs test")
     while True:
-        ahrs.update(0)
-        time.sleep(0.01)
+        data = ahrs.update(0)
+        print(data)
+        time.sleep(0.2)
 
 def main():
-    test_d435_threaded()
+    #test_d435_threaded()
     #test_d435_mp()
-    #test_ahrs_rs()
+    test_ahrs_rs()
 
 if __name__=="__main__":
     main()
