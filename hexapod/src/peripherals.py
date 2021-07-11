@@ -381,11 +381,11 @@ class D435MPIF:
     def loop(self):
         while True:
             quat = self.quat_queue.get()
-            pc = self.get_depth_pc()
+            pc = self._get_depth_pc()
             depth_features = self._get_depth_features(pc, quat)
             self.depth_queue.put(depth_features)
 
-    def get_depth_pc(self):
+    def _get_depth_pc(self):
         frames = self.pipeline.wait_for_frames()
         dec_frames = self.decimate.process(frames).as_frameset()
         depth = dec_frames.get_depth_frame()
@@ -393,19 +393,20 @@ class D435MPIF:
         pc = rs.pointcloud()
         points = pc.calculate(depth)
         pts_array = np.asarray(points.get_vertices(), dtype=np.ndarray)
-        pts_array_capped = pts_array[np.random.randint(0, len(pts_array), self.config["n_depth_points"])]
-        pts_numpy = np.zeros((3, len(pts_array_capped)))
+        pts_np = np.zeros((3, len(pts_array)))
 
-        for i in range(len(pts_numpy)):
-            pts_numpy[:, i] = pts_array_capped[i]
+        for i in range(len(pts_array)):
+            pts_np[:, i] = pts_array[i]
 
-        pts_cpy = np.empty_like(pts_numpy)
-        pts_cpy[0, :] = pts_numpy[2, :]
-        pts_cpy[1, :] = -pts_numpy[0, :]
-        pts_cpy[2, :] = -pts_numpy[1, :]
+        pts_np_filt = pts_np[:, np.sum(np.abs(pts_np), axis=0) != 0]
 
-        return pts_cpy
+        pts_rearranged = np.empty_like(pts_np_filt)
+        pts_rearranged[0,:] = pts_np_filt[2,:]
+        pts_rearranged[1,:] = -pts_np_filt[0,:]
+        pts_rearranged[2,:] = -pts_np_filt[1,:]
 
+        return pts_rearranged
+    
     def _get_depth_features(self, pc, quat):
         if quat is None:
             return (0, 0, 0), None
@@ -492,9 +493,11 @@ class D435CameraT:
         while True:
             with self.orientation_lock:
                 quat = deepcopy(self.current_orientation)
-            pc = self.get_depth_pc()
+            t1 = time.time()
+            pc = self._get_depth_pc()
             depth_features = self._get_depth_features(pc, quat)
-
+            t2 = time.time()
+            print(f"Process_time: {t2-t1}")
             with self.depth_features_lock:
                 self.current_depth_features = deepcopy(depth_features)
 
@@ -506,27 +509,27 @@ class D435CameraT:
         with self.orientation_lock:
             self.current_orientation = quat
 
-    def get_depth_pc(self):
+    def _get_depth_pc(self):
         frames = self.pipeline.wait_for_frames()
-        #frames = frames.apply_filter(self.decimate)
         dec_frames = self.decimate.process(frames).as_frameset()
         depth = dec_frames.get_depth_frame()
 
         pc = rs.pointcloud()
         points = pc.calculate(depth)
         pts_array = np.asarray(points.get_vertices(), dtype=np.ndarray)
-        pts_array_capped = pts_array[np.random.randint(0, len(pts_array), self.config["n_depth_points"])]
-        pts_numpy = np.zeros((3, len(pts_array_capped)))
+        pts_np = np.zeros((3, len(pts_array)))
 
-        for i in range(len(pts_numpy)):
-            pts_numpy[:, i] = pts_array_capped[i]
+        for i in range(len(pts_array)):
+            pts_np[:, i] = pts_array[i]
 
-        pts_cpy = np.empty_like(pts_numpy)
-        pts_cpy[0,:] = pts_numpy[2,:]
-        pts_cpy[1,:] = -pts_numpy[0,:]
-        pts_cpy[2,:] = -pts_numpy[1,:]
+        pts_np_filt = pts_np[:, np.sum(np.abs(pts_np), axis=0) != 0]
 
-        return pts_cpy
+        pts_rearranged = np.empty_like(pts_np_filt)
+        pts_rearranged[0,:] = pts_np_filt[2,:]
+        pts_rearranged[1,:] = -pts_np_filt[0,:]
+        pts_rearranged[2,:] = -pts_np_filt[1,:]
+
+        return pts_rearranged
 
     def _get_depth_features(self, pc, quat):
         if quat is None:
@@ -562,15 +565,18 @@ class D435CameraT:
 def read_contacts(leg_sensor_gpio_inputs):
     return [GPIO.input(ipt) * 2 - 1 for ipt in leg_sensor_gpio_inputs]
 
-def test_d435_thread():
+def test_d435_threaded():
     with open('configs/default.yaml') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     depth_cam = D435CameraT(config)
     
     while True:
+        t1 = time.time()
         quat = [0,0,0,1]
         depth_cam.set_current_orientation(quat)
         d_feat = depth_cam.get_current_depth_features()
+        t2 = time.time()
+        #print(f"Time taken for iteration: {t2-t1}")
         print(d_feat)
         time.sleep(0.3)
 
@@ -580,10 +586,13 @@ def test_d435_mp():
     depth_cam = D435CameraMP(config)
     
     while True:
+        t1 = time.time()
         quat = [0,0,0,1]
         d_feat = depth_cam.update_orientation(quat)
-        print(d_feat)
-        time.sleep(0.3)
+        t2 = time.time()
+        #print(f"Time taken for iteration: {t2-t1}")
+        #print(d_feat)
+        time.sleep(0.0)
 
 def test_ahrs_rs():
     ahrs = AHRS_RS()
@@ -594,8 +603,8 @@ def test_ahrs_rs():
         time.sleep(0.01)
 
 def main():
-    #test_d435_thread()
-    test_d435_mp()
+    test_d435_threaded()
+    #test_d435_mp()
     #test_ahrs_rs()
 
 if __name__=="__main__":
