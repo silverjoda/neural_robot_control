@@ -1,29 +1,20 @@
 #!/usr/bin/env python3
-import time
-import itertools
-import torch.nn as nn
-import torch.nn.functional as F
-import torch as T
-import numpy as np
-from copy import deepcopy
-import os
 import logging
-import smbus
-import math
-import sys
-# logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-import pypot.dynamixel
-import pygame
-from gyro import IMU
-import pyrealsense2 as rs
 import math as m
-import yaml
-import threading
-import quaternion
-# Torques are positive upwards and when leg is being pushed backward
-from stable_baselines3 import A2C
-import RPi.GPIO as GPIO
 import multiprocessing
+import threading
+import time
+from copy import deepcopy
+
+# Torques are positive upwards and when leg is being pushed backward
+import RPi.GPIO as GPIO
+import numpy as np
+import pybullet as p
+# logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+import pygame
+import pyrealsense2 as rs
+import smbus
+import yaml
 
 
 class JoyController():
@@ -63,7 +54,6 @@ class JoyController():
             button_x_event = 0
 
         return turn, vel, height, button_x, button_x_event
-
 
 class AHRS:
     DEVICE_ADDR = 0x68  # MPU6050 device address
@@ -203,7 +193,6 @@ class AHRS:
             yaw / 2)
         return (qx, qy, qz, qw)
 
-
 class AHRS_RS:
     def __init__(self):
         print("Initializing the rs_t265. ")
@@ -234,24 +223,6 @@ class AHRS_RS:
         self.current_quat = (0, 0, 0, 1) 
 
         print("Finished initializing the rs_t265. ")
-
-    def setup_ros(self):
-        # Ros stuff
-        rospy.init_node("ahrs_rs")
-        rospy.Subscriber("depth_feat",
-                         Point,
-                         self._ros_depth_feat_callback, queue_size=1)
-        self.depth_feat_lock = threading.Lock()
-        self.depth_feat_data = None
-
-        self.orientation_publisher = rospy.Publisher("quat_orientation",
-                                                    Quaternion,
-                                                    queue_size=1)
-        time.sleep(1.5)
-
-    def _ros_depth_feat_callback(self, data):
-        with self.depth_feat_lock:
-            self.depth_feat_data = data
 
     def update(self, heading_spoof_angle=0):
         self.timestamp = time.time()
@@ -288,14 +259,6 @@ class AHRS_RS:
 
         self.current_heading = yaw
         #print(f"Yaw: {yaw}, yaw_corrected: {yaw_corrected}, heading_spoof: {heading_spoof_angle}")
-
-        # Publish quaternion
-        #msg = Quaternion()
-        #msg.x = quat_yaw_corrected[0]
-        #msg.y = quat_yaw_corrected[1]
-        #msg.z = quat_yaw_corrected[2]
-        #msg.w = quat_yaw_corrected[3]
-        #self.orientation_publisher.publish(msg)
 
         return roll, pitch, yaw_corrected, quat_yaw_corrected, self.vel_rob, self.timestamp
 
@@ -411,9 +374,9 @@ class D435MPIF:
         if pc is None:
             return (0, 0, 0), None
 
-        euler_x, euler_y, euler_z = tf.transformations.euler_from_quaternion(quat)
-        rot_quat_zero_yaw = tf.transformations.quaternion_from_euler(euler_x, euler_y, 0)
-        rot_mat_zero_yaw = tf.transformations.quaternion_matrix(rot_quat_zero_yaw)
+        euler_x, euler_y, euler_z = p.getEulerFromQuaternion(quat)
+        rot_quat_zero_yaw = p.getQuaternionFromEuler([euler_x, euler_y, 0])
+        rot_mat_zero_yaw = p.getMatrixFromQuaternion(rot_quat_zero_yaw)
 
         pc_rot = np.matmul(rot_mat_zero_yaw[:3, :3], pc)
 
@@ -535,13 +498,14 @@ class D435CameraT:
         if pc is None:
             return (0,0,0), None
 
-        euler_x, euler_y, euler_z = tf.transformations.euler_from_quaternion(quat)
-        rot_quat_zero_yaw = tf.transformations.quaternion_from_euler(euler_x, euler_y, 0)
-        rot_mat_zero_yaw = tf.transformations.quaternion_matrix(rot_quat_zero_yaw)
+        euler_x, euler_y, euler_z = p.getEulerFromQuaternion(quat)
+        rot_quat_zero_yaw = p.getQuaternionFromEuler([euler_x, euler_y, 0])
+        rot_mat_zero_yaw = p.getMatrixFromQuaternion(rot_quat_zero_yaw)
 
         pc_rot = np.matmul(rot_mat_zero_yaw[:3, :3], pc)
 
         ## Calculate depth features
+
         # Crop pc to appropriate region
         pc_rot = pc_rot[:, pc_rot[0] < self.config["depth_x_bnd"]]
         pc_rot = pc_rot[:, np.logical_and(pc_rot[1] < self.config["depth_y_bnd"],
@@ -558,6 +522,23 @@ class D435CameraT:
         presence = len(pc_rot[0])
 
         return pc_mean_height, pc_mean_dist, presence
+
+def q2e(x, y, z, w):
+    pitch = -m.asin(2.0 * (x * z - w * y))
+    roll = m.atan2(2.0 * (w * x + y * z), w * w - x * x - y * y + z * z)
+    yaw = m.atan2(2.0 * (w * z + x * y), w * w + x * x - y * y - z * z)
+    return (roll, pitch, yaw)
+
+def e2q(roll, pitch, yaw):
+        qx = np.sin(roll / 2) * np.cos(pitch / 2) * np.cos(yaw / 2) - np.cos(roll / 2) * np.sin(pitch / 2) * np.sin(
+            yaw / 2)
+        qy = np.cos(roll / 2) * np.sin(pitch / 2) * np.cos(yaw / 2) + np.sin(roll / 2) * np.cos(pitch / 2) * np.sin(
+            yaw / 2)
+        qz = np.cos(roll / 2) * np.cos(pitch / 2) * np.sin(yaw / 2) - np.sin(roll / 2) * np.sin(pitch / 2) * np.cos(
+            yaw / 2)
+        qw = np.cos(roll / 2) * np.cos(pitch / 2) * np.cos(yaw / 2) + np.sin(roll / 2) * np.sin(pitch / 2) * np.sin(
+            yaw / 2)
+        return (qx, qy, qz, qw)
 
 def read_contacts(leg_sensor_gpio_inputs):
     return [GPIO.input(ipt) * 2 - 1 for ipt in leg_sensor_gpio_inputs]
