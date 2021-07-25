@@ -376,7 +376,7 @@ class D435MPIF:
 
         euler_x, euler_y, euler_z = p.getEulerFromQuaternion(quat)
         rot_quat_zero_yaw = p.getQuaternionFromEuler([euler_x, euler_y, 0])
-        rot_mat_zero_yaw = p.getMatrixFromQuaternion(rot_quat_zero_yaw)
+        rot_mat_zero_yaw = np.array(p.getMatrixFromQuaternion(rot_quat_zero_yaw)).reshape(3,3)
 
         pc_rot = np.matmul(rot_mat_zero_yaw[:3, :3], pc)
 
@@ -444,10 +444,8 @@ class D435CameraT:
         self.depth_features_lock = threading.Lock()
         self.orientation_lock = threading.Lock()
 
-        print("===============A===============")
         self.loop_thread = threading.Thread(target=self.loop_depth_calculation)
         self.loop_thread.start()
-        print("===============B===============")
 
     def loop_depth_calculation(self):
         while True:
@@ -500,7 +498,7 @@ class D435CameraT:
 
         euler_x, euler_y, euler_z = p.getEulerFromQuaternion(quat)
         rot_quat_zero_yaw = p.getQuaternionFromEuler([euler_x, euler_y, 0])
-        rot_mat_zero_yaw = p.getMatrixFromQuaternion(rot_quat_zero_yaw)
+        rot_mat_zero_yaw = np.array(p.getMatrixFromQuaternion(rot_quat_zero_yaw)).reshape(3,3)
 
         pc_rot = np.matmul(rot_mat_zero_yaw[:3, :3], pc)
 
@@ -568,8 +566,8 @@ def test_d435_mp():
         quat = [0,0,0,1]
         d_feat = depth_cam.update_orientation(quat)
         t2 = time.time()
-        #print(f"Time taken for iteration: {t2-t1}")
-        #print(d_feat)
+        print(f"Time taken for iteration: {t2-t1}")
+        print(d_feat)
         time.sleep(0.0)
 
 def test_ahrs_rs():
@@ -583,8 +581,8 @@ def test_ahrs_rs():
 
 def main():
     #test_d435_threaded()
-    #test_d435_mp()
-    test_ahrs_rs()
+    test_d435_mp()
+    #test_ahrs_rs()
 
 if __name__=="__main__":
     main()

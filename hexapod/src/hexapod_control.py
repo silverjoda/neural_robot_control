@@ -56,6 +56,9 @@ class HexapodController:
         # Make IMU
         self.Ahrs = AHRS_RS()
 
+        print("Waiting for T265 to initialize for a second")
+        time.sleep(2)
+
         # Make Depth cam
         self.d435 = D435CameraMP(self.config)
 
@@ -382,7 +385,7 @@ if __name__ == "__main__":
         config = yaml.load(f, Loader=yaml.FullLoader)
     controller = HexapodController(config)
     #controller.test_AHRS_RS()
-    #controller.start_ctrl_loop()
-    controller.test_joint_angles()
+    controller.start_ctrl_loop()
+    #controller.test_joint_angles()
     #controller.test_nn_act()
 
