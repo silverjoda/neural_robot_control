@@ -6,8 +6,6 @@ import torch.nn.functional as F
 import torch as T
 import numpy as np
 from copy import deepcopy
-import tf
-import ros_numpy
 import os
 import logging
 import smbus
@@ -22,12 +20,10 @@ import math as m
 import yaml
 import threading
 import quaternion
-import rospy
 # Torques are positive upwards and when leg is being pushed backward
 from stable_baselines3 import A2C
 import RPi.GPIO as GPIO
 import multiprocessing
-from geometry_msgs.msg import Point, Quaternion
 
 
 class JoyController():

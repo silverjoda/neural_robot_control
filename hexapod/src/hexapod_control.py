@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import time
 import itertools
 import torch.nn as nn
@@ -380,7 +382,7 @@ if __name__ == "__main__":
         config = yaml.load(f, Loader=yaml.FullLoader)
     controller = HexapodController(config)
     #controller.test_AHRS_RS()
-    controller.start_ctrl_loop()
-    #controller.test_joint_angles()
+    #controller.start_ctrl_loop()
+    controller.test_joint_angles()
     #controller.test_nn_act()
 
