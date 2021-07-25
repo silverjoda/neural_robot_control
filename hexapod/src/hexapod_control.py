@@ -106,7 +106,7 @@ class HexapodController:
         self.yaw = 0
 
         if self.config["motors_on"]:
-            tar_pos = [512, 100, 1023 - 200, 512, 1023 - 100, 200] * 3
+            tar_pos = [512, 200, 1023 - 200, 512, 1023 - 200, 200] * 3
             self.dxl_io.set_goal_position(dict(zip(self.ids, tar_pos)))
             time.sleep(1)
 
