@@ -17,7 +17,7 @@ import quaternion
 from scripts.agent.agent import Agent
 from scripts.agent.trajectory import Trajectory2d
 import scripts.datamanagement.datamanager as dm
-import OpenSimplex
+from opensimplex import OpenSimplex
 import matplotlib.pyplot as plt
 
 
@@ -176,7 +176,7 @@ class Controller:
         self.autonomous = False
         self.opensimple_noisefun = SimplexNoise(2, *self.config["opensimplex_scalars"])
         self.agent = Agent()
-        self.trajectory = Trajectory2d(filename="lap.npy")
+        self.trajectory = Trajectory2d(filename="infinityleft.npy")
 
     def __enter__(self):
         return self
@@ -246,7 +246,7 @@ class Controller:
                     osn = self.opensimple_noisefun()
                     # Generate noise from 0,1 for throttle and -1, 1 for turn
                     m_1 = np.clip(osn[0], -1, 1) * 0.5 + 0.5
-                    m_2 = np.clip(osn[2], -1, 1)
+                    m_2 = np.clip(osn[1], -1, 1)
                 elif button_B:
                     # Generate temporally correlated noise from 0,1 for throttle and -1, 1 for turn
                     m_1 = np.clip(np.random.randn(1), -2, 2) * 0.125 + 0.75
@@ -258,7 +258,7 @@ class Controller:
                 m_1_scaled, m_2_scaled = np.clip((0.5 * m_1 * self.config["motor_scalar"]) + self.config["throttle_offset"],
                                        0.5, 1), (m_2 / 2) + 0.5
 
-                print("Throttle js: {}, turn js: {}, throttle: {}, turn: {} ".format(throttle, turn, m_1_scaled, m_2_scaled))
+                print("Throttle js: {}, turn js: {}, throttle: {}, turn: {}, button_A: {}, button_B: {} ".format(throttle, turn, m_1_scaled, m_2_scaled, button_A, button_B))
                 data_position.append(position_rob)
                 data_vel.append(vel_rob)
                 data_rotation.append(rotation_rob)
@@ -303,10 +303,11 @@ class Controller:
         before exit save episode history, turn the wheels to the side so buggy 
         dont run straight into the wall and set minimal throttle
         """
-        dm.save_episode(history=self.agent.get_history(), trajectory=self.trajectory.trajectory)
+        dm.save_episode(history=self.agent.get_history(), trajectory=self.trajectory.trajectory, tag="realtest")
         self.PWMDriver.write_servos([0.5, 0])
 
 if __name__ == "__main__":
     with Controller() as controller:
-        controller.loop_control()
+        controller.gather_data()
+        #controller.loop_control()
 
