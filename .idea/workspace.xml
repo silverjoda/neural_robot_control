@@ -20,11 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/buggy/src/draft2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/buggy/src/barinov_buggy_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/barinov_buggy_control.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buggy/src/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/configs/default.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buggy/src/draft.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/draft.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buggy/src/draft.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/simplex_tester.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buggy/src/draft2.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/draft.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -131,27 +130,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="draft2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="neural_robot_control" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/buggy/src" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/buggy/src/draft2.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="peripherals" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="neural_robot_control" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -173,17 +151,38 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="simplex_tester" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="neural_robot_control" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/buggy/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/buggy/src/simplex_tester.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.buggy_control" />
       <item itemvalue="Python.peripherals" />
       <item itemvalue="Python.barinov_buggy_control" />
-      <item itemvalue="Python.draft" />
       <item itemvalue="Python.draft2" />
+      <item itemvalue="Python.simplex_tester" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.draft2" />
-        <item itemvalue="Python.draft" />
+        <item itemvalue="Python.simplex_tester" />
         <item itemvalue="Python.barinov_buggy_control" />
         <item itemvalue="Python.peripherals" />
         <item itemvalue="Python.buggy_control" />
@@ -590,9 +589,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/buggy/src/draft2.py</url>
-          <line>3</line>
-          <option name="timeStamp" value="2" />
+          <url>file://$PROJECT_DIR$/buggy/src/draft.py</url>
+          <line>5</line>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -76,10 +76,9 @@ class AHRS_RS:
         return (roll, pitch, yaw)
 
     def update(self):
-        timestamp = time.time()
-
         frames = self.pipe.wait_for_frames()
         pose = frames.get_pose_frame()
+        timestamp = frames.get_timestamp()
         if pose: 
             data = pose.get_pose_data()
 
