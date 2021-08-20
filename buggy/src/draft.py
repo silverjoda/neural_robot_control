@@ -1,43 +1,44 @@
-def calculate_stabilization_action(self, orientation, angular_velocities, targets):
-    roll, pitch, _ = p.getEulerFromQuaternion(orientation)
-    roll_vel, pitch_vel, yaw_vel = angular_velocities
-    t_throttle, t_roll, t_pitch, t_yaw_vel = targets
+import logging
+import sys
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+import time
+import random
+import numpy as np
+import logging
 
-    # Increase t_yaw_vel because it's slow as shit
-    t_yaw_vel *= 5
+import os
 
-    # print(f"Throttle_target: {t_throttle}, Roll_target: {t_roll}, Pitch_target: {t_pitch}, Yaw_vel_target: {t_yaw_vel}")
-    # print(f"Roll: {roll}, Pitch: {pitch}, Yaw_vel: {yaw_vel}")
+import math as m
+import quaternion
 
-    # Target errors
-    e_roll = t_roll - roll
-    e_pitch = t_pitch - pitch
-    e_yaw = t_yaw_vel - yaw_vel
+from opensimplex import OpenSimplex
+import matplotlib.pyplot as plt
 
-    # Desired correction action
-    roll_act = e_roll * self.p_roll + (e_roll - self.e_roll_prev) * self.d_roll
-    pitch_act = e_pitch * self.p_pitch + (e_pitch - self.e_pitch_prev) * self.d_pitch
-    yaw_act = e_yaw * self.p_yaw + (e_yaw - self.e_yaw_prev) * self.d_yaw
+class SimplexNoise:
+    """
+    A simplex action noise
+    """
+    def __init__(self, dim, s1, s2):
+        super().__init__()
+        self.idx = 0
+        self.dim = dim
+        self.s1 = s1
+        self.s2 = s2
+        self.noisefun = OpenSimplex(seed=int((time.time() % 1) * 10000000))
 
-    self.e_roll_prev = e_roll
-    self.e_pitch_prev = e_pitch
-    self.e_yaw_prev = e_yaw
+    def __call__(self) -> np.ndarray:
+        self.idx += 1
+        return np.array([(self.noisefun.noise2d(x=self.idx / self.s1, y=i*10) + self.noisefun.noise2d(x=self.idx / self.s2, y=i*10)) for i in range(self.dim)])
 
-    m_1_act_total = + roll_act - pitch_act + yaw_act
-    m_2_act_total = - roll_act - pitch_act - yaw_act
-    m_3_act_total = + roll_act + pitch_act - yaw_act
-    m_4_act_total = - roll_act + pitch_act + yaw_act
+    def __repr__(self) -> str:
+        return 'Opensimplex Noise()'.format()
 
-    # Translate desired correction actions to servo commands
-    m_1 = np.clip(t_throttle + m_1_act_total, 0, 1)
-    m_2 = np.clip(t_throttle + m_2_act_total, 0, 1)
-    m_3 = np.clip(t_throttle + m_3_act_total, 0, 1)
-    m_4 = np.clip(t_throttle + m_4_act_total, 0, 1)
+def test_simplex_noise():
+    nf = SimplexNoise(1, 30, 300)
+    n_samples = 200
+    nd = [nf() for _ in range(n_samples)]
+    plt.plot(range(n_samples), nd)
+    plt.show()
 
-    # print([m_1, m_2, m_3, m_4])
-
-    if np.max([m_1, m_2, m_3, m_4]) > 1.1:
-        print("Warning: motor commands exceed 1.0. This signifies an error in the system", m_1, m_2, m_3, m_4,
-              t_throttle)
-
-    return m_1, m_2, m_3, m_4
+if __name__ == "__main__":
+    test_simplex_noise()

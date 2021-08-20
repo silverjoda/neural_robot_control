@@ -1,15 +1,13 @@
-import Adafruit_PCA9685
-import sys
-import threading
 import logging
+import sys
+
+import Adafruit_PCA9685
+
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 import time
-import torch as T
-import torch.nn as nn
-import torch.functional as F
+import random
 import numpy as np
 import logging
-import smbus
 import pyrealsense2 as rs
 import pygame
 import os
@@ -19,6 +17,8 @@ import quaternion
 from scripts.agent.agent import Agent
 from scripts.agent.trajectory import Trajectory2d
 import scripts.datamanagement.datamanager as dm
+import OpenSimplex
+import matplotlib.pyplot as plt
 
 
 class JoyController():
@@ -34,11 +34,12 @@ class JoyController():
     def get_joystick_input(self):
         pygame.event.pump()
         turn, throttle = [self.joystick.get_axis(3), self.joystick.get_axis(1)]
-        button_x = self.joystick.get_button(0)
+        button_A = self.joystick.get_button(0)
+        button_B = self.joystick.get_button(1)
         pygame.event.clear()
-        turn = -turn # [-.5, .5]
-        throttle = throttle * -1  # [0, 1]
-        return throttle, turn, button_x
+        turn = -turn # [-.1, .1]
+        throttle = np.clip(throttle * -1, 0, 1)  # [0, 1]
+        return throttle, turn, button_A, button_B
 
 
 class AHRS_RS:
@@ -61,7 +62,6 @@ class AHRS_RS:
         # RS2_OPTION_ENABLE_MAP_PRESERVATION
 
         self.pipe.start(self.cfg)
-        self.timestamp = time.time()
         self.rs_frame = None
         print("Finished initializing the rs_t265. ")
 
@@ -76,7 +76,7 @@ class AHRS_RS:
         return (roll, pitch, yaw)
 
     def update(self):
-        self.timestamp = time.time()
+        timestamp = time.time()
 
         frames = self.pipe.wait_for_frames()
         pose = frames.get_pose_frame()
@@ -106,7 +106,7 @@ class AHRS_RS:
             angular_vel_rob =  [0., 0., 0.]
             euler_rob =  [0., 0., 0.]
 
-        return position_rob, vel_rs_corrected, rotation_rob, angular_vel_rob, euler_rob, self.timestamp
+        return position_rob, vel_rs_corrected, rotation_rob, angular_vel_rob, euler_rob, timestamp
 
 
 class PWMDriver:
@@ -142,9 +142,27 @@ class PWMDriver:
             return
         time.sleep(0.1)
         print("Setting escs to lowest value. ")
-        self.write_servos([0.50,0.5])
+        self.write_servos([0.50, 0.5])
         time.sleep(0.3)
 
+class SimplexNoise:
+    """
+    A simplex action noise
+    """
+    def __init__(self, dim, s1, s2):
+        super().__init__()
+        self.idx = 0
+        self.dim = dim
+        self.s1 = s1
+        self.s2 = s2
+        self.noisefun = OpenSimplex(seed=int((time.time() % 1) * 10000000))
+
+    def __call__(self) -> np.ndarray:
+        self.idx += 1
+        return np.array([(self.noisefun.noise2d(x=self.idx / self.s1, y=i*10) + self.noisefun.noise2d(x=self.idx / self.s2, y=i*10)) for i in range(self.dim)])
+
+    def __repr__(self) -> str:
+        return 'Opensimplex Noise()'.format()
 
 class Controller:  
     def __init__(self):
@@ -156,6 +174,7 @@ class Controller:
         self.PWMDriver = PWMDriver(self.motors_on)
         self.JOYStick = JoyController()
         self.autonomous = False
+        self.opensimple_noisefun = SimplexNoise(2, *self.config["opensimplex_scalars"])
         self.agent = Agent()
         self.trajectory = Trajectory2d(filename="lap.npy")
 
@@ -177,8 +196,8 @@ class Controller:
         if specified pass control to the AI agent.
         return actions: throttle, turn corresponding to the motors m1 and m2
         """
-        throttle, turn, autonomous_control = self.JOYStick.get_joystick_input()
-        if self.config["controller_source"] == "nn" and autonomous_control:
+        throttle, turn, button_A, _ = self.JOYStick.get_joystick_input()
+        if self.config["controller_source"] == "nn" and button_A:
             action = self.agent.observe_then_act(readstatefunc=self.update_AHRS_then_read_state, 
                                                  pathplanfunc=self.trajectory.get_waypoints_vector)
             throttle, turn = self.correct_throttle(action[0]), action[1]
@@ -200,6 +219,85 @@ class Controller:
             self.PWMDriver.write_servos([m_1, m_2])
             while time.time() - iteration_starttime < self.config["update_period"]: pass
 
+    def gather_data(self):
+        # Initialize data lists
+        data_position = []
+        data_vel = []
+        data_rotation = []
+        data_angular_vel = []
+        data_timestamp = []
+        data_action = []
+
+        print("Starting the control loop")
+        try:
+            for i in range(self.config["n_data_gathering_steps"]):
+                if i % 1000 == 0:
+                    print(i)
+
+                iteration_starttime = time.time()
+
+                # Read target control inputs
+                throttle, turn, button_A, button_B = self.JOYStick.get_joystick_input()
+
+                # Update sensor data
+                position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
+
+                if button_A:
+                    osn = self.opensimple_noisefun()
+                    # Generate noise from 0,1 for throttle and -1, 1 for turn
+                    m_1 = np.clip(osn[0], -1, 1) * 0.5 + 0.5
+                    m_2 = np.clip(osn[2], -1, 1)
+                elif button_B:
+                    # Generate temporally correlated noise from 0,1 for throttle and -1, 1 for turn
+                    m_1 = np.clip(np.random.randn(1), -2, 2) * 0.125 + 0.75
+                    m_2 = np.clip(np.random.randn(1), -2, 2) * 0.5
+                else:
+                    # Use joystick inputs
+                    m_1, m_2 = throttle, turn
+
+                m_1_scaled, m_2_scaled = np.clip((0.5 * m_1 * self.config["motor_scalar"]) + self.config["throttle_offset"],
+                                       0.5, 1), (m_2 / 2) + 0.5
+
+                print("Throttle js: {}, turn js: {}, throttle: {}, turn: {} ".format(throttle, turn, m_1_scaled, m_2_scaled))
+                data_position.append(position_rob)
+                data_vel.append(vel_rob)
+                data_rotation.append(rotation_rob)
+                data_angular_vel.append(angular_vel_rob)
+                data_timestamp.append(timestamp)
+                data_action.append([throttle, turn])
+
+                # Write control to servos
+                self.PWMDriver.write_servos([m_1_scaled, m_2_scaled])
+
+                # Sleep to maintain correct FPS
+                while time.time() - iteration_starttime < self.config["update_period"]: pass
+        except KeyboardInterrupt:
+            print("Interrupted by user")
+
+        for _ in range(10):
+            self.PWMDriver.write_servos([0, 0.5])
+
+        # Save data
+        dir_prefix = os.path.join("data", time.strftime("%Y_%m_%d"))
+        if not os.path.exists(dir_prefix):
+            os.makedirs(dir_prefix)
+        prefix = 'buggy_' + ''.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ', k=3))
+
+        data_position = np.array(data_position, dtype=np.float32)
+        data_vel = np.array(data_vel, dtype=np.float32)
+        data_rotation = np.array(data_rotation, dtype=np.float32)
+        data_angular_vel = np.array(data_angular_vel, dtype=np.float32)
+        data_timestamp = np.array(data_timestamp, dtype=np.float32)
+        data_action = np.array(data_action, dtype=np.float32)
+        np.save(os.path.join(dir_prefix, prefix + "_position"), data_position)
+        np.save(os.path.join(dir_prefix, prefix + "_vel"), data_vel)
+        np.save(os.path.join(dir_prefix, prefix + "_rotation"), data_rotation)
+        np.save(os.path.join(dir_prefix, prefix + "_angular"), data_angular_vel)
+        np.save(os.path.join(dir_prefix, prefix + "_timestamp"), data_timestamp)
+        np.save(os.path.join(dir_prefix, prefix + "_action"), data_action)
+
+        print("Saved data")
+
     def __exit__(self, exc_type, exc_value, traceback):
         """
         before exit save episode history, turn the wheels to the side so buggy 
@@ -207,7 +305,6 @@ class Controller:
         """
         dm.save_episode(history=self.agent.get_history(), trajectory=self.trajectory.trajectory)
         self.PWMDriver.write_servos([0.5, 0])
-            
 
 if __name__ == "__main__":
     with Controller() as controller:

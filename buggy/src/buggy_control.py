@@ -319,7 +319,6 @@ class Controller:
             while time.time() - iteration_starttime < self.config["update_period"]: pass
             
     def gather_data(self):
-
         # Initialize data lists
         data_position = []
         data_vel = []
