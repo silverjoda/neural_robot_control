@@ -14,6 +14,8 @@ import quaternion
 from opensimplex import OpenSimplex
 import matplotlib.pyplot as plt
 
+
+
 class SimplexNoise:
     """
     A simplex action noise

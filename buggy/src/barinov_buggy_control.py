@@ -228,6 +228,8 @@ class Controller:
         data_timestamp = []
         data_action = []
 
+        # todo: make timestamp properly
+
         print("Starting the control loop")
         try:
             for i in range(self.config["n_data_gathering_steps"]):
@@ -287,7 +289,7 @@ class Controller:
         data_vel = np.array(data_vel, dtype=np.float32)
         data_rotation = np.array(data_rotation, dtype=np.float32)
         data_angular_vel = np.array(data_angular_vel, dtype=np.float32)
-        data_timestamp = np.array(data_timestamp, dtype=np.float32)
+        data_timestamp = np.array(data_timestamp)
         data_action = np.array(data_action, dtype=np.float32)
         np.save(os.path.join(dir_prefix, prefix + "_position"), data_position)
         np.save(os.path.join(dir_prefix, prefix + "_vel"), data_vel)
