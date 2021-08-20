@@ -1,0 +1,215 @@
+import Adafruit_PCA9685
+import sys
+import threading
+import logging
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+import time
+import torch as T
+import torch.nn as nn
+import torch.functional as F
+import numpy as np
+import logging
+import smbus
+import pyrealsense2 as rs
+import pygame
+import os
+import yaml
+import math as m
+import quaternion
+from scripts.agent.agent import Agent
+from scripts.agent.trajectory import Trajectory2d
+import scripts.datamanagement.datamanager as dm
+
+
+class JoyController():
+    def __init__(self):
+        logging.info("Initializing joystick controller")
+        pygame.init()
+        self.joystick = pygame.joystick.Joystick(0)
+        self.joystick.init()
+        logging.info("Initialized gamepad: {}".format(self.joystick.get_name()))
+        logging.info("Finished initializing the joystick controller.")
+        self.button_x_state = 0
+
+    def get_joystick_input(self):
+        pygame.event.pump()
+        turn, throttle = [self.joystick.get_axis(3), self.joystick.get_axis(1)]
+        button_x = self.joystick.get_button(0)
+        pygame.event.clear()
+        turn = -turn # [-.5, .5]
+        throttle = throttle * -1  # [0, 1]
+        return throttle, turn, button_x
+
+
+class AHRS_RS:
+    def __init__(self):
+        print("Initializing the rs_t265. ")
+        self.rs_to_world_mat = np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]])
+        self.pipe = rs.pipeline()
+        self.cfg = rs.config()
+        self.cfg.enable_stream(rs.stream.pose)
+        # added new
+        device = self.cfg.resolve(self.pipe).get_device()
+        pose_sensor = device.first_pose_sensor()
+        #pose_sensor.set_option(rs.option.enable_map_relocalization, 0)
+        pose_sensor.set_option(rs.option.enable_pose_jumping, 0)
+        #pose_sensor.set_option(rs.option.enable_motion_correction, 0)
+        pose_sensor.set_option(rs.option.enable_relocalization, 0)
+        # RS2_OPTION_ENABLE_POSE_JUMPING
+        # RS2_OPTION_ENABLE_MAPPING
+        # RS2_OPTION_ENABLE_RELOCALIZATION
+        # RS2_OPTION_ENABLE_MAP_PRESERVATION
+
+        self.pipe.start(self.cfg)
+        self.timestamp = time.time()
+        self.rs_frame = None
+        print("Finished initializing the rs_t265. ")
+
+    def rs_cb(self, data_frame):
+        with self.rs_lock:
+            self.rs_frame = data_frame
+
+    def _quat_to_euler(self, w, x, y, z):
+        pitch =  -m.asin(2.0 * (x*z - w*y))
+        roll  =  m.atan2(2.0 * (w*x + y*z), w*w - x*x - y*y + z*z)
+        yaw   =  m.atan2(2.0 * (w*z + x*y), w*w + x*x - y*y - z*z)
+        return (roll, pitch, yaw)
+
+    def update(self):
+        self.timestamp = time.time()
+
+        frames = self.pipe.wait_for_frames()
+        pose = frames.get_pose_frame()
+        if pose: 
+            data = pose.get_pose_data()
+
+            position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
+            vel_rs = np.array([data.velocity.x, data.velocity.y, data.velocity.z])
+            position_rob = self.rs_to_world_mat @ position_rs
+            vel_rob = self.rs_to_world_mat @ vel_rs
+
+            # Axes are permuted according how the RS axes are oriented wrt world axes
+            rotation_rob = (data.rotation.w, data.rotation.z, data.rotation.x, data.rotation.y)
+            angular_vel_rob = (data.angular_velocity.z, data.angular_velocity.x, data.angular_velocity.y)
+            euler_rob = self._quat_to_euler(*rotation_rob)
+
+            # Correct vel_rob to local frame using orientation quat:
+            rotation_rob_matrix = quaternion.as_rotation_matrix(np.quaternion(*rotation_rob))
+            vel_rs_corrected = np.matmul(rotation_rob_matrix.T, vel_rob)
+
+        else:
+            print("RS frame was None, so returning zero values")
+            position_rob = [0., 0., 0.]
+            vel_rob =  [0., 0., 0.]
+            vel_rs_corrected = vel_rob
+            rotation_rob =  [0., 0., 0., 0.]
+            angular_vel_rob =  [0., 0., 0.]
+            euler_rob =  [0., 0., 0.]
+
+        return position_rob, vel_rs_corrected, rotation_rob, angular_vel_rob, euler_rob, self.timestamp
+
+
+class PWMDriver:
+    def __init__(self, motors_on):
+        self.motors_on = motors_on
+        if not self.motors_on:
+            print("Motors OFF, not initializing the PWMdriver. ")
+            return
+        self.pwm_freq = 50
+        self.servo_ids = [0, 1] # MOTOR IS 0, TURN is 1
+        print("Initializing the PWMdriver. ")
+        self.pwm = Adafruit_PCA9685.PCA9685()
+        self.pwm.set_pwm_freq(self.pwm_freq)
+        self.arm_escs()
+        print("Finished initializing the PWMdriver. ")
+
+    def write_servos(self, vals):
+        '''
+        :param vals: Throttle commands [0,1] corresponding to min and max values
+        :return: None
+        '''
+        if not self.motors_on:
+            print("Motors OFF, writing to servos")
+            return
+
+        for id in self.servo_ids:
+            pulse_length = ((np.clip(vals[id], 0, 1) + 1) * 1000) / ((1000000. / self.pwm_freq) / 4096.)
+            self.pwm.set_pwm(id, 0, int(pulse_length))
+
+    def arm_escs(self):
+        if not self.motors_on:
+            print("Motors OFF, not arming motors")
+            return
+        time.sleep(0.1)
+        print("Setting escs to lowest value. ")
+        self.write_servos([0.50,0.5])
+        time.sleep(0.3)
+
+
+class Controller:  
+    def __init__(self):
+        with open('configs/default.yaml') as f:
+            self.config = yaml.load(f, Loader=yaml.FullLoader)
+        self.motors_on = self.config["motors_on"]
+        print("Initializing the Controller, motors_on: {}".format(self.motors_on))
+        self.AHRS = AHRS_RS()
+        self.PWMDriver = PWMDriver(self.motors_on)
+        self.JOYStick = JoyController()
+        self.autonomous = False
+        self.agent = Agent()
+        self.trajectory = Trajectory2d(filename="lap.npy")
+
+    def __enter__(self):
+        return self
+
+    def update_AHRS_then_read_state(self):
+        """update sensors and return data relevant to the AI agent"""
+        pos, vel, rot, ang, _, _ = self.AHRS.update()
+        return pos, vel, np.array(rot), np.array(ang)
+
+    def correct_throttle(self, throttle):
+        """map throttle from [-1, 1] to [0, 1] interval"""
+        return (throttle + 1) / 2
+
+    def get_action(self):
+        """
+        process input from the joystick. 
+        if specified pass control to the AI agent.
+        return actions: throttle, turn corresponding to the motors m1 and m2
+        """
+        throttle, turn, autonomous_control = self.JOYStick.get_joystick_input()
+        if self.config["controller_source"] == "nn" and autonomous_control:
+            action = self.agent.observe_then_act(readstatefunc=self.update_AHRS_then_read_state, 
+                                                 pathplanfunc=self.trajectory.get_waypoints_vector)
+            throttle, turn = self.correct_throttle(action[0]), action[1]
+            self.trajectory.update_points_state(self.agent.state.get_pos()[:2])
+            print(f"throttle: {throttle}. turn: {turn}. waypoints: {self.trajectory.get_next_unvisited_point()}. pos: {self.agent.state.get_pos()}")
+        return throttle, turn
+
+    def loop_control(self):
+        """
+        Target inputs are in radians, throttle is in [0,1]
+        Roll, pitch and yaw are in radians. 
+        Motor outputs are sent to the motor driver as [0,1]
+        """
+        print("Starting the control loop")
+        while True:
+            iteration_starttime = time.time()
+            action_m_1, action_m_2 = self.get_action()
+            m_1, m_2 = np.clip((0.5 * action_m_1 * self.config["motor_scalar"]) + self.config["throttle_offset"], 0.5, 1), (action_m_2 / 2) + 0.5
+            self.PWMDriver.write_servos([m_1, m_2])
+            while time.time() - iteration_starttime < self.config["update_period"]: pass
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        before exit save episode history, turn the wheels to the side so buggy 
+        dont run straight into the wall and set minimal throttle
+        """
+        dm.save_episode(history=self.agent.get_history(), trajectory=self.trajectory.trajectory)
+        self.PWMDriver.write_servos([0.5, 0])
+            
+
+if __name__ == "__main__":
+    with Controller() as controller:
+        controller.loop_control()
+

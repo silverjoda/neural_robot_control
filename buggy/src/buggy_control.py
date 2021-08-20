@@ -219,7 +219,7 @@ class PWMDriver:
 
         time.sleep(0.1)
         print("Setting escs to lowest value. ")
-        self.write_servos([0.55,0.5])
+        self.write_servos([0.50,0.5])
         time.sleep(0.3)
 
 
@@ -360,7 +360,8 @@ class Controller:
                 else:
                     m_1, m_2 = np.clip((0.5 * throttle * self.config["motor_scalar"]) + self.config["throttle_offset"],
                                        0, 1), (turn / 2) + 0.5
-
+                
+                    print("Throttle js: {}, turn js: {}, throttle: {}, turn: {} ".format(throttle, turn, m_1, m_2))
                 data_position.append(position_rob)
                 data_vel.append(vel_rob)
                 data_rotation.append(rotation_rob)
