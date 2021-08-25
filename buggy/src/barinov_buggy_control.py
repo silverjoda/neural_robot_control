@@ -84,9 +84,10 @@ class AHRS_RS:
 
                 # Metadata
                 timestamp = frames.get_timestamp()
-                frame = frames.get_pose_frame()
-                #frame = frames.frame_number
+                #frame = frames.get_pose_frame() # !!LOL THIS MAKES THE T265 CRASH!!
+                frame = frames.frame_number
 
+                
                 # Raw data (rotation axes are permuted according how the RS axes are oriented wrt world axes)
                 position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
                 velocity_rs = np.array([data.velocity.x, data.velocity.y, data.velocity.z])
@@ -260,6 +261,7 @@ class Controller:
         data_acceleration_glob = []
         data_timestamp = []
         data_frame = []
+        data_action = []
 
         print("Starting the control loop")
         try:
@@ -277,12 +279,12 @@ class Controller:
 
                 if button_A:
                     osn = self.opensimple_noisefun()
-                    # Generate noise from 0,1 for throttle and -1, 1 for turn
+                    # Generate temporally correclated noise from 0,1 for throttle and -1, 1 for turn
                     m_1 = np.clip(osn[0], -1, 1) * 0.5 + 0.5
                     m_2 = np.clip(osn[1], -1, 1)
                 elif button_B:
-                    # Generate temporally correlated noise from 0,1 for throttle and -1, 1 for turn
-                    m_1 = np.clip(np.random.randn(1), -2, 2) * 0.125 + 0.75
+                    # Generate one sided gaussian correlated noise from 0,1 for throttle and -1, 1 for turn
+                    m_1 = np.clip(np.random.randn(1) * 0.5, 0, 1)
                     m_2 = np.clip(np.random.randn(1), -2, 2) * 0.5
                 else:
                     # Use joystick inputs
@@ -291,7 +293,8 @@ class Controller:
                 m_1_scaled, m_2_scaled = np.clip((0.5 * m_1 * self.config["motor_scalar"]) + self.config["throttle_offset"],
                                        0.5, 1), (m_2 / 2) + 0.5
 
-                print("Throttle js: {}, turn js: {}, throttle: {}, turn: {}, button_A: {}, button_B: {} ".format(throttle, turn, m_1_scaled, m_2_scaled, button_A, button_B))
+                if i % 100 == 0:
+                    print("Throttle js: {}, turn js: {}, throttle: {}, turn: {}, button_A: {}, button_B: {} ".format(throttle, turn, m_1_scaled, m_2_scaled, button_A, button_B))
 
                 # Realsense data
                 data_position_rs.append(rs_dict["position_rs"])
@@ -331,7 +334,7 @@ class Controller:
             os.makedirs(dir_prefix)
         prefix = 'buggy_' + ''.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ', k=3))
 
-        data_position_rs = np.array(data_position, dtype=np.float32)
+        data_position_rs = np.array(data_position_rs, dtype=np.float32)
         data_velocity_rs = np.array(data_velocity_rs, dtype=np.float32)
         data_acceleration_rs = np.array(data_acceleration_rs, dtype=np.float32)
         data_rotation_rob = np.array(data_rotation_rob, dtype=np.float32)
