@@ -76,37 +76,59 @@ class AHRS_RS:
         return (roll, pitch, yaw)
 
     def update(self):
-        frames = self.pipe.wait_for_frames()
-        pose = frames.get_pose_frame()
-        timestamp = frames.get_timestamp()
-        if pose: 
-            data = pose.get_pose_data()
-            position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
-            vel_rs = np.array([data.velocity.x, data.velocity.y, data.velocity.z])
-            accel_rs = np.array([data.acceleration.x, data.acceleration.y, data.acceleration.z])
-            position_rob = self.rs_to_world_mat @ position_rs
-            vel_rob = self.rs_to_world_mat @ vel_rs
-            accel_rob = self.rs_to_world_mat @ accel_rs
+        while True:
+            frames = self.pipe.wait_for_frames()
+            pose = frames.get_pose_frame()
+            if pose:
+                data = pose.get_pose_data()
 
-            # Axes are permuted according how the RS axes are oriented wrt world axes
-            rotation_rob = (data.rotation.w, data.rotation.z, data.rotation.x, data.rotation.y)
-            angular_vel_rob = (data.angular_velocity.z, data.angular_velocity.x, data.angular_velocity.y)
-            euler_rob = self._quat_to_euler(*rotation_rob)
+                # Metadata
+                timestamp = frames.get_timestamp()
+                frame = frames.get_pose_frame()
+                #frame = frames.frame_number
 
-            # Correct vel_rob to local frame using orientation quat:
-            rotation_rob_matrix = quaternion.as_rotation_matrix(np.quaternion(*rotation_rob))
-            vel_rs_corrected = np.matmul(rotation_rob_matrix.T, vel_rob)
+                # Raw data (rotation axes are permuted according how the RS axes are oriented wrt world axes)
+                position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
+                velocity_rs = np.array([data.velocity.x, data.velocity.y, data.velocity.z])
+                acceleration_rs = np.array([data.acceleration.x, data.acceleration.y, data.acceleration.z])
+                rotation_rob = np.array([data.rotation.w, data.rotation.z, data.rotation.x, data.rotation.y])
+                angular_velocity_rob = np.array([data.angular_velocity.z, data.angular_velocity.x, data.angular_velocity.y])
+                angular_acceleration_rob = np.array([data.angular_acceleration.z, data.angular_acceleration.x, data.angular_acceleration.y])
+                tracker_confidence = np.array(data.tracker_confidence)
+                mapper_confidence = np.array(data.mapper_confidence)
 
-        else:
-            print("RS frame was None, so returning zero values")
-            position_rob = [0., 0., 0.]
-            vel_rob =  [0., 0., 0.]
-            vel_rs_corrected = vel_rob
-            rotation_rob =  [0., 0., 0., 0.]
-            angular_vel_rob =  [0., 0., 0.]
-            euler_rob =  [0., 0., 0.]
+                # Corrected to robot frame
+                position_rob = self.rs_to_world_mat @ position_rs
+                velocity_rob = self.rs_to_world_mat @ velocity_rs
+                acceleration_rob = self.rs_to_world_mat @ acceleration_rs
+                euler_rob = self._quat_to_euler(*rotation_rob)
 
-        return position_rob, vel_rs_corrected, rotation_rob, angular_vel_rob, euler_rob, timestamp
+                # Correct vel_rob to map frame using orientation quat:
+                rotation_rob_matrix = quaternion.as_rotation_matrix(np.quaternion(*rotation_rob))
+                velocity_glob = np.matmul(rotation_rob_matrix.T, velocity_rob)
+                acceleration_glob = np.matmul(rotation_rob_matrix.T, acceleration_rob)
+
+                data_dict = {"position_rs" : position_rs,
+                             "velocity_rs" : velocity_rs,
+                             "acceleration_rs" : acceleration_rs,
+                             "rotation_rob" : rotation_rob,
+                             "angular_velocity_rob" : angular_velocity_rob,
+                             "angular_acceleration_rob" : angular_acceleration_rob,
+                             "tracker_confidence" : tracker_confidence,
+                             "mapper_confidence" : mapper_confidence,
+                             "position_rob" : position_rob,
+                             "velocity_rob" : velocity_rob,
+                             "acceleration_rob" : acceleration_rob,
+                             "euler_rob" : euler_rob,
+                             "velocity_glob" : velocity_glob,
+                             "acceleration_glob" : acceleration_glob,
+                             "timestamp" : timestamp,
+                             "frame" : frame}
+
+                # Changes (get outputs from dictinonary keys using the following changes):
+                # vel_rob -> velocity_glob
+                # angular_vel_rob -> angular_velocity_rob
+                return data_dict
 
 
 class PWMDriver:
@@ -220,15 +242,24 @@ class Controller:
             while time.time() - iteration_starttime < self.config["update_period"]: pass
 
     def gather_data(self):
-        # Initialize data lists
-        data_position = []
-        data_vel = []
-        data_rotation = []
-        data_angular_vel = []
-        data_timestamp = []
-        data_action = []
 
-        # todo: make timestamp properly
+        # Initialize data lists
+        data_position_rs = []
+        data_velocity_rs = []
+        data_acceleration_rs = []
+        data_rotation_rob = []
+        data_angular_velocity_rob = []
+        data_angular_acceleration_rob = []
+        data_tracker_confidence = []
+        data_mapper_confidence = []
+        data_position_rob = []
+        data_velocity_rob = []
+        data_acceleration_rob = []
+        data_euler_rob = []
+        data_velocity_glob = []
+        data_acceleration_glob = []
+        data_timestamp = []
+        data_frame = []
 
         print("Starting the control loop")
         try:
@@ -242,7 +273,7 @@ class Controller:
                 throttle, turn, button_A, button_B = self.JOYStick.get_joystick_input()
 
                 # Update sensor data
-                position_rob, vel_rob, rotation_rob, angular_vel_rob, euler_rob, timestamp = self.AHRS.update()
+                rs_dict = self.AHRS.update()
 
                 if button_A:
                     osn = self.opensimple_noisefun()
@@ -261,11 +292,26 @@ class Controller:
                                        0.5, 1), (m_2 / 2) + 0.5
 
                 print("Throttle js: {}, turn js: {}, throttle: {}, turn: {}, button_A: {}, button_B: {} ".format(throttle, turn, m_1_scaled, m_2_scaled, button_A, button_B))
-                data_position.append(position_rob)
-                data_vel.append(vel_rob)
-                data_rotation.append(rotation_rob)
-                data_angular_vel.append(angular_vel_rob)
-                data_timestamp.append(timestamp)
+
+                # Realsense data
+                data_position_rs.append(rs_dict["position_rs"])
+                data_velocity_rs.append(rs_dict["velocity_rs"])
+                data_acceleration_rs.append(rs_dict["acceleration_rs"])
+                data_rotation_rob.append(rs_dict["rotation_rob"])
+                data_angular_velocity_rob.append(rs_dict["angular_velocity_rob"])
+                data_angular_acceleration_rob.append(rs_dict["angular_acceleration_rob"])
+                data_tracker_confidence.append(rs_dict["tracker_confidence"])
+                data_mapper_confidence.append(rs_dict["mapper_confidence"])
+                data_position_rob.append(rs_dict["position_rob"])
+                data_velocity_rob.append(rs_dict["velocity_rob"])
+                data_acceleration_rob.append(rs_dict["acceleration_rob"])
+                data_euler_rob.append(rs_dict["euler_rob"])
+                data_velocity_glob.append(rs_dict["velocity_glob"])
+                data_acceleration_glob.append(rs_dict["acceleration_glob"])
+                data_timestamp.append(rs_dict["timestamp"])
+                data_frame.append(rs_dict["frame"])
+
+                # Action data
                 data_action.append([m_1_scaled, m_2_scaled])
 
                 # Write control to servos
@@ -285,18 +331,47 @@ class Controller:
             os.makedirs(dir_prefix)
         prefix = 'buggy_' + ''.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ', k=3))
 
-        data_position = np.array(data_position, dtype=np.float32)
-        data_vel = np.array(data_vel, dtype=np.float32)
-        data_rotation = np.array(data_rotation, dtype=np.float32)
-        data_angular_vel = np.array(data_angular_vel, dtype=np.float32)
+        data_position_rs = np.array(data_position, dtype=np.float32)
+        data_velocity_rs = np.array(data_velocity_rs, dtype=np.float32)
+        data_acceleration_rs = np.array(data_acceleration_rs, dtype=np.float32)
+        data_rotation_rob = np.array(data_rotation_rob, dtype=np.float32)
+        data_angular_velocity_rob = np.array(data_angular_velocity_rob, dtype=np.float32)
+        data_angular_acceleration_rob = np.array(data_angular_acceleration_rob, dtype=np.float32)
+        data_tracker_confidence = np.array(data_tracker_confidence)
+        data_mapper_confidence = np.array(data_mapper_confidence)
+        data_position_rob = np.array(data_position_rob, dtype=np.float32)
+        data_velocity_rob = np.array(data_velocity_rob, dtype=np.float32)
+        data_acceleration_rob = np.array(data_acceleration_rob, dtype=np.float32)
+        data_euler_rob = np.array(data_euler_rob, dtype=np.float32)
+        data_velocity_glob = np.array(data_velocity_glob, dtype=np.float32)
+        data_acceleration_glob = np.array(data_acceleration_glob, dtype=np.float32)
         data_timestamp = np.array(data_timestamp)
-        data_action = np.array(data_action, dtype=np.float32)
-        np.save(os.path.join(dir_prefix, prefix + "_position"), data_position)
-        np.save(os.path.join(dir_prefix, prefix + "_vel"), data_vel)
-        np.save(os.path.join(dir_prefix, prefix + "_rotation"), data_rotation)
-        np.save(os.path.join(dir_prefix, prefix + "_angular"), data_angular_vel)
+        data_frame = np.array(data_frame)
+        data_action = np.array(data_action)
+
+        np.save(os.path.join(dir_prefix, prefix + "_position_rs"), data_position_rs)
+        np.save(os.path.join(dir_prefix, prefix + "_velocity_rs"), data_velocity_rs)
+        np.save(os.path.join(dir_prefix, prefix + "_acceleration_rs"), data_acceleration_rs)
+        np.save(os.path.join(dir_prefix, prefix + "_rotation_rob"), data_rotation_rob)
+        np.save(os.path.join(dir_prefix, prefix + "_angular_velocity_rob"), data_angular_velocity_rob)
+        np.save(os.path.join(dir_prefix, prefix + "_angular_acceleration_rob"), data_angular_acceleration_rob)
+        np.save(os.path.join(dir_prefix, prefix + "_tracker_confidence"), data_tracker_confidence)
+        np.save(os.path.join(dir_prefix, prefix + "_mapper_confidence"), data_mapper_confidence)
+        np.save(os.path.join(dir_prefix, prefix + "_position_rob"), data_position_rob)
+        np.save(os.path.join(dir_prefix, prefix + "_velocity_rob"), data_velocity_rob)
+        np.save(os.path.join(dir_prefix, prefix + "_acceleration_rob"), data_acceleration_rob)
+        np.save(os.path.join(dir_prefix, prefix + "_euler_rob"), data_euler_rob)
+        np.save(os.path.join(dir_prefix, prefix + "_velocity_glob"), data_velocity_glob)
+        np.save(os.path.join(dir_prefix, prefix + "_acceleration_glob"), data_acceleration_glob)
         np.save(os.path.join(dir_prefix, prefix + "_timestamp"), data_timestamp)
+        np.save(os.path.join(dir_prefix, prefix + "_frame"), data_frame)
         np.save(os.path.join(dir_prefix, prefix + "_action"), data_action)
+
+        # Name changes:
+        # position -> position_rob
+        # vel -> velocity_glob
+        # rotation -> rotation_rob
+        # angular -> angular_velocity_rob
 
         print("Saved data")
 
