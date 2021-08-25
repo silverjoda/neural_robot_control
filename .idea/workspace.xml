@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -19,11 +22,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="">
+    <list default="true" id="0836584b-6c92-416f-8410-231b90843ff2" name="Default Changelist" comment="M">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/buggy/src/barinov_buggy_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/barinov_buggy_control.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buggy/src/draft.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/simplex_tester.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buggy/src/draft2.py" beforeDir="false" afterPath="$PROJECT_DIR$/buggy/src/draft.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,28 +66,7 @@
       <recent name="$PROJECT_DIR$/quadcopter" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.draft2">
-    <configuration name="barinov_buggy_control" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="neural_robot_control" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/buggy/src" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/buggy/src/barinov_buggy_control.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.main">
     <configuration name="buggy_control" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="neural_robot_control" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -109,7 +89,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="draft" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="neural_robot_control" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -117,11 +97,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/buggy/src" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/buggy/src/draft.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -137,9 +117,9 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/../miniconda3/envs/adaptive_neural_control/bin/python" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/hexapod/src" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/peripherals.py" />
@@ -151,7 +131,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="simplex_tester" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="t265_rpy" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="neural_robot_control" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -163,7 +143,29 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/buggy/src/simplex_tester.py" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/buggy/src/t265_rpy.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="zmq_1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="neural_robot_control" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/hexapod/src/zmq_test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hexapod/src/zmq_test/zmq_1.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -174,18 +176,18 @@
     </configuration>
     <list>
       <item itemvalue="Python.buggy_control" />
+      <item itemvalue="Python.main" />
       <item itemvalue="Python.peripherals" />
-      <item itemvalue="Python.barinov_buggy_control" />
-      <item itemvalue="Python.draft2" />
-      <item itemvalue="Python.simplex_tester" />
+      <item itemvalue="Python.t265_rpy" />
+      <item itemvalue="Python.zmq_1" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.draft2" />
-        <item itemvalue="Python.simplex_tester" />
-        <item itemvalue="Python.barinov_buggy_control" />
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.zmq_1" />
         <item itemvalue="Python.peripherals" />
         <item itemvalue="Python.buggy_control" />
+        <item itemvalue="Python.t265_rpy" />
       </list>
     </recent_temporary>
   </component>
@@ -218,97 +220,6 @@
       <workItem from="1618415354427" duration="2309000" />
       <workItem from="1618417680101" duration="670000" />
       <workItem from="1618419039422" duration="288000" />
-    </task>
-    <task id="LOCAL-00012" summary="M">
-      <created>1606411751380</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1606411751380</updated>
-    </task>
-    <task id="LOCAL-00013" summary="M">
-      <created>1606415709580</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1606415709580</updated>
-    </task>
-    <task id="LOCAL-00014" summary="M">
-      <created>1606417851244</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1606417851244</updated>
-    </task>
-    <task id="LOCAL-00015" summary="M">
-      <created>1606417930849</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1606417930849</updated>
-    </task>
-    <task id="LOCAL-00016" summary="M">
-      <created>1606999498910</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1606999498910</updated>
-    </task>
-    <task id="LOCAL-00017" summary="M">
-      <created>1607000473473</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1607000473473</updated>
-    </task>
-    <task id="LOCAL-00018" summary="M">
-      <created>1607000917714</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1607000917714</updated>
-    </task>
-    <task id="LOCAL-00019" summary="M">
-      <created>1607006033839</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1607006033839</updated>
-    </task>
-    <task id="LOCAL-00020" summary="M">
-      <created>1607509581656</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1607509581656</updated>
-    </task>
-    <task id="LOCAL-00021" summary="M">
-      <created>1607881878217</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1607881878217</updated>
-    </task>
-    <task id="LOCAL-00022" summary="M">
-      <created>1607883127098</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1607883127098</updated>
-    </task>
-    <task id="LOCAL-00023" summary="M">
-      <created>1607883149511</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1607883149511</updated>
-    </task>
-    <task id="LOCAL-00024" summary="M">
-      <created>1608293015695</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1608293015695</updated>
     </task>
     <task id="LOCAL-00025" summary="M">
       <created>1608546095876</created>
@@ -562,7 +473,98 @@
       <option name="project" value="LOCAL" />
       <updated>1625418361382</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="M">
+      <created>1625418401930</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1625418401930</updated>
+    </task>
+    <task id="LOCAL-00062" summary="M">
+      <created>1625841393753</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1625841393753</updated>
+    </task>
+    <task id="LOCAL-00063" summary="M">
+      <created>1625841902869</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1625841902870</updated>
+    </task>
+    <task id="LOCAL-00064" summary="M">
+      <created>1625852302567</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1625852302567</updated>
+    </task>
+    <task id="LOCAL-00065" summary="M">
+      <created>1625854467976</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1625854467976</updated>
+    </task>
+    <task id="LOCAL-00066" summary="M">
+      <created>1625855389953</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1625855389953</updated>
+    </task>
+    <task id="LOCAL-00067" summary="M">
+      <created>1625855569370</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1625855569370</updated>
+    </task>
+    <task id="LOCAL-00068" summary="M">
+      <created>1625856533038</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1625856533038</updated>
+    </task>
+    <task id="LOCAL-00069" summary="M">
+      <created>1625924545237</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1625924545238</updated>
+    </task>
+    <task id="LOCAL-00070" summary="M">
+      <created>1625924604740</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1625924604740</updated>
+    </task>
+    <task id="LOCAL-00071" summary="M">
+      <created>1625933815955</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1625933815956</updated>
+    </task>
+    <task id="LOCAL-00072" summary="M">
+      <created>1625933988399</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1625933988399</updated>
+    </task>
+    <task id="LOCAL-00073" summary="M">
+      <created>1625934136717</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1625934136717</updated>
+    </task>
+    <option name="localTasksCounter" value="74" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -584,16 +586,5 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="M" />
     <option name="LAST_COMMIT_MESSAGE" value="M" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/buggy/src/draft.py</url>
-          <line>5</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

@@ -81,11 +81,12 @@ class AHRS_RS:
         timestamp = frames.get_timestamp()
         if pose: 
             data = pose.get_pose_data()
-
             position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
             vel_rs = np.array([data.velocity.x, data.velocity.y, data.velocity.z])
+            accel_rs = np.array([data.acceleration.x, data.acceleration.y, data.acceleration.z])
             position_rob = self.rs_to_world_mat @ position_rs
             vel_rob = self.rs_to_world_mat @ vel_rs
+            accel_rob = self.rs_to_world_mat @ accel_rs
 
             # Axes are permuted according how the RS axes are oriented wrt world axes
             rotation_rob = (data.rotation.w, data.rotation.z, data.rotation.x, data.rotation.y)
@@ -109,12 +110,12 @@ class AHRS_RS:
 
 
 class PWMDriver:
-    def __init__(self, motors_on):
+    def __init__(self, motors_on, pwm_freq):
         self.motors_on = motors_on
         if not self.motors_on:
             print("Motors OFF, not initializing the PWMdriver. ")
             return
-        self.pwm_freq = 50
+        self.pwm_freq = pwm_freq
         self.servo_ids = [0, 1] # MOTOR IS 0, TURN is 1
         print("Initializing the PWMdriver. ")
         self.pwm = Adafruit_PCA9685.PCA9685()
@@ -170,7 +171,7 @@ class Controller:
         self.motors_on = self.config["motors_on"]
         print("Initializing the Controller, motors_on: {}".format(self.motors_on))
         self.AHRS = AHRS_RS()
-        self.PWMDriver = PWMDriver(self.motors_on)
+        self.PWMDriver = PWMDriver(self.motors_on, int(1. / self.config["update_period"]))
         self.JOYStick = JoyController()
         self.autonomous = False
         self.opensimple_noisefun = SimplexNoise(2, *self.config["opensimplex_scalars"])
@@ -265,7 +266,7 @@ class Controller:
                 data_rotation.append(rotation_rob)
                 data_angular_vel.append(angular_vel_rob)
                 data_timestamp.append(timestamp)
-                data_action.append([throttle, turn])
+                data_action.append([m_1_scaled, m_2_scaled])
 
                 # Write control to servos
                 self.PWMDriver.write_servos([m_1_scaled, m_2_scaled])
