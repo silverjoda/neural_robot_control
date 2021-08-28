@@ -206,8 +206,12 @@ class Controller:
 
     def update_AHRS_then_read_state(self):
         """update sensors and return data relevant to the AI agent"""
-        pos, vel, rot, ang, _, _ = self.AHRS.update()
-        return pos, vel, np.array(rot), np.array(ang)
+        data = self.AHRS.update()
+        pos = data["position_rob"]
+        vel = data["velocity_rob"]
+        rot = data["rotation_rob"]
+        ang = data["angular_velocity_rob"]
+        return pos, vel, rot, ang
 
     def correct_throttle(self, throttle):
         """map throttle from [-1, 1] to [0, 1] interval"""
