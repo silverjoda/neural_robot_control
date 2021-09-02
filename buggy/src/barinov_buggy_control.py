@@ -189,7 +189,7 @@ class SimplexNoise:
 
 class Controller:  
     def __init__(self):
-        with open('configs/default.yaml') as f:
+        with open(os.path.join(os.path.dirname(__file__), "configs/default.yaml"), 'r') as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
         self.motors_on = self.config["motors_on"]
         print("Initializing the Controller, motors_on: {}".format(self.motors_on))
@@ -230,7 +230,16 @@ class Controller:
             throttle, turn = self.correct_throttle(action[0]), action[1]
             self.trajectory.update_points_state(self.agent.state.get_pos()[:2])
             print(f"throttle: {throttle}. turn: {turn}. waypoints: {self.trajectory.get_next_unvisited_point()}. pos: {self.agent.state.get_pos()}")
+        print(f"throttle: {throttle}. turn: {turn}")
         return throttle, turn
+
+    def action_to_servos(self, action_m_1, action_m_2):
+        m_1 = np.clip((0.5 * action_m_1 * self.config["motor_scalar"]) + self.config["throttle_offset"], 0.5, 1)
+        #m_2 = (action_m_2 / 2) + 0.5
+        center = 0.7
+        m_2 = (action_m_2 + 1) * center if action_m_2 < 0 else action_m_2 * (1-center) + center
+        return m_1, m_2
+
 
     def loop_control(self):
         """
@@ -242,7 +251,7 @@ class Controller:
         while True:
             iteration_starttime = time.time()
             action_m_1, action_m_2 = self.get_action()
-            m_1, m_2 = np.clip((0.5 * action_m_1 * self.config["motor_scalar"]) + self.config["throttle_offset"], 0.5, 1), (action_m_2 / 2) + 0.5
+            m_1, m_2 = self.action_to_servos(action_m_1, action_m_2) 
             self.PWMDriver.write_servos([m_1, m_2])
             while time.time() - iteration_starttime < self.config["update_period"]: pass
 
@@ -294,8 +303,7 @@ class Controller:
                     # Use joystick inputs
                     m_1, m_2 = throttle, turn
 
-                m_1_scaled, m_2_scaled = np.clip((0.5 * m_1 * self.config["motor_scalar"]) + self.config["throttle_offset"],
-                                       0.5, 1), (m_2 / 2) + 0.5
+                m_1_scaled, m_2_scaled = self.action_to_servos(m_1, m_2)
 
                 if i % 100 == 0:
                     print("Throttle js: {}, turn js: {}, throttle: {}, turn: {}, button_A: {}, button_B: {} ".format(throttle, turn, m_1_scaled, m_2_scaled, button_A, button_B))
@@ -392,6 +400,6 @@ class Controller:
 
 if __name__ == "__main__":
     with Controller() as controller:
-        controller.gather_data()
-        #controller.loop_control()
+        #controller.gather_data()
+        controller.loop_control()
 
