@@ -275,6 +275,7 @@ class Controller:
         data_timestamp = []
         data_frame = []
         data_action = []
+        data_throttleturn = []
 
         print("Starting the control loop")
         try:
@@ -328,6 +329,7 @@ class Controller:
 
                 # Action data
                 data_action.append([m_1_scaled, m_2_scaled])
+                data_throttleturn.append([m_1, m_2])
 
                 # Write control to servos
                 self.PWMDriver.write_servos([m_1_scaled, m_2_scaled])
@@ -363,6 +365,7 @@ class Controller:
         data_timestamp = np.array(data_timestamp)
         data_frame = np.array(data_frame)
         data_action = np.array(data_action)
+        data_throttleturn = np.array(data_throttleturn)
 
         np.save(os.path.join(dir_prefix, prefix + "_position_rs"), data_position_rs)
         np.save(os.path.join(dir_prefix, prefix + "_velocity_rs"), data_velocity_rs)
@@ -381,6 +384,8 @@ class Controller:
         np.save(os.path.join(dir_prefix, prefix + "_timestamp"), data_timestamp)
         np.save(os.path.join(dir_prefix, prefix + "_frame"), data_frame)
         np.save(os.path.join(dir_prefix, prefix + "_action"), data_action)
+        np.save(os.path.join(dir_prefix, prefix + "_throttleturn"), data_throttleturn)
+
 
         # Name changes:
         # position -> position_rob
@@ -400,6 +405,6 @@ class Controller:
 
 if __name__ == "__main__":
     with Controller() as controller:
-        #controller.gather_data()
-        controller.loop_control()
+        controller.gather_data()
+        #controller.loop_control()
 
