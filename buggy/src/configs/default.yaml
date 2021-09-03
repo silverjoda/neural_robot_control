@@ -2,7 +2,7 @@
 "motors_on" : True 
 "controller_source" : "nn" # "joystick" # nn/joystick
 "update_period" : 0.005
-"motor_scalar" : 0.7
+"motor_scalar" : 0.3
 "throttle_offset" : 0.5
 "target_proximity_threshold" : 0.6
 "n_data_gathering_steps" : 10000
