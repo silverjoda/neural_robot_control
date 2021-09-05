@@ -202,7 +202,7 @@ class Controller:
         self.opensimple_noisefun = SimplexNoise(2, *self.config["opensimplex_scalars"])
         self.agent = Agent()
         self.trajectory = Trajectory2d(n_waypoints=cm.get(key='env', param='n_waypoints'), 
-                                       filename="infinityleft.npy")
+                                       filename="lap_r3s5.npy")
 
     def __enter__(self):
         return self
@@ -403,11 +403,12 @@ class Controller:
         before exit save episode history, turn the wheels to the side so buggy 
         dont run straight into the wall and set minimal throttle
         """
-        dm.save_episode(history=self.agent.get_history(), trajectory=self.trajectory.trajectory, tag=f"realtest{time.strftime('%Y_%m_%d')}")
+        dm.save_episode(history=self.agent.get_history(), trajectory=self.trajectory.trajectory, 
+                        tag=f"realtest{time.strftime('%Y_%m_%d')}4")
         self.PWMDriver.write_servos([0.5, 0])
 
 if __name__ == "__main__":
     with Controller() as controller:
-        #controller.gather_data()
-        controller.loop_control()
+        controller.gather_data()
+        #controller.loop_control()
 
