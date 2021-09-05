@@ -216,7 +216,7 @@ class Controller:
         self.opensimple_noisefun = SimplexNoise(2, *self.config["opensimplex_scalars"])
         self.agent = Agent()
         self.trajectory = Trajectory2d(n_waypoints=cm.get(key='env', param='n_waypoints'), 
-                                       filename="lap_r3s5.npy")
+                                       filename="lap_r2s4.npy") # lap_r2s4.npy infinityleft_r2.npy
 
     def __enter__(self):
         return self
