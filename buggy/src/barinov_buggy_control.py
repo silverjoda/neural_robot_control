@@ -21,6 +21,20 @@ cm = ConfigsManager()
 import scripts.datamanagement.datamanager as dm
 from opensimplex import OpenSimplex
 import matplotlib.pyplot as plt
+import datetime
+
+
+def replace_symbols(var: str, to_replace: str, replacement: str):
+    """replace all required symbols in the string with desired"""
+    for symbol in to_replace:
+        var = var.replace(symbol, replacement)
+    return var
+
+
+def datetime_to_str():
+    """date and time to a string"""
+    s = str(datetime.datetime.today())
+    return replace_symbols(s, to_replace=' -:.', replacement='_')
 
 
 class JoyController():
@@ -404,11 +418,11 @@ class Controller:
         dont run straight into the wall and set minimal throttle
         """
         dm.save_episode(history=self.agent.get_history(), trajectory=self.trajectory.trajectory, 
-                        tag=f"realtest{time.strftime('%Y_%m_%d')}4")
+                        tag=f"realtest_{datetime_to_str()}")
         self.PWMDriver.write_servos([0.5, 0])
 
 if __name__ == "__main__":
     with Controller() as controller:
-        controller.gather_data()
-        #controller.loop_control()
+        #controller.gather_data()
+        controller.loop_control()
 
