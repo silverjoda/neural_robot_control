@@ -253,8 +253,8 @@ class Controller:
     def action_to_servos(self, action_m_1, action_m_2):
         m_1 = np.clip((0.5 * action_m_1 * self.config["motor_scalar"]) + self.config["throttle_offset"], 0.5, 1)
         #m_2 = (action_m_2 / 2) + 0.5
-        center = 0.7
-        m_2 = (action_m_2 + 1) * center if action_m_2 < 0 else action_m_2 * (1-center) + center
+        centre = 0.58
+        m_2 = (action_m_2 + 1) * centre if action_m_2 < 0 else action_m_2 * (1 - centre) + centre
         return m_1, m_2
 
 
