@@ -17,27 +17,20 @@ import quaternion
 from scripts.agent.agent import Agent
 from scripts.agent.trajectory import Trajectory2d
 from scripts.datamanagement.configsmanager import ConfigsManager
+from scripts.datamanagement.dataviewer import DataViewer
 cm = ConfigsManager()
-import scripts.datamanagement.datamanager as dm
+dv = DataViewer()
 from opensimplex import OpenSimplex
 import matplotlib.pyplot as plt
 import datetime
 
 
-def replace_symbols(var: str, to_replace: str, replacement: str):
-    """replace all required symbols in the string with desired"""
-    for symbol in to_replace:
-        var = var.replace(symbol, replacement)
-    return var
+datatypes = ["position_rs","velocity_rs","acceleration_rs","rotation_rob","angular_velocity_rob",
+             "angular_acceleration_rob","tracker_confidence","mapper_confidence","position_rob","velocity_rob",
+             "acceleration_rob","euler_rob","velocity_glob","acceleration_glob","timestamp","frame"]
 
 
-def datetime_to_str():
-    """date and time to a string"""
-    s = str(datetime.datetime.today())
-    return replace_symbols(s, to_replace=' -:.', replacement='_')
-
-
-class JoyController():
+class JoyController:
     def __init__(self):
         logging.info("Initializing joystick controller")
         pygame.init()
@@ -97,50 +90,33 @@ class AHRS_RS:
             pose = frames.get_pose_frame()
             if pose:
                 data = pose.get_pose_data()
+                data_dict = {}
 
                 # Metadata
-                timestamp = frames.get_timestamp()
+                data_dict["timestamp"] = frames.get_timestamp()
                 #frame = frames.get_pose_frame() # !!LOL THIS MAKES THE T265 CRASH!!
-                frame = frames.frame_number
-
+                data_dict["frame"] = frames.frame_number
                 
                 # Raw data (rotation axes are permuted according how the RS axes are oriented wrt world axes)
-                position_rs = np.array([data.translation.x, data.translation.y, data.translation.z])
-                velocity_rs = np.array([data.velocity.x, data.velocity.y, data.velocity.z])
-                acceleration_rs = np.array([data.acceleration.x, data.acceleration.y, data.acceleration.z])
-                rotation_rob = np.array([data.rotation.w, data.rotation.z, data.rotation.x, data.rotation.y])
-                angular_velocity_rob = np.array([data.angular_velocity.z, data.angular_velocity.x, data.angular_velocity.y])
-                angular_acceleration_rob = np.array([data.angular_acceleration.z, data.angular_acceleration.x, data.angular_acceleration.y])
-                tracker_confidence = np.array(data.tracker_confidence)
-                mapper_confidence = np.array(data.mapper_confidence)
+                data_dict["position_rs"] = np.array([data.translation.x, data.translation.y, data.translation.z])
+                data_dict["velocity_rs"] = np.array([data.velocity.x, data.velocity.y, data.velocity.z])
+                data_dict["acceleration_rs"] = np.array([data.acceleration.x, data.acceleration.y, data.acceleration.z])
+                data_dict["rotation_rob"] = np.array([data.rotation.w, data.rotation.z, data.rotation.x, data.rotation.y])
+                data_dict["angular_velocity_rob"] = np.array([data.angular_velocity.z, data.angular_velocity.x, data.angular_velocity.y])
+                data_dict["angular_acceleration_rob"] = np.array([data.angular_acceleration.z, data.angular_acceleration.x, data.angular_acceleration.y])
+                data_dict["tracker_confidence"] = np.array(data.tracker_confidence)
+                data_dict["mapper_confidence"] = np.array(data.mapper_confidence)
 
                 # Corrected to robot frame
-                position_rob = self.rs_to_world_mat @ position_rs
-                velocity_rob = self.rs_to_world_mat @ velocity_rs
-                acceleration_rob = self.rs_to_world_mat @ acceleration_rs
-                euler_rob = self._quat_to_euler(*rotation_rob)
+                data_dict["position_rob"] = self.rs_to_world_mat @ data_dict["position_rs"]
+                data_dict["velocity_rob"] = self.rs_to_world_mat @ data_dict["velocity_rs"]
+                data_dict["acceleration_rob"] = self.rs_to_world_mat @ data_dict["acceleration_rs"]
+                data_dict["euler_rob"] = self._quat_to_euler(*data_dict["rotation_rob"])
 
                 # Correct vel_rob to map frame using orientation quat:
-                rotation_rob_matrix = quaternion.as_rotation_matrix(np.quaternion(*rotation_rob))
-                velocity_glob = np.matmul(rotation_rob_matrix.T, velocity_rob)
-                acceleration_glob = np.matmul(rotation_rob_matrix.T, acceleration_rob)
-
-                data_dict = {"position_rs" : position_rs,
-                             "velocity_rs" : velocity_rs,
-                             "acceleration_rs" : acceleration_rs,
-                             "rotation_rob" : rotation_rob,
-                             "angular_velocity_rob" : angular_velocity_rob,
-                             "angular_acceleration_rob" : angular_acceleration_rob,
-                             "tracker_confidence" : tracker_confidence,
-                             "mapper_confidence" : mapper_confidence,
-                             "position_rob" : position_rob,
-                             "velocity_rob" : velocity_rob,
-                             "acceleration_rob" : acceleration_rob,
-                             "euler_rob" : euler_rob,
-                             "velocity_glob" : velocity_glob,
-                             "acceleration_glob" : acceleration_glob,
-                             "timestamp" : timestamp,
-                             "frame" : frame}
+                rotation_rob_matrix = quaternion.as_rotation_matrix(np.quaternion(*data_dict["rotation_rob"]))
+                data_dict["velocity_glob"] = np.matmul(rotation_rob_matrix.T, data_dict["velocity_rob"])
+                data_dict["acceleration_glob"] = np.matmul(rotation_rob_matrix.T, data_dict["acceleration_rob"])
 
                 # Changes (get outputs from dictinonary keys using the following changes):
                 # vel_rob -> velocity_glob
@@ -246,11 +222,11 @@ class Controller:
                                                  pathplanfunc=self.trajectory.get_waypoints_vector)
             throttle, turn = self.correct_throttle(action[0]), action[1]
             self.trajectory.update_points_state(self.agent.state.get_pos()[:2])
-            print(f"throttle: {throttle}. turn: {turn}. waypoints: {self.trajectory.get_next_unvisited_point()}. pos: {self.agent.state.get_pos()}")
         print(f"throttle: {throttle}. turn: {turn}")
         return throttle, turn
 
     def action_to_servos(self, action_m_1, action_m_2):
+        """map joystick or agent actions to motors"""
         m_1 = np.clip((0.5 * action_m_1 * self.config["motor_scalar"]) + self.config["throttle_offset"], 0.5, 1)
         #m_2 = (action_m_2 / 2) + 0.5
         centre = 0.58
@@ -273,27 +249,9 @@ class Controller:
             while time.time() - iteration_starttime < self.config["update_period"]: pass
 
     def gather_data(self):
-
-        # Initialize data lists
-        data_position_rs = []
-        data_velocity_rs = []
-        data_acceleration_rs = []
-        data_rotation_rob = []
-        data_angular_velocity_rob = []
-        data_angular_acceleration_rob = []
-        data_tracker_confidence = []
-        data_mapper_confidence = []
-        data_position_rob = []
-        data_velocity_rob = []
-        data_acceleration_rob = []
-        data_euler_rob = []
-        data_velocity_glob = []
-        data_acceleration_glob = []
-        data_timestamp = []
-        data_frame = []
-        data_action = []
-        data_throttleturn = []
-
+        data = {k: [] for k in datatypes}
+        data["action"] = []
+        data["throttleturn"] = []
         print("Starting the control loop")
         try:
             for i in range(self.config["n_data_gathering_steps"]):
@@ -301,10 +259,8 @@ class Controller:
                     print(i)
 
                 iteration_starttime = time.time()
-
                 # Read target control inputs
                 throttle, turn, button_A, button_B = self.JOYStick.get_joystick_input()
-
                 # Update sensor data
                 rs_dict = self.AHRS.update()
 
@@ -327,26 +283,12 @@ class Controller:
                     print("Throttle js: {}, turn js: {}, throttle: {}, turn: {}, button_A: {}, button_B: {} ".format(throttle, turn, m_1_scaled, m_2_scaled, button_A, button_B))
 
                 # Realsense data
-                data_position_rs.append(rs_dict["position_rs"])
-                data_velocity_rs.append(rs_dict["velocity_rs"])
-                data_acceleration_rs.append(rs_dict["acceleration_rs"])
-                data_rotation_rob.append(rs_dict["rotation_rob"])
-                data_angular_velocity_rob.append(rs_dict["angular_velocity_rob"])
-                data_angular_acceleration_rob.append(rs_dict["angular_acceleration_rob"])
-                data_tracker_confidence.append(rs_dict["tracker_confidence"])
-                data_mapper_confidence.append(rs_dict["mapper_confidence"])
-                data_position_rob.append(rs_dict["position_rob"])
-                data_velocity_rob.append(rs_dict["velocity_rob"])
-                data_acceleration_rob.append(rs_dict["acceleration_rob"])
-                data_euler_rob.append(rs_dict["euler_rob"])
-                data_velocity_glob.append(rs_dict["velocity_glob"])
-                data_acceleration_glob.append(rs_dict["acceleration_glob"])
-                data_timestamp.append(rs_dict["timestamp"])
-                data_frame.append(rs_dict["frame"])
+                for key in datatypes:
+                    data[key].append(rs_dict[key])
 
                 # Action data
-                data_action.append([m_1_scaled, m_2_scaled])
-                data_throttleturn.append([m_1, m_2])
+                data["action"].append([m_1_scaled, m_2_scaled])
+                data["throttleturn"].append([m_1, m_2])
 
                 # Write control to servos
                 self.PWMDriver.write_servos([m_1_scaled, m_2_scaled])
@@ -360,49 +302,13 @@ class Controller:
             self.PWMDriver.write_servos([0, 0.5])
 
         # Save data
-        dir_prefix = os.path.join("data", time.strftime("%Y_%m_%d"))
+        dir_prefix = os.path.join("data", time.strftime("%Y_%m_%d"), 'run'.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ', k=3)))
         if not os.path.exists(dir_prefix):
             os.makedirs(dir_prefix)
-        prefix = 'buggy_' + ''.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ', k=3))
+        prefix = 'buggy_'
 
-        data_position_rs = np.array(data_position_rs, dtype=np.float32)
-        data_velocity_rs = np.array(data_velocity_rs, dtype=np.float32)
-        data_acceleration_rs = np.array(data_acceleration_rs, dtype=np.float32)
-        data_rotation_rob = np.array(data_rotation_rob, dtype=np.float32)
-        data_angular_velocity_rob = np.array(data_angular_velocity_rob, dtype=np.float32)
-        data_angular_acceleration_rob = np.array(data_angular_acceleration_rob, dtype=np.float32)
-        data_tracker_confidence = np.array(data_tracker_confidence)
-        data_mapper_confidence = np.array(data_mapper_confidence)
-        data_position_rob = np.array(data_position_rob, dtype=np.float32)
-        data_velocity_rob = np.array(data_velocity_rob, dtype=np.float32)
-        data_acceleration_rob = np.array(data_acceleration_rob, dtype=np.float32)
-        data_euler_rob = np.array(data_euler_rob, dtype=np.float32)
-        data_velocity_glob = np.array(data_velocity_glob, dtype=np.float32)
-        data_acceleration_glob = np.array(data_acceleration_glob, dtype=np.float32)
-        data_timestamp = np.array(data_timestamp)
-        data_frame = np.array(data_frame)
-        data_action = np.array(data_action)
-        data_throttleturn = np.array(data_throttleturn)
-
-        np.save(os.path.join(dir_prefix, prefix + "_position_rs"), data_position_rs)
-        np.save(os.path.join(dir_prefix, prefix + "_velocity_rs"), data_velocity_rs)
-        np.save(os.path.join(dir_prefix, prefix + "_acceleration_rs"), data_acceleration_rs)
-        np.save(os.path.join(dir_prefix, prefix + "_rotation_rob"), data_rotation_rob)
-        np.save(os.path.join(dir_prefix, prefix + "_angular_velocity_rob"), data_angular_velocity_rob)
-        np.save(os.path.join(dir_prefix, prefix + "_angular_acceleration_rob"), data_angular_acceleration_rob)
-        np.save(os.path.join(dir_prefix, prefix + "_tracker_confidence"), data_tracker_confidence)
-        np.save(os.path.join(dir_prefix, prefix + "_mapper_confidence"), data_mapper_confidence)
-        np.save(os.path.join(dir_prefix, prefix + "_position_rob"), data_position_rob)
-        np.save(os.path.join(dir_prefix, prefix + "_velocity_rob"), data_velocity_rob)
-        np.save(os.path.join(dir_prefix, prefix + "_acceleration_rob"), data_acceleration_rob)
-        np.save(os.path.join(dir_prefix, prefix + "_euler_rob"), data_euler_rob)
-        np.save(os.path.join(dir_prefix, prefix + "_velocity_glob"), data_velocity_glob)
-        np.save(os.path.join(dir_prefix, prefix + "_acceleration_glob"), data_acceleration_glob)
-        np.save(os.path.join(dir_prefix, prefix + "_timestamp"), data_timestamp)
-        np.save(os.path.join(dir_prefix, prefix + "_frame"), data_frame)
-        np.save(os.path.join(dir_prefix, prefix + "_action"), data_action)
-        np.save(os.path.join(dir_prefix, prefix + "_throttleturn"), data_throttleturn)
-
+        for key in data.keys():
+            np.save(os.path.join(dir_prefix, prefix + key), np.array(data[key], dtype=np.float32))
 
         # Name changes:
         # position -> position_rob
@@ -417,8 +323,9 @@ class Controller:
         before exit save episode history, turn the wheels to the side so buggy 
         dont run straight into the wall and set minimal throttle
         """
-        dm.save_episode(history=self.agent.get_history(), trajectory=self.trajectory.trajectory, 
-                        tag=f"realtest_{datetime_to_str()}")
+        history = self.agent.get_history()
+        history["trajectory"] = self.trajectory.trajectory["points"]
+        dv.saverealepisode(data=history)
         self.PWMDriver.write_servos([0.5, 0])
 
 if __name__ == "__main__":
