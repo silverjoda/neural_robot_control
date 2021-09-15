@@ -289,7 +289,7 @@ class Controller:
             self.PWMDriver.write_servos([0, 0.5])
 
         # Save data
-        dir_prefix = os.path.join("data", time.strftime("%Y_%m_%d"), 'run'.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ', k=3)))
+        dir_prefix = os.path.join("data", time.strftime("%Y_%m_%d"), f"run{''.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ', k=3))}")
         if not os.path.exists(dir_prefix):
             os.makedirs(dir_prefix)
         prefix = 'buggy_'
