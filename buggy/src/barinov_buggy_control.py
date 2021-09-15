@@ -14,12 +14,7 @@ import os
 import yaml
 import math as m
 import quaternion
-from scripts.agent.agent import Agent
-from scripts.agent.trajectory import Trajectory2d
-from scripts.datamanagement.configsmanager import ConfigsManager
-from scripts.datamanagement.dataviewer import DataViewer
-cm = ConfigsManager()
-dv = DataViewer()
+from scripts.agent.trajectoryfollower import TrajectoryFollower
 from opensimplex import OpenSimplex
 import matplotlib.pyplot as plt
 import datetime
@@ -190,9 +185,7 @@ class Controller:
         self.JOYStick = JoyController()
         self.autonomous = False
         self.opensimple_noisefun = SimplexNoise(2, *self.config["opensimplex_scalars"])
-        self.agent = Agent()
-        self.trajectory = Trajectory2d(n_waypoints=cm.get(key='env', param='n_waypoints'), 
-                                       filename="lap_r2s4.npy") # lap_r2s4.npy infinityleft_r2.npy
+        self.agent = TrajectoryFollower(trajectoryname="lap_r2s4.npy")
 
     def __enter__(self):
         return self
@@ -200,11 +193,7 @@ class Controller:
     def update_AHRS_then_read_state(self):
         """update sensors and return data relevant to the AI agent"""
         data = self.AHRS.update()
-        pos = data["position_rob"]
-        vel = data["velocity_glob"]
-        rot = data["rotation_rob"]
-        ang = data["angular_velocity_rob"]
-        return pos, vel, rot, ang
+        return data["position_rob"], data["velocity_glob"], data["rotation_rob"], data["angular_velocity_rob"]
 
     def correct_throttle(self, throttle):
         """map throttle from [-1, 1] to [0, 1] interval"""
@@ -218,10 +207,8 @@ class Controller:
         """
         throttle, turn, button_A, _ = self.JOYStick.get_joystick_input()
         if self.config["controller_source"] == "nn" and button_A:
-            action = self.agent.observe_then_act(readstatefunc=self.update_AHRS_then_read_state, 
-                                                 pathplanfunc=self.trajectory.get_waypoints_vector)
+            action = self.agent.actonobservation(readstatefunc=self.update_AHRS_then_read_state)
             throttle, turn = self.correct_throttle(action[0]), action[1]
-            self.trajectory.update_points_state(self.agent.state.get_pos()[:2])
         print(f"throttle: {throttle}. turn: {turn}")
         return throttle, turn
 
@@ -323,9 +310,7 @@ class Controller:
         before exit save episode history, turn the wheels to the side so buggy 
         dont run straight into the wall and set minimal throttle
         """
-        history = self.agent.get_history()
-        history["trajectory"] = self.trajectory.trajectory["points"]
-        dv.saverealepisode(data=history)
+        self.agent.saveepisode(etype='real')
         self.PWMDriver.write_servos([0.5, 0])
 
 if __name__ == "__main__":
