@@ -118,6 +118,16 @@ class AHRS_RS:
                 # angular_vel_rob -> angular_velocity_rob
                 return data_dict
 
+    def get_pos(self):
+        """return estimated position"""
+        while True:
+            frames = self.pipe.wait_for_frames()
+            pose = frames.get_pose_frame()
+            if pose:
+                data = pose.get_pose_data()
+                pos = np.array([data.translation.x, data.translation.y, data.translation.z])
+                return self.rs_to_world_mat @ pos
+
 
 class PWMDriver:
     def __init__(self, motors_on, pwm_freq):
@@ -146,8 +156,7 @@ class PWMDriver:
             pulse_length = ((np.clip(vals[id], 0, 1) + 1) * 1000) / ((1000000. / self.pwm_freq) / 4096.)
             self.pwm.set_pwm(id, 0, int(pulse_length))
 
-    def arm_escs(self):
-        if not self.motors_on:
+    def arm_escs(self): if not self.motors_on:
             print("Motors OFF, not arming motors")
             return
         time.sleep(0.1)
@@ -199,6 +208,14 @@ class Controller:
         """map throttle from [-1, 1] to [0, 1] interval"""
         return (throttle + 1) / 2
 
+    def safecheck(self):
+        """if buggy went too far from joystick, 
+        turn motors off in order to prevent an accident 
+        as a consequence of connection loss"""
+        pos = self.AHRS.get_pos()
+        if (abs(pos) > 4).any():
+            self.PWMDriver.write_servos([0.5, 0])
+
     def get_action(self):
         """
         process input from the joystick. 
@@ -220,7 +237,6 @@ class Controller:
         #m_2 = (action_m_2 + 1) * centre if action_m_2 < 0 else action_m_2 * (1 - centre) + centre
         return m_1, m_2
 
-
     def loop_control(self):
         """
         Target inputs are in radians, throttle is in [0,1]
@@ -234,6 +250,7 @@ class Controller:
             m_1, m_2 = self.action_to_servos(action_m_1, action_m_2) 
             self.PWMDriver.write_servos([m_1, m_2])
             while time.time() - iteration_starttime < self.config["update_period"]: pass
+            self.safecheck()
 
     def gather_data(self):
         data = {k: [] for k in datatypes}
@@ -282,6 +299,7 @@ class Controller:
 
                 # Sleep to maintain correct FPS
                 while time.time() - iteration_starttime < self.config["update_period"]: pass
+                self.safecheck()
         except KeyboardInterrupt:
             print("Interrupted by user")
 
