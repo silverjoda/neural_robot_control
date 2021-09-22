@@ -156,7 +156,8 @@ class PWMDriver:
             pulse_length = ((np.clip(vals[id], 0, 1) + 1) * 1000) / ((1000000. / self.pwm_freq) / 4096.)
             self.pwm.set_pwm(id, 0, int(pulse_length))
 
-    def arm_escs(self): if not self.motors_on:
+    def arm_escs(self): 
+        if not self.motors_on:
             print("Motors OFF, not arming motors")
             return
         time.sleep(0.1)
