@@ -195,7 +195,7 @@ class Controller:
         self.JOYStick = JoyController()
         self.autonomous = False
         self.opensimple_noisefun = SimplexNoise(2, *self.config["opensimplex_scalars"])
-        self.agent = TrajectoryFollower(uid=8, trajectoryname="lap_r2s4.npy")
+        self.agent = TrajectoryFollower(uid=14, trajectoryname="lap_r2s4.npy")
 
     def __enter__(self):
         return self
@@ -203,6 +203,7 @@ class Controller:
     def update_AHRS_then_read_state(self):
         """update sensors and return data relevant to the AI agent"""
         data = self.AHRS.update()
+        print(data["position_rob"])
         return data["position_rob"], data["velocity_glob"], data["rotation_rob"], data["angular_velocity_rob"]
 
     def correct_throttle(self, throttle):
@@ -214,7 +215,7 @@ class Controller:
         turn motors off in order to prevent an accident 
         as a consequence of connection loss"""
         pos = self.AHRS.get_pos()
-        if (abs(pos) > 4).any():
+        if (abs(pos) > 8).any():
             self.PWMDriver.write_servos([0.5, 0])
 
     def get_action(self):
@@ -227,7 +228,7 @@ class Controller:
         if self.config["controller_source"] == "nn" and button_A:
             action = self.agent.actonobservation(readstatefunc=self.update_AHRS_then_read_state)
             throttle, turn = self.correct_throttle(action[0]), action[1]
-        print(f"throttle: {throttle}. turn: {turn}")
+        #print(f"throttle: {throttle}. turn: {turn}")
         return throttle, turn
 
     def action_to_servos(self, action_m_1, action_m_2):
