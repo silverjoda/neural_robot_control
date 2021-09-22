@@ -194,7 +194,7 @@ class Controller:
         self.JOYStick = JoyController()
         self.autonomous = False
         self.opensimple_noisefun = SimplexNoise(2, *self.config["opensimplex_scalars"])
-        self.agent = TrajectoryFollower(trajectoryname="lap_r2s4.npy")
+        self.agent = TrajectoryFollower(uid=8, trajectoryname="lap_r2s4.npy")
 
     def __enter__(self):
         return self
