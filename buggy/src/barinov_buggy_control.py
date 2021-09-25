@@ -217,6 +217,7 @@ class Controller:
         pos = self.AHRS.get_pos()
         if (abs(pos) > 8).any():
             self.PWMDriver.write_servos([0.5, 0])
+            sys.exit(f"CONNECTION MIGHT BE LOST. SAFETY BREAK")
 
     def get_action(self):
         """
