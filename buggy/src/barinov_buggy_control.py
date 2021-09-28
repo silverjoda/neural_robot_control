@@ -217,7 +217,9 @@ class Controller:
         pos = self.AHRS.get_pos()
         if (abs(pos) > 12).any():
             self.PWMDriver.write_servos([0.5, 0])
-            sys.exit(f"CONNECTION MIGHT BE LOST. SAFETY BREAK")
+            print(f"CONNECTION MIGHT BE LOST. SAFETY BREAK")
+            return False
+        return True
 
     def get_action(self):
         """
@@ -248,13 +250,12 @@ class Controller:
         Motor outputs are sent to the motor driver as [0,1]
         """
         print("Starting the control loop")
-        while True:
+        while self.safecheck():
             iteration_starttime = time.time()
             action_m_1, action_m_2 = self.get_action()
             m_1, m_2 = self.action_to_servos(action_m_1, action_m_2) 
             self.PWMDriver.write_servos([m_1, m_2])
             while time.time() - iteration_starttime < self.config["update_period"]: pass
-            self.safecheck()
 
     def gather_data(self):
         data = {k: [] for k in datatypes}
@@ -303,7 +304,8 @@ class Controller:
 
                 # Sleep to maintain correct FPS
                 while time.time() - iteration_starttime < self.config["update_period"]: pass
-                self.safecheck()
+                if not self.safecheck():
+                    break
         except KeyboardInterrupt:
             print("Interrupted by user")
 
@@ -311,7 +313,7 @@ class Controller:
             self.PWMDriver.write_servos([0, 0.5])
 
         # Save data
-        dir_prefix = os.path.join("data", time.strftime("%Y_%m_%d"), 'run', ''.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ', k=3)))
+        dir_prefix = os.path.join("data", time.strftime("%Y_%m_%d"), ''.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ', k=3)))
         if not os.path.exists(dir_prefix):
             os.makedirs(dir_prefix)
         prefix = 'buggy_'
