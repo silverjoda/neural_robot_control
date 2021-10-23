@@ -49,7 +49,9 @@ class JoyController:
 class AHRS_RS:
     def __init__(self):
         print("Initializing the rs_t265. ")
-        self.rs_to_world_mat = np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]])
+        #self.rs_to_world_mat = np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]])
+        a = - np.pi / 4 
+        self.rs_to_world_mat = np.array([[0, np.sin(a), np.cos(a)], [1, 0, 0], [0, np.cos(a), -np.sin(a)]])
         self.pipe = rs.pipeline()
         self.cfg = rs.config()
         self.cfg.enable_stream(rs.stream.pose)
