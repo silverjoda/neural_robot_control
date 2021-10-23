@@ -239,10 +239,9 @@ class Controller:
     def action_to_servos(self, action_m_1, action_m_2):
         """map joystick or agent actions to motors"""
         m_1 = np.clip((0.5 * action_m_1 * self.config["motor_scalar"]) + self.config["throttle_offset"], 0.5, 1)
-        action_m_2 = -action_m_2
-        #m_2 = (-action_m_2 / 2) + 0.5
-        centre = 0.2
-        m_2 = (action_m_2 + 1) * centre if action_m_2 < 0 else action_m_2 * (1 - centre) + centre
+        m_2 = action_m_2 / 2 + 0.5
+        #centre = 0.2
+        #m_2 = (action_m_2 + 1) * centre if action_m_2 < 0 else action_m_2 * (1 - centre) + centre
         return m_1, m_2
 
     def loop_control(self):
@@ -341,6 +340,6 @@ class Controller:
 
 if __name__ == "__main__":
     with Controller() as controller:
-        controller.gather_data()
-        #controller.loop_control()
+        #controller.gather_data()
+        controller.loop_control()
 
